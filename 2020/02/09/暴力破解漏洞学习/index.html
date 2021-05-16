@@ -1,0 +1,582 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>暴力破解漏洞学习 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="暴力破解漏洞学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-02-09 19:57" pubdate>
+        2020年2月9日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      14
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">暴力破解漏洞学习</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <hr>
+<hr>
+<h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="暴力破解漏洞学习"><a href="#暴力破解漏洞学习" class="headerlink" title="暴力破解漏洞学习"></a>暴力破解漏洞学习</h1><p>目标靶场：pikachu靶场</p>
+<p>连续性尝试+字典+自动化=暴力破解</p>
+<h3 id="Burte-Force（暴力破解）概述"><a href="#Burte-Force（暴力破解）概述" class="headerlink" title="Burte Force（暴力破解）概述"></a>Burte Force（暴力破解）概述</h3><p>“暴力破解”是一攻击具手段，在web攻击中，一般会使用这种手段对应用系统的认证信息进行获取。 其过程就是使用大量的认证信息在认证接口进行尝试登录，直到得到正确的结果。 为了提高效率，暴力破解一般会使用带有字典的工具来进行自动化操作。</p>
+<p>理论上来说，大多数系统都是可以被暴力破解的，只要攻击者有足够强大的计算能力和时间，所以断定一个系统是否存在暴力破解漏洞，其条件也不是绝对的。 我们说一个web应用系统存在暴力破解漏洞，一般是指该web应用系统没有采用或者采用了比较弱的认证安全策略，导致其被暴力破解的“可能性”变的比较高。 这里的<strong>认证安全策略</strong>, 包括：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-number">1</span>.是否要求用户设置复杂的密码；<br><br><span class="hljs-number">2</span>.是否每次认证都使用安全的验证码（想想你买火车票时输的验证码～）或者手机otp；<br><br><span class="hljs-number">3</span>.是否对尝试登录的行为进行判断和限制（如：连续<span class="hljs-number">5</span>次错误登录，进行账号锁定或<span class="hljs-built_in">IP</span>地址锁定等）；<br><br><span class="hljs-number">4</span>.是否采用了双因素认证；<br><br><span class="hljs-symbol">...</span>等等。<br><br>千万不要小看暴力破解漏洞,往往这种简单粗暴的攻击方式带来的效果是超出预期的!<br><br>你可以通过“BurteForce”对应的测试栏目，来进一步的了解该漏洞。<br><br></code></pre></td></tr></table></figure>
+<h3 id="测试流程："><a href="#测试流程：" class="headerlink" title="测试流程："></a>测试流程：</h3><p>1确认登录接口的脆弱性</p>
+<p>2.对字典进行优化</p>
+<p>3.工具自动化操作</p>
+<p>暴力破解技巧：</p>
+<p>根据注册提示信息进行优化：对目标站点进行注册，搞清楚账号密码的一些限制，比如目标站点要求密码必须6位以上，字母数字组合，则可以按照次优化字典，去掉不符合要求的密码</p>
+<p>如果爆破的是管理后台，可以通过目标页面对账号密码的回显来大致判断用户名是什么，然后进行密码破解.</p>
+<h3 id="暴力破解的绕过和防范（验证码-amp-Token）"><a href="#暴力破解的绕过和防范（验证码-amp-Token）" class="headerlink" title="暴力破解的绕过和防范（验证码&amp;Token）"></a>暴力破解的绕过和防范（验证码&amp;Token）</h3><p><strong>验证码绕过前端：</strong></p>
+<p>在pikachu靶场中的验证码绕过（client），关于验证码的产生和核查是通过前端进行的，并没有交到服务端进行核查。这样是很容易绕过，直接用burp进行抓包就行了。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-keyword">var</span> code; <span class="hljs-comment">//在全局 定义验证码</span><br> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createCode</span>(<span class="hljs-params"></span>) </span>&#123;<br>     code = <span class="hljs-string">&quot;&quot;</span>;<br>     <span class="hljs-keyword">var</span> codeLength = <span class="hljs-number">5</span>;<span class="hljs-comment">//验证码的长度</span><br>     <span class="hljs-keyword">var</span> checkCode = <span class="hljs-built_in">document</span>.getElementById(<span class="hljs-string">&quot;checkCode&quot;</span>);<br>     <span class="hljs-keyword">var</span> selectChar = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(<span class="hljs-number">0</span>, <span class="hljs-number">1</span>, <span class="hljs-number">2</span>, <span class="hljs-number">3</span>, <span class="hljs-number">4</span>, <span class="hljs-number">5</span>, <span class="hljs-number">6</span>, <span class="hljs-number">7</span>, <span class="hljs-number">8</span>, <span class="hljs-number">9</span>,<span class="hljs-string">&#x27;A&#x27;</span>,<span class="hljs-string">&#x27;B&#x27;</span>,<span class="hljs-string">&#x27;C&#x27;</span>,<span class="hljs-string">&#x27;D&#x27;</span>,<span class="hljs-string">&#x27;E&#x27;</span>,<span class="hljs-string">&#x27;F&#x27;</span>,<span class="hljs-string">&#x27;G&#x27;</span>,<span class="hljs-string">&#x27;H&#x27;</span>,<span class="hljs-string">&#x27;I&#x27;</span>,<span class="hljs-string">&#x27;J&#x27;</span>,<span class="hljs-string">&#x27;K&#x27;</span>,<span class="hljs-string">&#x27;L&#x27;</span>,<span class="hljs-string">&#x27;M&#x27;</span>,<span class="hljs-string">&#x27;N&#x27;</span>,<span class="hljs-string">&#x27;O&#x27;</span>,<span class="hljs-string">&#x27;P&#x27;</span>,<span class="hljs-string">&#x27;Q&#x27;</span>,<span class="hljs-string">&#x27;R&#x27;</span>,<span class="hljs-string">&#x27;S&#x27;</span>,<span class="hljs-string">&#x27;T&#x27;</span>,<span class="hljs-string">&#x27;U&#x27;</span>,<span class="hljs-string">&#x27;V&#x27;</span>,<span class="hljs-string">&#x27;W&#x27;</span>,<span class="hljs-string">&#x27;X&#x27;</span>,<span class="hljs-string">&#x27;Y&#x27;</span>,<span class="hljs-string">&#x27;Z&#x27;</span>);<span class="hljs-comment">//所有候选组成验证码的字符，当然也可以用中文的</span><br><br>     <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; codeLength; i++) &#123;<br>         <span class="hljs-keyword">var</span> charIndex = <span class="hljs-built_in">Math</span>.floor(<span class="hljs-built_in">Math</span>.random() * <span class="hljs-number">36</span>);<br>         code += selectChar[charIndex];<br>     &#125;<br>     <span class="hljs-comment">//alert(code);</span><br>     <span class="hljs-keyword">if</span> (checkCode) &#123;<br>         checkCode.className = <span class="hljs-string">&quot;code&quot;</span>;<br>         checkCode.value = code;<br>     &#125;<br> &#125;<br><br> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">validate</span>(<span class="hljs-params"></span>) </span>&#123;<br>     <span class="hljs-keyword">var</span> inputCode = <span class="hljs-built_in">document</span>.querySelector(<span class="hljs-string">&#x27;#bf_client .vcode&#x27;</span>).value;<br>     <span class="hljs-keyword">if</span> (inputCode.length &lt;= <span class="hljs-number">0</span>) &#123;<br>         alert(<span class="hljs-string">&quot;请输入验证码！&quot;</span>);<br>         <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>     &#125; <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (inputCode != code) &#123;<br>         alert(<span class="hljs-string">&quot;验证码输入错误！&quot;</span>);<br>         createCode();<span class="hljs-comment">//刷新验证码</span><br>         <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>;<br>     &#125;<br>     <span class="hljs-keyword">else</span> &#123;<br>         <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>;<br>     &#125;<br> &#125;<br><br><br> createCode();<br></code></pre></td></tr></table></figure>
+<p><strong>不安全验证码-on client常见问题</strong></p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">使用<span class="hljs-keyword">js前端实现验证码（纸老虎）</span><br><span class="hljs-keyword">将验证码在cookie中泄露，容易被获取</span><br><span class="hljs-keyword">将验证码在前端源代码中泄露，容易被获取</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+<p><strong>不安全的验证码-on server常见问题</strong></p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plain">验证码在后台不过期，导致可以长期被使用<br>验证码校验不严格，逻辑出现问题（比如后台只接受账号密码，对验证码没进行验证，这样的验证码也没有啥用）<br>验证码设计的太过简单和有规律，容易被猜解<br></code></pre></td></tr></table></figure>
+
+
+<p>防范措施</p>
+<figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs gauss">设计安全的验证码（安全的流程+复杂而又可用的图形）<br>对认证错误的提交进行计数并给出限制，比如连续<span class="hljs-number">5</span>次密码错误，锁定两小时<br>必要的情况下，使用双因素认证（<span class="hljs-built_in">token</span>+验证码，虽然<span class="hljs-built_in">token</span>对于防爆破是没啥用，因为<span class="hljs-built_in">token</span>是可以在前端获得，只要我们用burp截断的话，就可以一直使用相同<span class="hljs-built_in">token</span>，<span class="hljs-built_in">token</span>主要用来防御CSRF）<br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB/">WEB</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/02/09/%E5%B9%BF%E5%A4%96%E6%9D%AFweb%E9%83%A8%E5%88%86writeip%E5%8F%8A%E6%80%BB%E7%BB%93%E6%95%99%E8%AE%AD/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">广外杯web部分writeup及总结教训</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/02/09/ssti%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">
+                        <span class="hidden-mobile">ssti注入-Pyhon安全</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

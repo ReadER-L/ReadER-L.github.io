@@ -1,0 +1,576 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>某问卷调查网站的python利用 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="某问卷调查网站的python利用">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-02-09 19:57" pubdate>
+        2020年2月9日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      762 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      11
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">某问卷调查网站的python利用</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>终于，到我要开始弄创新创业调查报告的时候，弄这个报告又不能少问卷调查的结果资料，可是我又不想到处找人填报告，所以我就想到七月火师傅曾经用python来解决这个问题，所以我就想试试。</p>
+<h2 id="过程"><a href="#过程" class="headerlink" title="过程"></a>过程</h2><p>首先上某一个问卷调查网站弄了一份只有选择题的问卷调查，一共17题</p>
+<p>先随便的填写提交，然后用burp抓包</p>
+<p><img src="/2020/02/09/%E6%9F%90%E9%97%AE%E5%8D%B7%E8%B0%83%E6%9F%A5%E7%BD%91%E7%AB%99%E7%9A%84python%E5%88%A9%E7%94%A8/3.png" srcset="/img/loading.gif" alt="3.png"></p>
+<p>其中submitdata=后面数据经过url解码可以得到1$1}2$2}3$1}4$2}5$2}6$1}7$2}8$5}9$5}10$2}11$2}12$3}13$5}14$3}15$2}16$2}17$2</p>
+<p>显而易见这是这十七题的答案 的提交格式</p>
+<p>我再重复提交3次后，发现他就会需要验证码的认证，所以就猜测这个网站的机制是不是ip地址的查询</p>
+<p>所以我就写脚本进行实验</p>
+<p>就是每个填写问卷我都随机生成一个ip地址</p>
+<p><img src="/2020/02/09/%E6%9F%90%E9%97%AE%E5%8D%B7%E8%B0%83%E6%9F%A5%E7%BD%91%E7%AB%99%E7%9A%84python%E5%88%A9%E7%94%A8/4.png" srcset="/img/loading.gif" alt="4.png"></p>
+<p>结果还是会出现</p>
+<p><img src="/2020/02/09/%E6%9F%90%E9%97%AE%E5%8D%B7%E8%B0%83%E6%9F%A5%E7%BD%91%E7%AB%99%E7%9A%84python%E5%88%A9%E7%94%A8/5.png" srcset="/img/loading.gif" alt="5.png"></p>
+<p>很明显，单纯的修改ip还是不行</p>
+<p>当我在查看burp抓的包时，我发现了一个特殊的东西</p>
+<p><img src="/2020/02/09/%E6%9F%90%E9%97%AE%E5%8D%B7%E8%B0%83%E6%9F%A5%E7%BD%91%E7%AB%99%E7%9A%84python%E5%88%A9%E7%94%A8/6.png" srcset="/img/loading.gif" alt="6.png"></p>
+<p>所以我就尝试着把submittype的值改为2,在进行测试</p>
+<p><img src="/2020/02/09/%E6%9F%90%E9%97%AE%E5%8D%B7%E8%B0%83%E6%9F%A5%E7%BD%91%E7%AB%99%E7%9A%84python%E5%88%A9%E7%94%A8/7.png" srcset="/img/loading.gif" alt="7.png"></p>
+<p>虽然没有爆出验证码错误，但是却发现问卷的填写量并没有增加</p>
+<p>我就在试试3,4时，都出现不同的返回包，但都没有增加填写量</p>
+<p>当到5时，验证码绕过了，填写量也增加了</p>
+<p>我对python脚本也进行对应的修改，也成功了</p>
+<p><img src="/2020/02/09/%E6%9F%90%E9%97%AE%E5%8D%B7%E8%B0%83%E6%9F%A5%E7%BD%91%E7%AB%99%E7%9A%84python%E5%88%A9%E7%94%A8/8.png" srcset="/img/loading.gif" alt="8.png">)<img src="/2020/02/09/%E6%9F%90%E9%97%AE%E5%8D%B7%E8%B0%83%E6%9F%A5%E7%BD%91%E7%AB%99%E7%9A%84python%E5%88%A9%E7%94%A8/9.png" srcset="/img/loading.gif" alt="9.png"></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span>  requests;<br><span class="hljs-keyword">from</span> random <span class="hljs-keyword">import</span> randint;<br><span class="hljs-keyword">import</span> time;<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">putExam</span>(<span class="hljs-params">url</span>):</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1000</span>):<br>        <span class="hljs-comment">#time.sleep(5);</span><br>        header = &#123;<br>            <span class="hljs-string">&#x27;Host&#x27;</span>: <span class="hljs-string">&#x27;www.xxx.cn&#x27;</span>,<br>            <span class="hljs-string">&#x27;User-Agent&#x27;</span>: <span class="hljs-string">&#x27;Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0&#x27;</span>,<br>            <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/x-www-form-urlencoded&#x27;</span>,<br>            <span class="hljs-string">&#x27;X-Forwarded-For&#x27;</span>: <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">58</span>, <span class="hljs-number">222</span>)) + <span class="hljs-string">&#x27;.&#x27;</span> + <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">255</span>)) + <span class="hljs-string">&#x27;.&#x27;</span> + <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">255</span>)) + <span class="hljs-string">&#x27;.&#x27;</span> + <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">255</span>)),<br>            <span class="hljs-string">&#x27;Referer&#x27;</span>: <span class="hljs-string">&#x27;https://www.xxx.cn/jq/54419861.aspx&#x27;</span>,<br>            <span class="hljs-string">&#x27;Cookie&#x27;</span>: <span class="hljs-string">&#x27;.ASPXANONYMOUS=p8rSwakD1gEkAAAAMDA2M2U5OWMtNmMwYS00MDU1LWFkMDEtMmI3ZTRmZDE1ZmI4pznA0Q-N-i7AH_LE6fjlD80_ySM1; UM_distinctid=16ea78392aa4e6-031ca4067a184e-386b4644-144000-16ea78392accf3; CNZZDATA4478442=cnzz_eid%3D2126179085-1574765905-%26ntime%3D1579251434; Hm_lvt_21be24c80829bd7a683b2c536fcf520b=1579253071; acw_tc=2f624a1b15792530692836809e0aa2a42f2fc72d7a7edcdd5f7152a9eb49a2; jac50929872=29300047; Hm_lpvt_21be24c80829bd7a683b2c536fcf520b=1579253606; jac54419861=02493925; jpckey=%u5927%u5B66%u751F&#x27;</span>,<br>        &#125;<br>        data = <span class="hljs-string">&#x27;submitdata=1$%s&#125;2$%s&#125;3$%s&#125;4$%s&#125;5$%s&#125;6$%s&#125;7$%s&#125;8$%s&#125;9$%s&#125;10$%s&#125;11$%s&#125;12$%s&#125;13$%s&#125;14$%s&#125;15$%s&#125;16$%s&#125;17$%s&#x27;</span> % (<span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">5</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">2</span>, <span class="hljs-number">4</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">3</span>, <span class="hljs-number">4</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>)),<span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">3</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">8</span>)),<span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">2</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">2</span>, <span class="hljs-number">4</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">5</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">6</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>)),<span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>)), <span class="hljs-built_in">str</span>(randint(<span class="hljs-number">1</span>, <span class="hljs-number">4</span>)));<br>        r = requests.post(url, data=data, headers=header);<br>        r.encoding = r.apparent_encoding;<br>        print(header[<span class="hljs-string">&#x27;X-Forwarded-For&#x27;</span>]);<br>        print(r.text);<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span><br>    url = <span class="hljs-string">&#x27;https://www.xxx.cn/joinnew/processjq.ashx?submittype=5&amp;curID=54419861&amp;t=1579253643689&amp;starttime=2020%2F1%2F17%2017%3A33%3A25&amp;ktimes=244&amp;rn=2134303828.02493925&amp;hlv=1&amp;jqnonce=98ebd327-b89a-4ea1-952f-c18f0e980547&amp;jqsign=%3D%3Caf%60763)f%3C%3De)0ae5)%3D16b)g5%3Cb4a%3D%3C4103&amp;jpm=13&#x27;</span>;<br>    putExam(url);<br>    print(<span class="hljs-string">&#x27;good job&#x27;</span>);<br><br>main();<br></code></pre></td></tr></table></figure>
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0/">语言学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/python%E5%AD%A6%E4%B9%A0/">python学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/02/09/%E7%BD%91%E7%BB%9C%E5%AE%89%E5%85%A8%E5%AE%9E%E9%AA%8C%E5%AE%A4hackinglab-cn%E7%9A%84writeup/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">网络安全实验室hackinglab-cn的writeup</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/02/09/%E5%8D%97%E4%BA%AC%E9%82%AE%E7%94%B5CG-CTFwp/">
+                        <span class="hidden-mobile">南京邮电CG-CTFwp</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

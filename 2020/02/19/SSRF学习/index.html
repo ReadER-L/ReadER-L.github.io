@@ -1,0 +1,582 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>SSRF简单小计 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="SSRF简单小计">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-02-19 19:57" pubdate>
+        2020年2月19日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      911 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      12
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SSRF简单小计</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月2日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h3 id="补充："><a href="#补充：" class="headerlink" title="补充："></a>补充：</h3><p>2020-3-4：</p>
+<p>SSRF(Server-Side Request Forgery:服务器端请求伪造)</p>
+<p>其形成的原因大都是由于服务端<strong>提供了从其他服务器应用获取数据的功能</strong>,但又没有对目标地址做严格过滤与限制 </p>
+<p>  数据流:攻击者—–&gt;服务器—-&gt;目标地址</p>
+<p>​    根据后台使用的函数的不同,对应的影响和利用方法又有不一样 </p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stylus">PHP中下面函数的使用不当会导致SSRF:<br><span class="hljs-function"><span class="hljs-title">file_get_contents</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">fsockopen</span><span class="hljs-params">()</span></span><br><span class="hljs-function"><span class="hljs-title">curl_exec</span><span class="hljs-params">()</span></span><br>             <br></code></pre></td></tr></table></figure>
+<p>如果一定要通过后台服务器远程去对用户指定(“或者预埋在前端的请求”)的地址进行资源请求，则请做好目标地址的过滤</p>
+<h2 id="0-SSRF漏洞概述"><a href="#0-SSRF漏洞概述" class="headerlink" title="0.SSRF漏洞概述"></a>0.SSRF漏洞概述</h2><p>1.SSRF漏洞定义：服务端请求伪造是一种构造请求，是由服务端发起请求的安全漏洞。很多web应用都提供了从其他服务器上获取数据的功能。使用用户指定的url，web应用可以获取图片、下载文件、读取文件内容等。这个功能如果被恶意使用，可以利用存在缺陷的web应用作为代理攻击远程和本地的服务器。这种形式的攻击称为<strong>服务端请求伪造攻击</strong>。</p>
+<p>ssrf攻击可能存在任何语言编写的应用。</p>
+<p>一般情况下，ssrf的目标就是与外部隔离的内网资源。</p>
+<p>漏洞原理：服务端提供了从其他服务端获取数据的功能，但没有对内网目标地址做过滤和限制。</p>
+<p>主要方式：</p>
+<p>1.对外网、服务器所在内网、本地进行端口扫描，获取Banner信息。</p>
+<p>2.测试运行在内网或本地的应用程序。</p>
+<p>3.利用file协议读取本地文件等。</p>
+<p>存在SSRF漏洞的代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">curl</span>(<span class="hljs-params"><span class="hljs-variable">$url</span></span>)</span>&#123;<br>        <span class="hljs-variable">$ch</span> = curl_init(<span class="hljs-variable">$link</span>);<br>        curl_setopt(<span class="hljs-variable">$ch</span>,CURLOPT_URL,<span class="hljs-variable">$url</span>);<span class="hljs-comment">//设置对应的url</span><br>        curl_setopt(<span class="hljs-variable">$ch</span>,CURLOPT_HEADER,<span class="hljs-number">0</span>);<br>        curl_exec(<span class="hljs-variable">$ch</span>);<span class="hljs-comment">//执行对应的访问</span><br>        curl_close(<span class="hljs-variable">$ch</span>);<br>	&#125;<br>	<span class="hljs-variable">$url</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&quot;url&quot;</span>];<br>	curl(<span class="hljs-variable">$url</span>);<br><span class="hljs-meta">?&gt;</span>	<br>    <br>  <br></code></pre></td></tr></table></figure>
+
+
+<h2 id="1-SSRF漏洞利用"><a href="#1-SSRF漏洞利用" class="headerlink" title="1.SSRF漏洞利用"></a>1.SSRF漏洞利用</h2><h4 id="1-利用SSRF进行文件读取"><a href="#1-利用SSRF进行文件读取" class="headerlink" title="1.利用SSRF进行文件读取"></a>1.利用SSRF进行文件读取</h4><p>可能产生SSRF漏洞的PHP函数：file_get_contents()函数(可以配合php:/filter/)、fsockopen()、curl_exec()</p>
+<p>file_get_contents()：</p>
+<p>下面的代码使用file_get_contents函数从用户指定的url获取图片，然后把它用一个随机文件名保存在硬盘上，并展示给用户。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>	<span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;url&#x27;</span>]))&#123;<br>        <span class="hljs-variable">$contents</span> = file_get_contents(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;url&#x27;</span>]);<br>        <span class="hljs-variable">$filename</span> = <span class="hljs-string">&#x27;./images/&#x27;</span>.rand().<span class="hljs-string">&#x27;;img1.jpg&#x27;</span>;<br>        file_put_contents(<span class="hljs-variable">$filename</span>,<span class="hljs-variable">$contents</span>);<br>        <span class="hljs-keyword">echo</span> <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;url&#x27;</span>];<br>        <span class="hljs-variable">$img</span> = <span class="hljs-string">&quot;&lt;img src=\&quot;&quot;</span>.<span class="hljs-variable">$filename</span>.<span class="hljs-string">&quot;\&quot;/&gt;&quot;</span>;<br>	&#125;<br>	<span class="hljs-keyword">echo</span> <span class="hljs-variable">$img</span>;<br><span class="hljs-meta">?&gt;</span>	<br></code></pre></td></tr></table></figure>
+
+
+<p>fsockopen()</p>
+<p>使用fsockopen()函数实现获取用户指定的url数据（文件或者HTML）。这个函数会使用socket跟服务器建立tcp链接，传输原始数据。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">GetFile</span>(<span class="hljs-params"><span class="hljs-variable">$host</span>,<span class="hljs-variable">$port</span>,<span class="hljs-variable">$link</span></span>)</span>&#123;<br>        <span class="hljs-variable">$fp</span> = fsockopen(<span class="hljs-variable">$host</span>,intval(<span class="hljs-variable">$port</span>),<span class="hljs-variable">$errno</span>,<span class="hljs-variable">$errstr</span>,<span class="hljs-number">30</span>);<br>        <span class="hljs-keyword">if</span>(!<span class="hljs-variable">$fp</span>)&#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;<span class="hljs-subst">$enstr</span>(error number <span class="hljs-subst">$errno</span>)\n&quot;</span>;<br>            <br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-variable">$out</span> = <span class="hljs-string">&quot;GET <span class="hljs-subst">$link</span> HTTP/1.1\r\n&quot;</span>;<br>            <span class="hljs-variable">$out</span> .= <span class="hljs-string">&quot;Host: <span class="hljs-subst">$host</span>\r\n&quot;</span>;<br>            <span class="hljs-variable">$out</span> .= <span class="hljs-string">&quot;Connection: Close\r\n\r\n&quot;</span>;<br>            <span class="hljs-variable">$out</span> .= <span class="hljs-string">&quot;\r\n&quot;</span>;<br>            fwrite(<span class="hljs-variable">$fp</span>,<span class="hljs-variable">$out</span>);<br>            <span class="hljs-variable">$contents</span> = <span class="hljs-string">&#x27;&#x27;</span>s;<br>            <span class="hljs-keyword">while</span>(!feof(<span class="hljs-variable">$fp</span>))&#123;<br>                <span class="hljs-variable">$contents</span> .= fgets(<span class="hljs-variable">$fp</span>,<span class="hljs-number">1024</span>);<br>                <br>            &#125;<br>            <span class="hljs-variable">$fclose</span>(<span class="hljs-variable">$fp</span>);<br>            <span class="hljs-keyword">return</span> <span class="hljs-variable">$contents</span>;<br>        &#125;<br>	&#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>curl_exec()函数：使用curl发送请求获取数据。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;url&#x27;</span>]))&#123;<br>        <span class="hljs-variable">$link</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;url&#x27;</span>];<br>        <span class="hljs-variable">$curlobj</span> = curl_init(<span class="hljs-variable">$link</span>);<br>        curl_setopt(<span class="hljs-variable">$curlobj</span>,CURLOPT_POST,<span class="hljs-number">0</span>);<br>        curl_setopt(<span class="hljs-variable">$curlobj</span>,CURLOPT_RETURNTRANSFER,<span class="hljs-literal">TRUE</span>);<span class="hljs-comment">//TRUE将curl_exec()获取的信息以字符串返回而不是直接输出。</span><br>        <span class="hljs-variable">$result</span> = curl_exec(<span class="hljs-variable">$curlobj</span>);<br>        curl_close(<span class="hljs-variable">$curlboj</span>);<br>        <span class="hljs-variable">$filename</span> = <span class="hljs-string">&#x27;./curled/&#x27;</span>.rand().<span class="hljs-string">&#x27;.txt&#x27;</span>;<br>        file_put_contents(<span class="hljs-variable">$filename</span>.<span class="hljs-variable">$result</span>);<br>        <span class="hljs-keyword">echo</span> <span class="hljs-variable">$result</span>;<br>    &#125;<br></code></pre></td></tr></table></figure>
+
+
+<h4 id="2-SSRF利用内网资源的探测"><a href="#2-SSRF利用内网资源的探测" class="headerlink" title="2.SSRF利用内网资源的探测"></a>2.SSRF利用内网资源的探测</h4><p>实验：192.168.0.43使我们要探测的内网资源</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs php">ssrf.php漏洞代码<br><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;url&#x27;</span>]))&#123;<br>    <span class="hljs-variable">$link</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;url&#x27;</span>];<br>    <span class="hljs-variable">$curlobj</span> = curl_init(<span class="hljs-variable">$link</span>);<br>    curl_setopt(<span class="hljs-variable">$curlobj</span>,CURLOPT_POST,<span class="hljs-number">0</span>);<br>    curl_setopt(<span class="hljs-variable">$curlobj</span>,CURLOPT_RETURNTRANSFER,<span class="hljs-number">1</span>);<br>    <span class="hljs-variable">$result</span> = curl_exec(<span class="hljs-variable">$curlobj</span>);<br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$result</span>;<br>    curl_close(<span class="hljs-variable">$curlobj</span>);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/19/SSRF%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE_%E9%80%89%E6%8B%A9%E5%8C%BA%E5%9F%9F_20200301160711.png" srcset="/img/loading.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/PHP%E5%AE%89%E5%85%A8/">PHP安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/01/ssh%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E6%93%8D%E4%BD%9C%E4%B8%8E%E6%94%BB%E9%98%B2/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SSH攻防学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/02/18/windows2003-IIS-asp/">
+                        <span class="hidden-mobile">windows2003+IIS+asp</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

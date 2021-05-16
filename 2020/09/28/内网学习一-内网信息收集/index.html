@@ -1,0 +1,636 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>内网学习一-内网信息收集 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="内网学习一-内网信息收集">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-28 21:00" pubdate>
+        2020年9月28日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      18
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">内网学习一-内网信息收集</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年2月19日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>有时候拿下一台机子后，想要进一步攻击渗透测试的话，我们需要进行长时间的信息收集来打为进攻打下基础。</p>
+<p><strong>以下知识全部都是来自《内网安全攻防：渗透测试指南》</strong></p>
+<p>以下是收集本机信息内容</p>
+<h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="2-知识概要"><a href="#2-知识概要" class="headerlink" title="2.知识概要"></a>2.知识概要</h1><h2 id="1-收集本机信息"><a href="#1-收集本机信息" class="headerlink" title="1.收集本机信息"></a>1.收集本机信息</h2><h3 id="1-查询网络配置信息"><a href="#1-查询网络配置信息" class="headerlink" title="1.查询网络配置信息"></a>1.查询网络配置信息</h3><figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">ipconfig</span> /<span class="hljs-keyword">all</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/1.png" srcset="/img/loading.gif"></p>
+<h3 id="2-查询操作系统和软件的信息"><a href="#2-查询操作系统和软件的信息" class="headerlink" title="2.查询操作系统和软件的信息"></a>2.查询操作系统和软件的信息</h3><h4 id="1-查询操作系统和版本信息"><a href="#1-查询操作系统和版本信息" class="headerlink" title="1.查询操作系统和版本信息"></a>1.查询操作系统和版本信息</h4><figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs groovy">systeminfo | findstr <span class="hljs-regexp">/B /</span><span class="hljs-attr">C:</span><span class="hljs-string">&quot;OS Name&quot;</span> /<span class="hljs-attr">C:</span><span class="hljs-string">&quot;OS Version&quot;</span><br>中文版：systeminfo | findstr <span class="hljs-regexp">/B /</span><span class="hljs-attr">C:</span><span class="hljs-string">&quot;OS 名称&quot;</span> /<span class="hljs-attr">C:</span><span class="hljs-string">&quot;OS 版本&quot;</span><br></code></pre></td></tr></table></figure>
+<h4 id="2-查看系统体系结构"><a href="#2-查看系统体系结构" class="headerlink" title="2.查看系统体系结构"></a>2.查看系统体系结构</h4><figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos"><span class="hljs-built_in">echo</span> <span class="hljs-variable">%PROCESSOR_ARCHITECTURE%</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/2.png" srcset="/img/loading.gif"></p>
+<h4 id="3-查看安装的软件及版本、路径等"><a href="#3-查看安装的软件及版本、路径等" class="headerlink" title="3.查看安装的软件及版本、路径等"></a>3.查看安装的软件及版本、路径等</h4><p>查看wmic命令，将结果输出到文本文件中。</p>
+<figure class="highlight applescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs applescript">wmic product <span class="hljs-keyword">get</span> <span class="hljs-built_in">name</span>,<span class="hljs-built_in">version</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/3.png" srcset="/img/loading.gif"></p>
+<p>利用powershell命令，收集软件的版本信息</p>
+<figure class="highlight n1ql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs n1ql">powershell &quot;Get-WmiObject -class Win32_Product | <span class="hljs-keyword">Select</span>-<span class="hljs-keyword">Object</span> -Property name,version<span class="hljs-string">&quot;</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/4.png" srcset="/img/loading.gif"></p>
+<h4 id="4-查看启动程序信息及本机服务信息"><a href="#4-查看启动程序信息及本机服务信息" class="headerlink" title="4.查看启动程序信息及本机服务信息"></a>4.查看启动程序信息及本机服务信息</h4><figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">wmic startup <span class="hljs-built_in">get</span> <span class="hljs-keyword">command</span>,<span class="hljs-title">caption</span><br>wmic service list brief <span class="hljs-comment"> //查询服务信息</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/5.png" srcset="/img/loading.gif"></p>
+<h4 id="5-查看计划任务"><a href="#5-查看计划任务" class="headerlink" title="5.查看计划任务"></a>5.查看计划任务</h4><p>若是没有计划任务的话，</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">schtasks <span class="hljs-string">/query</span> <span class="hljs-string">/fo</span> LIST <span class="hljs-string">/v</span><br></code></pre></td></tr></table></figure>
+<h4 id="6-查看主机开机时间"><a href="#6-查看主机开机时间" class="headerlink" title="6.查看主机开机时间"></a>6.查看主机开机时间</h4><figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos"><span class="hljs-built_in">net</span> statistics workstation<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/6.png" srcset="/img/loading.gif"></p>
+<h4 id="7-查询当前在线用户"><a href="#7-查询当前在线用户" class="headerlink" title="7.查询当前在线用户"></a>7.查询当前在线用户</h4><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">query <span class="hljs-keyword">user</span> <span class="hljs-title">| qwinsta</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/8.png" srcset="/img/loading.gif"></p>
+<h4 id="8-列出或断开本机计算机与所连接的客户端之间的会话"><a href="#8-列出或断开本机计算机与所连接的客户端之间的会话" class="headerlink" title="8.列出或断开本机计算机与所连接的客户端之间的会话"></a>8.列出或断开本机计算机与所连接的客户端之间的会话</h4><figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos"><span class="hljs-built_in">net</span> session<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/9.png" srcset="/img/loading.gif"></p>
+<p>可以看到并没有其他客户端与本机连接</p>
+<h4 id="9-查询端口列表"><a href="#9-查询端口列表" class="headerlink" title="9.查询端口列表"></a>9.查询端口列表</h4><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">netstat -ano</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/10.png" srcset="/img/loading.gif"></p>
+<h4 id="10-查看补丁列表"><a href="#10-查看补丁列表" class="headerlink" title="10.查看补丁列表"></a>10.查看补丁列表</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs routeros">systeminfo<br><br><br>wmic qfe <span class="hljs-builtin-name">get</span> Caption,Description,HotFixID,InstalledOn<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/11.png" srcset="/img/loading.gif"></p>
+<h4 id="11-查询本机共享列表"><a href="#11-查询本机共享列表" class="headerlink" title="11.查询本机共享列表"></a>11.查询本机共享列表</h4><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">net <span class="hljs-keyword">share</span><br><br>wmic <span class="hljs-keyword">share</span> <span class="hljs-keyword">get</span> <span class="hljs-type">name</span>,<span class="hljs-type">path</span>,status<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/12.png" srcset="/img/loading.gif"></p>
+<h4 id="12-查询路由表及所有可用接口的ARP缓存表"><a href="#12-查询路由表及所有可用接口的ARP缓存表" class="headerlink" title="12.查询路由表及所有可用接口的ARP缓存表"></a>12.查询路由表及所有可用接口的ARP缓存表</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros">route print<br>arp -a<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/13.png" srcset="/img/loading.gif"></p>
+<h4 id="13-查询防火墙相关配置"><a href="#13-查询防火墙相关配置" class="headerlink" title="13.查询防火墙相关配置"></a>13.查询防火墙相关配置</h4><p>1.关闭防火墙</p>
+<p>windows server 2003及之前的版本：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">netsh<span class="hljs-built_in"> firewall </span><span class="hljs-builtin-name">set</span> opmode disable<br></code></pre></td></tr></table></figure>
+<p>windows server 2003及之后的版本：</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pf">netsh advfirewall <span class="hljs-built_in">set</span> allprofiles <span class="hljs-keyword">state</span> off<br></code></pre></td></tr></table></figure>
+<p>2.查看防火墙配置</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">netsh firewall <span class="hljs-keyword">show </span><span class="hljs-built_in">config</span><br></code></pre></td></tr></table></figure>
+<p>3.修改防火墙配置</p>
+<p>windwos server 2003 及之前的版本，允许指定程序全部连接</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile">netsh firewall <span class="hljs-keyword">add</span><span class="bash"> allowedprogram c:\nc.exe <span class="hljs-string">&quot;allow nc&quot;</span> <span class="hljs-built_in">enable</span></span><br></code></pre></td></tr></table></figure>
+<p>windows server 2003之后的版本：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs routeros">允许指定程序进入,命令如下：<br>netsh advfirewall<span class="hljs-built_in"> firewall </span><span class="hljs-builtin-name">add</span> rule <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;pass nc&quot;</span> <span class="hljs-attribute">dir</span>=in <span class="hljs-attribute">action</span>=allow <span class="hljs-attribute">program</span>=<span class="hljs-string">&quot;C:\nc.exe&quot;</span><br><br><br>允许指定程序退出,命令如下：<br>netsh advfirewall<span class="hljs-built_in"> firewall </span><span class="hljs-builtin-name">add</span> rule <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Allow nc&quot;</span> <span class="hljs-attribute">dir</span>=out <span class="hljs-attribute">action</span>=allow <span class="hljs-attribute">program</span>=<span class="hljs-string">&quot;C:\nc.exe&quot;</span><br><br><br>允许3389端口放行：<br>netsh advfirewall<span class="hljs-built_in"> firewall </span><span class="hljs-builtin-name">add</span> rule <span class="hljs-attribute">name</span>=<span class="hljs-string">&quot;Remote Desktop&quot;</span> <span class="hljs-attribute">protocol</span>=TCP <span class="hljs-attribute">dir</span>=in <span class="hljs-attribute">localport</span>=3389 <span class="hljs-attribute">action</span>=allow<br></code></pre></td></tr></table></figure>
+<p>4.自定义防火墙日志的存储位置</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">netsh advfirewall <span class="hljs-builtin-name">set</span> currentprofile<span class="hljs-built_in"> logging </span>filename <span class="hljs-string">&quot;C:\windows\temp\fw.log&quot;</span><br></code></pre></td></tr></table></figure>
+<h4 id="14-查看代理配置情况"><a href="#14-查看代理配置情况" class="headerlink" title="14.查看代理配置情况"></a>14.查看代理配置情况</h4><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">reg query &quot;HKEY_CURRENT_USER<span class="hljs-symbol">\S</span>oftware<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\I</span>nternet Settings&quot;<br></code></pre></td></tr></table></figure>
+<h4 id="15-查询并开启远程连接服务"><a href="#15-查询并开启远程连接服务" class="headerlink" title="*15.查询并开启远程连接服务"></a>*15.查询并开启远程连接服务</h4><p>(1)查看远程连接端口</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">REG QUERY &quot;HKEY_LOCAL_MACHINE<span class="hljs-symbol">\S</span>YSTEM<span class="hljs-symbol">\C</span>urrentControlSet<span class="hljs-symbol">\C</span>ontrol<span class="hljs-symbol">\T</span>erminal Server<span class="hljs-symbol">\W</span>inStations<span class="hljs-symbol">\R</span>DP-Tcp&quot; /V PoryNumber<br><br><br>REG query HKLM<span class="hljs-symbol">\S</span>YSTEM<span class="hljs-symbol">\C</span>urrentControlSet<span class="hljs-symbol">\C</span>ontrol<span class="hljs-symbol">\T</span>erminal&quot; &quot;Server<span class="hljs-symbol">\W</span>inStations<span class="hljs-symbol">\R</span>DP-Tcp /v PortNumber<br></code></pre></td></tr></table></figure>
+<p>(2)在Windows Server 2003 中开启3389端口</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">wmic <span class="hljs-type">path</span> win32_terminalservicesetting <span class="hljs-keyword">where</span> (__CLASS != &quot;&quot;) <span class="hljs-keyword">call</span> setallowtsconnections <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<p>(3)在windows server 2008 和 windows server 2012 中开启3389端口</p>
+<figure class="highlight angelscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs angelscript">wmic /<span class="hljs-keyword">namespace</span>:\\<span class="hljs-symbol">root</span>\<span class="hljs-symbol">cimv2</span>\<span class="hljs-symbol">terminalservices</span> <span class="hljs-symbol">path</span> <span class="hljs-symbol">win32_terminalservicesetting</span> <span class="hljs-symbol">where</span> (<span class="hljs-symbol">__CLASS</span>=&quot;&quot;) <span class="hljs-symbol">call</span> <span class="hljs-symbol">setallowtsconnection</span> <span class="hljs-symbol">1</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xquery">wmic /namespace:\<span class="hljs-built_in">\root</span>\cimv2\terminalservices<span class="hljs-built_in"> path</span> win32_tsgeneralsetting <span class="hljs-keyword">where</span> (TerminalName=<span class="hljs-string">&#x27;RDP-Tcp&#x27;</span>) call setuserauthenticationrequired <span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">reg add <span class="hljs-string">&quot;HKLM\SYSTEM\CURRENT\CONTROLSET\CONTROL\TERMINAL SERVER&quot;</span> <span class="hljs-regexp">/v fSingleSessionPerUser /</span>t REG_DWORD <span class="hljs-regexp">/d 0 /</span>f<br></code></pre></td></tr></table></figure>
+<h2 id="2-查询当前权限"><a href="#2-查询当前权限" class="headerlink" title="2.查询当前权限"></a>2.查询当前权限</h2><h4 id="1-查看当前权限和域SID"><a href="#1-查看当前权限和域SID" class="headerlink" title="1.查看当前权限和域SID"></a>1.查看当前权限和域SID</h4><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">whoami</span><br></code></pre></td></tr></table></figure>
+<p>获取一台主机的权限后，有如下三种情况：<br>1.本地普通用户</p>
+<p>格式：比如<code>win-2008\user</code></p>
+<p>2.本地管理员用户</p>
+<p>格式：比如<code>wi-2008\administrator</code></p>
+<p>3.域内用户</p>
+<p>格式：比如<code>xxxx\administrator</code>xxxx域内的<code>administrator</code>用户。</p>
+<p>​    <strong>在这三种情况中，如果当前内网存在域，那么本地普通用户只能查询本机相关信息，不能查询域内信息，而本地管理员用户和域内用户可以查询域内信息。</strong></p>
+<p>​    原理：域内的所有查询都是经过域控制器实现的（基于LDAP协议），而这个查询需要经过权限认证，所以域用户才拥有这个权限；当域用户执行查询命令时，会自动使用<code>Kerberos</code>协议进行认证，无须额外输入帐号和密码。</p>
+<figure class="highlight mercury"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mercury">whoami /<span class="hljs-built_in">all</span> 获取域SID<br></code></pre></td></tr></table></figure>
+<h4 id="2-查询指定用户的详细信息"><a href="#2-查询指定用户的详细信息" class="headerlink" title="2.查询指定用户的详细信息"></a>2.查询指定用户的详细信息</h4><figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">net <span class="hljs-keyword">user</span> <span class="hljs-title">xxx</span> /domain<br></code></pre></td></tr></table></figure>
+<h2 id="3-判断是否存在域"><a href="#3-判断是否存在域" class="headerlink" title="3.判断是否存在域"></a>3.判断是否存在域</h2><p>​    搜集完本机相关信息后，接下来，就要判断当前内网是否有域。如果有，需要判断所控主机是否在域内。</p>
+<h4 id="1．使用ipconfig命令"><a href="#1．使用ipconfig命令" class="headerlink" title="1．使用ipconfig命令"></a>1．使用<code>ipconfig</code>命令</h4><p>​    执行如下命令，可以查看网关 IP 地址、DNS 的 IP 地址、本地地址是否和 DNS 服务器为同一网段、域名等</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">ipconfig</span> /<span class="hljs-keyword">all</span><br></code></pre></td></tr></table></figure>
+<p>然后，通过反向解析查询命令 <code>nslookup</code> 来解析域名的 IP 地址。使用解析出来的 IP 地址进行对比，判断域控制器和 DNS 服务器是否在同一台服务器上</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">nslookup reader.testlab  <span class="hljs-regexp">//</span>例子<br></code></pre></td></tr></table></figure>
+<h4 id="2-通过查看系统详细信息"><a href="#2-通过查看系统详细信息" class="headerlink" title="2.通过查看系统详细信息"></a>2.通过查看系统详细信息</h4><figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">systeminfo</span><br></code></pre></td></tr></table></figure>
+<p>域即域名，登录服务器为域控制器。如果域显示为<br><code>WORKGROUP</code>，表示当前服务器不在域内。当前域名<code>hacke.testlab</code></p>
+<p><img src="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/14.png" srcset="/img/loading.gif" alt="image-20210205184051401"></p>
+<h4 id="3-查询当前登录域及登录用户信息"><a href="#3-查询当前登录域及登录用户信息" class="headerlink" title="3.查询当前登录域及登录用户信息"></a>3.查询当前登录域及登录用户信息</h4><p>执行如下命令，工作站域 DNS 名称显示域名（如果显示为 WORKGROUP，则表示非域环境）。登录域表明当前用户是域用户登录还是本地用户登录，此处表明当前用户是域用户登录。</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">net <span class="hljs-built_in">config</span> workstation<br></code></pre></td></tr></table></figure>
+<h4 id="4-判断主域"><a href="#4-判断主域" class="headerlink" title="4.判断主域"></a>4.判断主域</h4><p>通过执行以下命令来判断主域（域服务器通常会同时作为时间服务器使用）</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos"><span class="hljs-built_in">net</span> <span class="hljs-built_in">time</span> /domain<br></code></pre></td></tr></table></figure>
+<p>运行该命令后，一般会有如下三种情况。<br>1.存在域，但当前用户不是域用户，提示<code>发生系统错误5</code>说明权限不够。</p>
+<p>2.存在域，并且当前用户是域用户，会显示正常时间</p>
+<p>3.当前网络环境为工作组，不存在域，则会爆出<code>找不到域workgroup的域控制器</code>的错误。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8/">内网安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/">内网信息收集</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">java安全-JAVA反射机制</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/">
+                        <span class="hidden-mobile">java安全-java基础学习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

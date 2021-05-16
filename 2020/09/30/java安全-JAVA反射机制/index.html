@@ -1,0 +1,689 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>java安全-JAVA反射机制 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="java安全-JAVA反射机制">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-30 19:10" pubdate>
+        2020年9月30日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      5.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      73
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">java安全-JAVA反射机制</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月20日 下午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-JAVA反射机制的概念："><a href="#1-JAVA反射机制的概念：" class="headerlink" title="1.JAVA反射机制的概念："></a>1.JAVA反射机制的概念：</h1><p>​    java反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法;对于任意一个对象，都能够调用它的任意方法和属性; 这种动态获取信息以及动态调用对象方法的功能称为java语言的反射机制。</p>
+<p>以下大部分知识来自<code>代码审计的知识星球</code></p>
+<h1 id="2-反射"><a href="#2-反射" class="headerlink" title="2.反射"></a>2.反射</h1><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">execute</span><span class="hljs-params">(String className, String methodName)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;<br> Class clazz = Class.forName(className);<br> clazz.getMethod(methodName).invoke(clazz.newInstance());<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>上面例子有几个知识点是在反射中极为重要的方法：</p>
+<p>获取类的方法：<code>forName</code></p>
+<p>实例化类对象的方法：<code>newInstance</code></p>
+<p>获取函数的方法：<code>getMethod</code></p>
+<p>执行函数的方法：<code>invoke</code></p>
+<p>​    基本上，这⼏个⽅法包揽了Java安全⾥各种和反射有关的Payload。<code>forName</code> 不是获取“类”的唯⼀途径，通常来说我们有如下三种⽅式获取⼀个“类”，也就是 <code>java.lang.Class</code> 对象：</p>
+<p>1.<code>obj.getClass()</code> 如果上下⽂中存在某个类的实例 obj ，那么我们可以直接通过<code>obj.getClass()</code> 来获取它的类。<br>2.<code>Test.class</code> 如果你已经加载了某个类，只是想获取到它的  3.<code>java.lang.Class</code> 对象，那么就直接拿它的<code> class</code> 属性即可。<strong>这个⽅法其实不属于反射</strong>。<br>4.<code>Class.forName </code>如果你知道某个类的名字，想获取到这个类，就可以使⽤ <code>forName </code>来获取</p>
+<h3 id="在使用Java反射机制时，主要步骤包括："><a href="#在使用Java反射机制时，主要步骤包括：" class="headerlink" title="在使用Java反射机制时，主要步骤包括："></a><strong>在使用<code>Java</code>反射机制时，主要步骤包括：</strong></h3><ol>
+<li><p>获取 目标类型的<code>Class</code>对象</p>
+</li>
+<li><p>通过 <code>Class</code> 对象分别获取<code>Constructor</code>类对象、<code>Method</code>类对象 &amp; <code>Field</code> 类对象</p>
+</li>
+<li><p>通过 <code>Constructor</code>类对象、<code>Method</code>类对象 &amp; <code>Field</code>类对象分别获取类的构造函数、方法&amp;属性的具体信息，并进行后续操作</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> com;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Page</span> </span>&#123;<br><br>    <span class="hljs-keyword">private</span> String name;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">Page</span><span class="hljs-params">(String name)</span></span>&#123;<br>        <span class="hljs-keyword">this</span>.name = name;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getName</span><span class="hljs-params">()</span></span>&#123;<br>        <span class="hljs-keyword">return</span> name;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setName</span><span class="hljs-params">(String name)</span></span>&#123;<br>        <span class="hljs-keyword">this</span>.name = name;<br>    &#125;<br>&#125;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reftest</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br>        <span class="hljs-comment">// 获取Page类的Class对象</span><br>        Class clas = Class.forName(<span class="hljs-string">&quot;com.Page&quot;</span>);<br>        <span class="hljs-comment">// 通过class对象来Constructor类对象也就是我们的构造器</span><br>        Constructor constructor = clas.getDeclaredConstructor(String.class);<br>        <span class="hljs-comment">// 通过设置setAccessible为true可以访问到 私有的方法和属性</span><br>        constructor.setAccessible(<span class="hljs-keyword">true</span>);<br>        <span class="hljs-comment">// 通过构造器来实例化我们的Page对象，括号中的参数是我们构造函数的参数</span><br>        Object object =  constructor.newInstance(<span class="hljs-string">&quot;Test&quot;</span>);<br>        <span class="hljs-comment">// 通过class对象来获取我们的Method类</span><br>        Method getname = clas.getMethod(<span class="hljs-string">&quot;getName&quot;</span>);<br>        System.out.println(getname.invoke(object));<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>上面是一个例子，我们通过反射来调用Page类中的<code>getName</code>方法</p>
+</li>
+</ol>
+<p>反射方法使用主要的步骤如下：</p>
+<ol>
+<li>通过路径获取类的对象实例</li>
+</ol>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">Class clas = <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Class</span>.</span></span><span class="hljs-keyword">for</span><span class="hljs-constructor">Name(<span class="hljs-string">&quot;com.Page&quot;</span>)</span>;<br></code></pre></td></tr></table></figure>
+<ol>
+<li>根据Class对象获取对应的Constructor对象也就是我们的Constructor构造器</li>
+</ol>
+<figure class="highlight delphi"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs delphi"><span class="hljs-function"><span class="hljs-keyword">Constructor</span> <span class="hljs-title">constructor</span> = <span class="hljs-title">clas</span>.<span class="hljs-title">getDeclaredConstructor</span><span class="hljs-params">(<span class="hljs-keyword">String</span>.<span class="hljs-keyword">class</span>)</span>;</span><br></code></pre></td></tr></table></figure>
+<ol>
+<li>使用Constructor 的 newInstance 来获取被实例化的类</li>
+</ol>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-built_in">Object</span> <span class="hljs-built_in">object</span> = <span class="hljs-title">constructor</span>.<span class="hljs-title">newInstance</span>(<span class="hljs-params"><span class="hljs-string">&quot;Test&quot;</span></span>);<br></code></pre></td></tr></table></figure>
+<ol>
+<li>利用Method来获取类的方法进行方法的调用</li>
+</ol>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs oxygene"><span class="hljs-function"><span class="hljs-keyword">Method</span> <span class="hljs-title">getname</span> = <span class="hljs-title">clas</span>.<span class="hljs-title">getMethod</span><span class="hljs-params">(&quot;getName&quot;)</span>;</span><br>getname.invoke(object)<br></code></pre></td></tr></table></figure>
+
+
+<p>接下来从获取类、调用构造方法、调用方法、调用属性来进行学习：</p>
+<h2 id="1-反射类的首要操作-获取类"><a href="#1-反射类的首要操作-获取类" class="headerlink" title="1.反射类的首要操作-获取类"></a>1.反射类的首要操作-获取类</h2><h3 id="1-直接根据类名获取类（不属于反射）"><a href="#1-直接根据类名获取类（不属于反射）" class="headerlink" title="1.直接根据类名获取类（不属于反射）"></a>1.直接根据类名获取类（不属于反射）</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reftest1</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">reftest1</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;ref 1&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        <span class="hljs-comment">//直接通过类名获取类</span><br>        Class a = reftest1.class;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<h3 id="2-通过Class-forName获取类，需要指定类的路径（重点）"><a href="#2-通过Class-forName获取类，需要指定类的路径（重点）" class="headerlink" title="2.通过Class.forName获取类，需要指定类的路径（重点）"></a>2.通过Class.forName获取类，需要指定类的路径（重点）</h3><p>需要注意的是:我们需要抛出异常。</p>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/1.png" srcset="/img/loading.gif"></p>
+<p><strong>我们还需要注意的是，当用Class.forName获取一个类的时候，就会动态的调用<code>static</code>静态代码块：</strong></p>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/3.png" srcset="/img/loading.gif"></p>
+<p><code>forName</code>有两个函数重载：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">	Class&lt;?&gt; <span class="hljs-keyword">for</span><span class="hljs-constructor">Name(String <span class="hljs-params">name</span>)</span><br><br>​	Class&lt;?&gt; <span class="hljs-keyword">for</span><span class="hljs-constructor">Name(String <span class="hljs-params">name</span>, <span class="hljs-operator">**</span><span class="hljs-params">boolean</span><span class="hljs-operator">**</span> <span class="hljs-params">initialize</span>, ClassLoader <span class="hljs-params">loader</span>)</span><br></code></pre></td></tr></table></figure>
+<p>默认情况下，<code>forName</code>的第⼀个参数是类名；第⼆个参数表示是否初始化；第三个参数就是 <code>ClassLoader </code>。<code>ClassLoader </code>是什么呢？它就是⼀个“加载器”，告诉Java虚拟机如何加载这个类。</p>
+<p>第⼆个参数<code>initialize</code>这个初始化究竟指的是什么？可以将其视为类的初始化。</p>
+<p>看一下下面这个类</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span></span>&#123;<br>    <span class="hljs-comment">//构造函数</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">reflection1</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;this is 构造函数&quot;</span>);<br>    &#125;<br>    <span class="hljs-comment">//&#123;&#125;块</span><br>    &#123;<br>        System.out.println(<span class="hljs-string">&quot;this is &#123;&#125;&quot;</span>);<br>    &#125;<br>    <span class="hljs-comment">//static块</span><br>    <span class="hljs-keyword">static</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;this is static&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>上述的三个“初始化”⽅法有什么区别，调⽤顺序是什么，在安全上有什么价值？</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> org.example.example;<br><br><span class="hljs-keyword">import</span> org.jsoup.select.Evaluator;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationTargetException;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span></span>&#123;<br>    <span class="hljs-comment">//构造函数</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">reflection1</span><span class="hljs-params">()</span></span>&#123;<br>        <span class="hljs-keyword">super</span>();<br>        System.out.println(<span class="hljs-string">&quot;this is 构造函数&quot;</span>);<br>    &#125;<br>    <span class="hljs-comment">//&#123;&#125;块</span><br>    &#123;<br>        System.out.println(<span class="hljs-string">&quot;this is &#123;&#125;&quot;</span>);<br>    &#125;<br>    <span class="hljs-comment">//static块</span><br>    <span class="hljs-keyword">static</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;this is static&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException, IllegalAccessException, InvocationTargetException, InstantiationException, NoSuchMethodException </span>&#123;<br>        Class b = Class.forName(<span class="hljs-string">&quot;org.example.example.reflection1&quot;</span>);<br>        Constructor constructor1 = b.getConstructor();<br>        constructor1.newInstance();<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>当我实例化的时候，会调用<code>&#123;&#125;</code>块和无参构造函数块。</p>
+<p><strong>⾸先调⽤的是 static {} ，其次是 {} ，最后是构造函数。</strong></p>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/16.png" srcset="/img/loading.gif"></p>
+<p>有时候在写漏洞利用方法的时候，会发现使用<code>newInstance</code>总是不成功，这时候原因可能是：</p>
+<ol>
+<li>你使用的类没有无参构造函数</li>
+<li>你使用的类构造函数是私有的</li>
+</ol>
+<h3 id="3-通过实例化的方式获取类"><a href="#3-通过实例化的方式获取类" class="headerlink" title="3.通过实例化的方式获取类"></a>3.通过实例化的方式获取类</h3><p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/2.png" srcset="/img/loading.gif"></p>
+<h2 id="2-反射调用构造方法"><a href="#2-反射调用构造方法" class="headerlink" title="2.反射调用构造方法"></a>2.反射调用构造方法</h2><p>反射调用构造方法需要<code>Constructor</code>类的相关函数。</p>
+<p><strong>知识前瞻：(来自代码审计的星球)</strong></p>
+<blockquote>
+<p>​     getConstructor 接收的参数是构造函数列表类型，因为构造函数也支持重载，所以必须用参数列表类型才能唯一确定一个构造函数。</p>
+<p>获取到构造函数后，我们使用 newInstance 来执行。比如，我们常用的另一种执行命令的方式ProcessBuilder，我们使用反射来获取其构造函数，然后调用start() 来执行命令：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">Class clazz = Class.forName(<span class="hljs-string">&quot;java.lang.ProcessBuilder&quot;</span>);<br>((ProcessBuilder)clazz.getConstructor(List.class).newInstance(Arrays.asList(<span class="hljs-string">&quot;calc.exe&quot;</span>))).start();<br></code></pre></td></tr></table></figure>
+
+<p>ProcessBuilder有两个构造函数：<br><code>public ProcessBuilder(List&lt;String&gt; command)</code><br><code>public ProcessBuilder(String... command)</code><br>我上面用到了第一个形式的构造函数，所以我在 getConstructor 的时候传入的是 List.class 。但是，我们看到，前面这个Payload用到了Java里的强制类型转换，有时候我们利用漏洞的时候（在表达式上下文中）是没有这种语法的。所以，我们仍需利用反射来完成这一步。其实用的就是前面讲过的知识：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">Class clazz = Class.forName(<span class="hljs-string">&quot;java.lang.ProcessBuilder&quot;</span>);<br>clazz.getMethod(<span class="hljs-string">&quot;start&quot;</span>).invoke(clazz.getConstructor(List.class).newInstance(Arrays.asList(<span class="hljs-string">&quot;calc.exe&quot;</span>)));<br></code></pre></td></tr></table></figure>
+
+<p>通过 <code>getMethod(&quot;start&quot;)</code> 获取到<code>start</code>方法，然后 <code>invoke </code>执行， <code>invoke</code> 的第一个参数就是<code>ProcessBuilder Object</code>了。</p>
+</blockquote>
+<h3 id="1-反射调用无参构造方法"><a href="#1-反射调用无参构造方法" class="headerlink" title="1.反射调用无参构造方法"></a>1.反射调用无参构造方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br>        <span class="hljs-comment">//直接通过类名获取类</span><br><span class="hljs-comment">//        Class a = reftest1.class;</span><br>        <span class="hljs-comment">//通过Class.forName来获取类</span><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.xxx&quot;</span>);<br>            Constructor constructor1 = clazz.getConstructor();<br>            constructor1.newInstance();<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br>        <span class="hljs-comment">//通过实例化的方式获取类</span><br><span class="hljs-comment">//        Class c = (new reftest1()).getClass();</span><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">xxx</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">xxx</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个没有参数（感情）的构造方法&quot;</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">xxx</span><span class="hljs-params">(String name)</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是有一个参数的构造方法，参数值为:&quot;</span>+name);<br>    &#125;<br>    <span class="hljs-comment">//forName该类的时候，会调用static代码块</span><br>    <span class="hljs-keyword">static</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;static&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">//实例化该类的时候,会调用该&#123;&#125;代码块的</span><br>    &#123;<br>        System.out.println(<span class="hljs-string">&quot;&#123;&#125;的&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/4.png" srcset="/img/loading.gif"></p>
+<p>注意：</p>
+<p>getConstructor 需要加一个异常处理。</p>
+<h3 id="2-一个参数的构造方法的调用"><a href="#2-一个参数的构造方法的调用" class="headerlink" title="2.一个参数的构造方法的调用"></a>2.一个参数的构造方法的调用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.xxx&quot;</span>);<br>            Constructor constructor1 = clazz.getConstructor(String.class);<br>            constructor1.newInstance(<span class="hljs-string">&quot;reader-l&quot;</span>);<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">xxx</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">xxx</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个没有参数（感情）的构造方法&quot;</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">xxx</span><span class="hljs-params">(String name)</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是有一个参数的构造方法，参数值为:&quot;</span>+name);<br>    &#125;<br>    <span class="hljs-comment">//forName该类的时候，会调用static代码块</span><br>    <span class="hljs-keyword">static</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;static&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">//实例化该类的时候,会调用该&#123;&#125;代码块的</span><br>    &#123;<br>        System.out.println(<span class="hljs-string">&quot;&#123;&#125;的&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/5.png" srcset="/img/loading.gif"></p>
+<h3 id="3-多个参数的构造方法的调用"><a href="#3-多个参数的构造方法的调用" class="headerlink" title="3.多个参数的构造方法的调用"></a>3.多个参数的构造方法的调用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class&lt;?&gt; clazz = Class.forName(<span class="hljs-string">&quot;learning.xxx&quot;</span>);<br>            <span class="hljs-comment">//要获取private（私有）的构造方法的话，我们需要用getDeclaredConstructor函数，也是要设置强行调用</span><br>            <span class="hljs-comment">//由于是两个参数，所以需要在getDeclaredConstructor传入对应的参数类型</span><br>            Constructor&lt;?&gt; constructor1 = clazz.getDeclaredConstructor(String.class,String.class);<br>            <span class="hljs-comment">//设置强制反射</span><br>            constructor1.setAccessible(<span class="hljs-keyword">true</span>);<br>            <span class="hljs-comment">//构造函数实例化，并传参</span><br>            constructor1.newInstance(<span class="hljs-string">&quot;reader-l&quot;</span>,<span class="hljs-string">&quot;reader&#x27;s blog &quot;</span>);<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">xxx</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">xxx</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个没有参数（感情）的构造方法&quot;</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">xxx</span><span class="hljs-params">(String name)</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是有一个参数的构造方法，参数值为:&quot;</span>+name);<br>    &#125;<br>    <span class="hljs-comment">//forName该类的时候，会调用static代码块</span><br>    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">xxx</span><span class="hljs-params">(String name , String school)</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是有两个参数的构造方法&quot;</span>+name+<span class="hljs-string">&quot; &quot;</span>+school);<br><br>    &#125;<br>    <span class="hljs-keyword">static</span> &#123;<br>        System.out.println(<span class="hljs-string">&quot;static&quot;</span>);<br>    &#125;<br><br>    <span class="hljs-comment">//实例化该类的时候,会调用该&#123;&#125;代码块的</span><br>    &#123;<br>        System.out.println(<span class="hljs-string">&quot;&#123;&#125;的&quot;</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/6.png" srcset="/img/loading.gif"></p>
+<h4 id="利用到的知识点：可变长参数（代码审计星球）"><a href="#利用到的知识点：可变长参数（代码审计星球）" class="headerlink" title="利用到的知识点：可变长参数（代码审计星球）"></a>利用到的知识点：可变长参数（代码审计星球）</h4><p>如果我们要使用 <code>public ProcessBuilder(String... command) </code>这个构造函数，需要怎样用反射执行呢？</p>
+<p>这又涉及到Java里的可变长参数（<code>varargs</code>）了。正如其他语言一样，Java也支持可变长参数，就是当你定义函数的时候不确定参数数量的时候，可以使用 … 这样的语法来表示”这个函数的参数个数是可变的”。对于可变长参数，Java其实在编译的时候会编译成一个数组，也就是说，如下这两种写法在底层是等价的（也就不能重载）：</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs typescript"><span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-function"><span class="hljs-title">hello</span>(<span class="hljs-params"><span class="hljs-built_in">String</span>[] names</span>)</span> &#123;&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-built_in">void</span> <span class="hljs-function"><span class="hljs-title">hello</span>(<span class="hljs-params"><span class="hljs-built_in">String</span>...names</span>)</span> &#123;&#125;<br></code></pre></td></tr></table></figure>
+<p>那么对于反射来说，如果要获取的目标函数里包含可变长参数，其实我们认为它是数组就行了。所以，我们将字符串数组的类 <code>String[].class</code> 传给 <code>getConstructor </code>，获取 <code>ProcessBuilder </code>的第二种构造函数：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">Class clazz = Class.forName(<span class="hljs-string">&quot;java.lang.ProcessBuilder&quot;</span>);<br>clazz.getConstructor(String[].class)<br></code></pre></td></tr></table></figure>
+<p>在调用 <code>newInstance</code> 的时候，因为这个函数本身接收的是一个可变长参数，我们传给<code>ProcessBuilder </code>的也是一个可变长参数，二者叠加为一个二维数组，所以整个Payload如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">Class clazz = Class.forName(<span class="hljs-string">&quot;java.lang.ProcessBuilder&quot;</span>);<br>((ProcessBuilder)clazz.getConstructor(String[].class).newInstance(<span class="hljs-keyword">new</span> String[][]&#123;&#123;<span class="hljs-string">&quot;deepin-calculator&quot;</span>&#125;&#125;)).start();<br></code></pre></td></tr></table></figure>
+<p>制成一段代码：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">((ProcessBuilder)<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Class</span>.</span></span><span class="hljs-keyword">for</span><span class="hljs-constructor">Name(<span class="hljs-string">&quot;java.lang.ProcessBuilder&quot;</span>)</span>.get<span class="hljs-constructor">Constructor(String[].<span class="hljs-params">class</span>)</span>.<span class="hljs-keyword">new</span><span class="hljs-constructor">Instance(<span class="hljs-params">new</span> String[][]&#123;&#123;<span class="hljs-string">&quot;deepin-calculator&quot;</span>&#125;&#125;)</span>).start<span class="hljs-literal">()</span>;<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="4-反射私有的构造方法（单例模式）"><a href="#4-反射私有的构造方法（单例模式）" class="headerlink" title="4.反射私有的构造方法（单例模式）"></a>4.反射私有的构造方法（单例模式）</h3><p>刚开始学习的时候，肯定会尝试调用<code>java.lang.Runtime</code>这个类来构造命令执行。</p>
+<p>但是不能直接像下例的样子来直接执行命令，会报错。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> org.example.example;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationTargetException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">excute</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span>  <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException </span>&#123;<br>        Class clazz = Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>);<br>        clazz.getMethod(<span class="hljs-string">&quot;exec&quot;</span>, String.class).invoke(clazz.newInstance(), <span class="hljs-string">&quot;id&quot;</span>);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/17.png" srcset="/img/loading.gif"></p>
+<p>这是因为<code>Runtime </code>类的构造方法是私有的。</p>
+<blockquote>
+<p>有同学就比较好奇，为什么会有类的构造方法是私有的，难道他不想让用户使用这个类吗？这其实涉及到很常见的设计模式：“单例模式”。（有时候工厂模式也会写成类似）比如，对于Web应用来说，数据库连接只需要建立一次，而不是每次用到数据库的时候再新建立一个连接，此时作为开发者你就可以将数据库连接使用的类的构造函数设置为私有，然后编写一个静态方法来<br>获取：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">TrainDB</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> <span class="hljs-keyword">static</span> TrainDB instance = <span class="hljs-keyword">new</span> TrainDB();<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> TrainDB <span class="hljs-title">getInstance</span><span class="hljs-params">()</span> </span>&#123;<br>    <span class="hljs-keyword">return</span> instance;<br>    &#125;<br>	<span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-title">TrainDB</span><span class="hljs-params">()</span> </span>&#123;<br><span class="hljs-comment">// 建立连接的代码...</span><br>	&#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+<p>这样，只有类初始化的时候会执行一次构造函数，后面只能通过 getInstance 获取这个对象，避免建立多个数据库连接。<br>回到正题，Runtime类就是单例模式，我们只能通过 Runtime.getRuntime() 来获取到 Runtime 对象。</p>
+</blockquote>
+<p>我们将上述Payload进行修改即可正常执行命令了：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> org.example.example;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationTargetException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">excute</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span>  <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> ClassNotFoundException, NoSuchMethodException, IllegalAccessException, InstantiationException, InvocationTargetException </span>&#123;<br>        Class clazz = Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>);<br>        clazz.getMethod(<span class="hljs-string">&quot;exec&quot;</span>, String.class).invoke(clazz.getMethod(<span class="hljs-string">&quot;getRuntime&quot;</span>).invoke(clazz), <span class="hljs-string">&quot;deepin-calculator&quot;</span>);<br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<blockquote>
+<p>这里用到了 getMethod 和 invoke 方法。getMethod 的作用是通过反射获取一个类的某个特定的公有方法。而学过Java的同学应该清楚，Java中<br>支持类的重载，我们不能仅通过函数名来确定一个函数。所以，在调用 getMethod 的时候，我们需要传给他你需要获取的函数的参数类型列表。</p>
+<p><code>getMethod(&quot;exec&quot;, String.class)</code> 来获取 <code>Runtime.exec</code> 方法。<br><code>invoke </code>的作用是执行方法，它的第一个参数是：<br>    如果这个方法是一个普通方法，那么第一个参数是类对象<br>    如果这个方法是一个静态方法，那么第一个参数是类<br>这也比较好理解了，我们正常执行方法是 <code>[1].method([2], [3], [4]...)</code> ，其实在反射里就是<code>method.invoke([1], [2], [3], [4]...)</code> 。</p>
+</blockquote>
+<h3 id="5-getDeclared-系列"><a href="#5-getDeclared-系列" class="headerlink" title="5.getDeclared 系列"></a>5.getDeclared 系列</h3><p>getDeclared 系列的反射与普通的 getMethod 、 getConstructor 区别是：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">getMethod</span> 系列方法获取的是当前类中所有公共方法，包括从父类继承的方法<br>getDeclaredMethod 系列方法获取的是当前类中“声明”的方法，是实在写在这个类里的，包括私有的方法，但从父类里继承来的就不包含了<br></code></pre></td></tr></table></figure>
+<p>前面说过Runtime这个类的构造函数是私有的，需要用 <code>Runtime.getRuntime() </code>来获取对象。其实现在也可以直接用 <code>getDeclaredConstructor</code> 来获取这个私有的构造方法来实例化对象，进而执行命令：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">Class clazz = Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>);<br>Constructor m = clazz.getDeclaredConstructor();<br>m.setAccessible(<span class="hljs-keyword">true</span>);<br>clazz.getMethod(<span class="hljs-string">&quot;exec&quot;</span>,String.class).invoke(m.newInstance(), <span class="hljs-string">&quot;calc.exe&quot;</span>);<br></code></pre></td></tr></table></figure>
+<p>可见，这里使用了一个方法 <code>setAccessible</code> ，这个是必须的。在获取到一个私有方法后，必须用<br><code>setAccessible</code> 修改它的作用域，否则仍然不能调用。</p>
+<p><code>getDeclaredConstructors</code>带<code>s</code>说明获取所有的构造方法，[0]代表第一位。</p>
+<h2 id="3-反射调用方法"><a href="#3-反射调用方法" class="headerlink" title="3.反射调用方法"></a>3.反射调用方法</h2><p><code>Method</code>类对象</p>
+<h3 id="1-调用无参的方法"><a href="#1-调用无参的方法" class="headerlink" title="1.调用无参的方法"></a>1.调用无参的方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.xxx&quot;</span>);<br>            Method method = clazz.getMethod(<span class="hljs-string">&quot;test&quot;</span>);<br>            method.invoke(clazz.newInstance());<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">xxx</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我调用了无参的test方法&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">public</span> String[] test1(String[] b)&#123;<br>        System.out.println(<span class="hljs-string">&quot;我调用了有一个参数的test1方法&quot;</span>);<br>        <span class="hljs-keyword">return</span> b;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个静态函数&quot;</span>);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/7.png" srcset="/img/loading.gif"></p>
+<p>调用私有的无参方法：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.xxx&quot;</span>);<br>            <span class="hljs-comment">//使用getDeclaredMethod方法</span><br>            Method method = clazz.getDeclaredMethod(<span class="hljs-string">&quot;test&quot;</span>);<br>            <span class="hljs-comment">//需要设置强制调用</span><br>            method.setAccessible(<span class="hljs-keyword">true</span>);<br>            method.invoke(clazz.newInstance());<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">xxx</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我调用了无参的test方法&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">public</span> String[] test1(String[] b)&#123;<br>        System.out.println(<span class="hljs-string">&quot;我调用了有一个参数的test1方法&quot;</span>);<br>        <span class="hljs-keyword">return</span> b;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个静态函数&quot;</span>);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<h3 id="2-有一个参数的方法调用"><a href="#2-有一个参数的方法调用" class="headerlink" title="2.有一个参数的方法调用"></a>2.有一个参数的方法调用</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.xxx&quot;</span>);<br>            Method method = clazz.getMethod(<span class="hljs-string">&quot;test1&quot;</span>,String[].class);<br>           <span class="hljs-comment">// method.setAccessible(true);</span><br>            String[] strs = (String[]) method.invoke(clazz.newInstance(),<span class="hljs-keyword">new</span> Object[]&#123;<span class="hljs-keyword">new</span> String[]&#123;<span class="hljs-string">&quot;str1&quot;</span>,<span class="hljs-string">&quot;str2&quot;</span>,<span class="hljs-string">&quot;str3&quot;</span>&#125;&#125;);<br>            <span class="hljs-keyword">for</span>(String str:strs)&#123;<br>                System.out.println(str);<br>            &#125;<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">xxx</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我调用了无参的test方法&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">public</span> String[] test1(String[] b)&#123;<br>        System.out.println(<span class="hljs-string">&quot;我调用了有一个参数的test1方法&quot;</span>);<br>        <span class="hljs-keyword">return</span> b;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个静态函数&quot;</span>);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/8.png" srcset="/img/loading.gif"></p>
+<p>私有的话，只是换个<code>clazz.getDeclaredMethod()</code>和加个强制调用而已</p>
+<h3 id="3-反射静态方法"><a href="#3-反射静态方法" class="headerlink" title="3.反射静态方法"></a>3.反射静态方法</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.xxx&quot;</span>);<br>            Method method = clazz.getMethod(<span class="hljs-string">&quot;test2&quot;</span>);<br>            method.invoke(<span class="hljs-keyword">null</span>);<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">xxx</span></span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">private</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我调用了无参的test方法&quot;</span>);<br>    &#125;<br>    <span class="hljs-keyword">public</span> String[] test1(String[] b)&#123;<br>        System.out.println(<span class="hljs-string">&quot;我调用了有一个参数的test1方法&quot;</span>);<br>        <span class="hljs-keyword">return</span> b;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test2</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;我是一个静态函数&quot;</span>);<br>    &#125;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>调用静态方法倒是比较简单</p>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/9.png" srcset="/img/loading.gif"></p>
+<h2 id="4-反射调用属性"><a href="#4-反射调用属性" class="headerlink" title="4.反射调用属性"></a>4.反射调用属性</h2><p>  <code>Field</code> 类对象</p>
+<h3 id="1-反射public属性"><a href="#1-反射public属性" class="headerlink" title="1.反射public属性"></a>1.反射public属性</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.Person&quot;</span>);<br>            Person reader = (Person)clazz.newInstance();<br>            Field m =clazz.getField(<span class="hljs-string">&quot;name&quot;</span>);<br>            String name = (String)m.get(reader);<br>            System.out.println(name);<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span></span>&#123;<br>    <span class="hljs-keyword">public</span> String name = <span class="hljs-string">&quot;reader-l&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Boolean sex = <span class="hljs-keyword">true</span>;<br>    <span class="hljs-keyword">private</span> Integer age = <span class="hljs-number">20</span>;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/10.png" srcset="/img/loading.gif"></p>
+<h3 id="2-反射公共静态属性"><a href="#2-反射公共静态属性" class="headerlink" title="2.反射公共静态属性"></a>2.反射公共静态属性</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.Person&quot;</span>);<br>            Field m =clazz.getField(<span class="hljs-string">&quot;sex&quot;</span>);<br>            <span class="hljs-comment">//获取属性值,静态属性不需要实例化类，直接传入null作为类对象即可</span><br>            Boolean sex = (Boolean) m.get(<span class="hljs-keyword">null</span>);<br>            System.out.println(sex);<br>            <span class="hljs-comment">//设置属性值</span><br>            m.set(<span class="hljs-keyword">null</span>,<span class="hljs-keyword">false</span>);<br>            sex = (Boolean)m.get(<span class="hljs-keyword">null</span>);<br>            System.out.println(sex);<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span></span>&#123;<br>    <span class="hljs-keyword">public</span> String name = <span class="hljs-string">&quot;reader-l&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Boolean sex = <span class="hljs-keyword">true</span>;<br>    <span class="hljs-keyword">private</span> Integer age = <span class="hljs-number">20</span>;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/11.png" srcset="/img/loading.gif"></p>
+<h3 id="3-反射私有属性"><a href="#3-反射私有属性" class="headerlink" title="3.反射私有属性"></a>3.反射私有属性</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br><br>        <span class="hljs-keyword">try</span> &#123;<br>            Class clazz = Class.forName(<span class="hljs-string">&quot;learning.Person&quot;</span>);<br>            Person reader = (Person)clazz.newInstance();<br>            <span class="hljs-comment">//获取私有属性</span><br>            Field m =clazz.getDeclaredField(<span class="hljs-string">&quot;age&quot;</span>);<br>            <span class="hljs-comment">//设置强制反射</span><br>            m.setAccessible(<span class="hljs-keyword">true</span>);<br>            <span class="hljs-comment">//获取属性值</span><br>            Integer age = (Integer) m.get(reader);<br>            System.out.println(age.toString());<br><br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Person</span></span>&#123;<br>    <span class="hljs-keyword">public</span> String name = <span class="hljs-string">&quot;reader-l&quot;</span>;<br>    <span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> Boolean sex = <span class="hljs-keyword">true</span>;<br>    <span class="hljs-keyword">private</span> Integer age = <span class="hljs-number">20</span>;<br><br>&#125;<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/12.png" srcset="/img/loading.gif"></p>
+<h1 id="3-反射调用Runtime-getRuntime-exec进行命令执行"><a href="#3-反射调用Runtime-getRuntime-exec进行命令执行" class="headerlink" title="3.反射调用Runtime.getRuntime().exec进行命令执行"></a>3.反射调用Runtime.getRuntime().exec进行命令执行</h1><p>我们在调用java.lang.Runtime方法的时候，我们需要注意：Runtime类的构造方法是私有的。</p>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/13.png" srcset="/img/loading.gif"></p>
+<p>所以我们不能直接用<code>Class</code>来实例化（不能直接<code>newInstance Class</code>）</p>
+<h3 id="1-通过强行反射私有构造方法，用Runtime实例化进行反射"><a href="#1-通过强行反射私有构造方法，用Runtime实例化进行反射" class="headerlink" title="1.通过强行反射私有构造方法，用Runtime实例化进行反射"></a>1.通过强行反射私有构造方法，用<code>Runtime</code>实例化进行反射</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br>        <span class="hljs-comment">//InputStream    输入流，即数据流入，读入数据</span><br>        <span class="hljs-comment">//OutputStream 输出流，即数据输出，写入数据</span><br>        <span class="hljs-comment">//该代码读取上一步 Process 类型的数据流</span><br>        <span class="hljs-comment">//input.read(a);</span><br>        <span class="hljs-comment">//在上一步调用getInputStream后，可执行 read 函数。</span><br>        <span class="hljs-comment">//将当前的数据流读取出来，写入到一个 byte[]类型的变量里。</span><br>        <span class="hljs-keyword">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[<span class="hljs-number">1024</span>];<br>        <span class="hljs-keyword">try</span> &#123;<br>            Class runtime = Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>);<br>            Constructor constructor = runtime.getDeclaredConstructor();<br>            constructor.setAccessible(<span class="hljs-keyword">true</span>);<br>            <span class="hljs-comment">//由于 Runtime类构造方法返回类型为 Runtime类，所以需要使用 Runtime 类型变量进行接收</span><br>            Runtime r = (Runtime)constructor.newInstance();<br>            Method m = runtime.getMethod(<span class="hljs-string">&quot;exec&quot;</span>,String.class);<br>            <span class="hljs-comment">//调用 exec 方法，传入对象为 Runtime类的构造方法实例化</span><br>            <span class="hljs-comment">//由于 exec 方法返回的是 Process 类型数据，所以需要使用 Process 类型变量进行接收</span><br>            Process p = (Process)m.invoke(r,<span class="hljs-string">&quot;whoami&quot;</span>);<br>            p.getInputStream().read(a);<br>            System.out.println(<span class="hljs-keyword">new</span> String(a));<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/14.png" srcset="/img/loading.gif"></p>
+<h3 id="2-不进行-Runtime实例化，直接通过getRuntime进行反射"><a href="#2-不进行-Runtime实例化，直接通过getRuntime进行反射" class="headerlink" title="2.不进行 Runtime实例化，直接通过getRuntime进行反射"></a>2.不进行 Runtime实例化，直接通过getRuntime进行反射</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.Field;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">reflection1</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception</span>&#123;<br>        <span class="hljs-comment">//InputStream    输入流，即数据流入，读入数据</span><br>        <span class="hljs-comment">//OutputStream 输出流，即数据输出，写入数据</span><br>        <span class="hljs-comment">//该代码读取上一步 Process 类型的数据流</span><br>        <span class="hljs-comment">//input.read(a);</span><br>        <span class="hljs-comment">//在上一步调用getInputStream后，可执行 read 函数。</span><br>        <span class="hljs-comment">//将当前的数据流读取出来，写入到一个 byte[]类型的变量里。</span><br>        <span class="hljs-keyword">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[<span class="hljs-number">1024</span>];<br>        <span class="hljs-keyword">try</span> &#123;<br>            Class runtime = Class.forName(<span class="hljs-string">&quot;java.lang.Runtime&quot;</span>);<br>            Method method = runtime.getMethod(<span class="hljs-string">&quot;getRuntime&quot;</span>);<br>            <span class="hljs-comment">//调用getRuntime方法，使用 Runtime 类型变量进行接收</span><br>            <span class="hljs-comment">//调用无参的方法,直接传个null</span><br>            Runtime r = (Runtime)method.invoke(<span class="hljs-keyword">null</span>);<br>            <span class="hljs-comment">//由于上一个代码中调用 getRuntime 方法，返回了 Runtime类</span><br>            <span class="hljs-comment">//我们直接就可以调用底下的 exec 方法了</span><br>            Process p = (Process)r.exec(<span class="hljs-string">&quot;whoami&quot;</span>);<br>            p.getInputStream().read(a);<br>            System.out.println(<span class="hljs-keyword">new</span> String(a));<br>        &#125;<span class="hljs-keyword">catch</span> (Exception e)&#123;<br>            e.printStackTrace();<br>        &#125;<br><br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/15.png" srcset="/img/loading.gif"></p>
+<h1 id="3-参考连接"><a href="#3-参考连接" class="headerlink" title="3.参考连接"></a>3.参考连接</h1><p><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/242967.html">java代码审计基础之反射</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/10/02/java%E5%AE%89%E5%85%A8-java%E5%8A%A8%E6%80%81%E4%BB%A3%E7%90%86%E5%AD%A6%E4%B9%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">java安全-java动态代理学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/">
+                        <span class="hidden-mobile">内网学习一-内网信息收集</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

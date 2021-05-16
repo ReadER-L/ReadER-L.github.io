@@ -1,0 +1,582 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>Linux基础四 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Linux基础四">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-17 20:04" pubdate>
+        2020年12月17日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      16
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Linux基础四</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月20日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <p>Linux复习第四章</p>
+<h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-Linux文件系统概述"><a href="#1-Linux文件系统概述" class="headerlink" title="1.Linux文件系统概述"></a>1.Linux文件系统概述</h1><p>◆Linux采用虚拟文件系统技术，可支持多种常见<br>的文件系统，并允许用户在不同的磁盘分区上安<br>装不同的文件系统。<br>◆Linux支持的文件系统类型主要有：<br>➢MSDOS：MS DOS采用的FAT文件系统。<br>➢VFAT：Windows中通用的文件系统。<br>➢NFS：网络文件系统（Network File System）。<br>➢ISO9660：CD-ROM的标准文件系统。<br>➢XFS：SGI开发的日志文件系统</p>
+<h3 id="补充："><a href="#补充：" class="headerlink" title="补充："></a>补充：</h3><p>➢ 簇是一组连续的扇区；一般是2n(n为整数)个盘块。<br>➢簇的最大值为64个扇区，即32KB<br>➢一个簇应包含扇区的数量与磁盘容量的大小<br>直接有关，当以它为单位分配并链接，可减<br>少访问时间，但增大了内部碎片。</p>
+<p><strong>硬盘类型：IDE接口硬盘和SCSI接口硬盘</strong></p>
+<p>◆一台计算机上一般有两个IDE接口，每个IDE口上可连接两个硬盘设备（主盘和从盘）。<br>➢IDE0接口上的主盘称为/dev/hda<br>➢IDE0接口上的从盘称为/dev/hdb<br>◆SCSI设备：<br>第一块SCSI设备称为：/dev/sda<br>第二块SCSI设备称为：/dev/sdb</p>
+<p><img src="/2020/12/17/Linux%E5%9F%BA%E7%A1%80%E5%9B%9B/1.png" srcset="/img/loading.gif"></p>
+<h2 id="1-EXT（Extended-File-System）"><a href="#1-EXT（Extended-File-System）" class="headerlink" title="1.EXT（Extended File System）"></a>1.EXT（Extended File System）</h2><p>➢文件系统系列（EXT2、EXT3、EXT4）是专为Linux设计的文件系统。<br>➢高实用性<br>➢数据的完整性<br>➢更快的速度<br>➢方便的数据转换</p>
+<h2 id="2-SWAP文件系统"><a href="#2-SWAP文件系统" class="headerlink" title="2.SWAP文件系统"></a>2.SWAP文件系统</h2><p>➢用于Linux的交换分区<br>➢提供虚拟内存服务<br>➢一般在Linux系统安装过程中自动完成<br>➢Linux不支持使用mount命令挂载SWAP文件系统</p>
+<h2 id="3-文件系统的挂载与卸载"><a href="#3-文件系统的挂载与卸载" class="headerlink" title="3.文件系统的挂载与卸载"></a>3.文件系统的挂载与卸载</h2><p>◆挂载就是将存储介质的内容映射到指定的目录中，此目录即为该设备的挂载点。<br>➢硬盘上的各个磁盘分区都会在启动过程中自动挂载到指定的目录，并在关机时自动卸载。<br>➢移动存储介质既可以在启动时自动挂载，也可以在需要时手动挂载/卸载。<br>◆Linux 为用户的后续挂载专门提供了/mnt 或/media目录作挂载点。只有root有权执行挂载与卸载操作。</p>
+<p>文件系统的挂载记载在<code>/etc/fstab</code>，其内容：</p>
+<p><img src="/2020/12/17/Linux%E5%9F%BA%E7%A1%80%E5%9B%9B/2.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/12/17/Linux%E5%9F%BA%E7%A1%80%E5%9B%9B/3.png" srcset="/img/loading.gif"></p>
+<h3 id="1-mount命令"><a href="#1-mount命令" class="headerlink" title="1.mount命令"></a>1.mount命令</h3><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs gradle">格式： mount [-t 文件系统] [被挂载的设备名] [挂载点]<br>功能： 将磁盘设备挂载到指定的目录。挂载点目录可以不为空，但必须存在。直接输入不带参数的mount命令查看磁盘的挂载情况。<br>选项： –t 文件系统类型（type）<br>设备名：光盘一般为<span class="hljs-regexp">/dev/</span>cdrom或<span class="hljs-regexp">/dev/</span>sr0<br>软盘一般为<span class="hljs-regexp">/dev/</span>fd0<br>U盘一般为<span class="hljs-regexp">/dev/</span>sdb<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/12/17/Linux%E5%9F%BA%E7%A1%80%E5%9B%9B/4.png" srcset="/img/loading.gif"></p>
+<h3 id="2-umount命令"><a href="#2-umount命令" class="headerlink" title="2.umount命令"></a>2.umount命令</h3><figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">格式： umount 设备|<span class="hljs-string">目录</span><br><span class="hljs-string">功能： 卸载指定的设备，即可使用设备名也可以使用挂载目录名。</span><br></code></pre></td></tr></table></figure>
+<h3 id="3-fdisk-命令"><a href="#3-fdisk-命令" class="headerlink" title="3.fdisk 命令"></a>3.fdisk 命令</h3><figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">fdisk</span> -l 查看磁盘当前分区信息，如设备名，文件系统<br>fdisk 设备名 对某个磁盘设备进行分区。分区后，需对文件系统进行格式化，才能正常使用。<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/12/17/Linux%E5%9F%BA%E7%A1%80%E5%9B%9B/5.png" srcset="/img/loading.gif"></p>
+<h3 id="4-df命令"><a href="#4-df命令" class="headerlink" title="4.df命令"></a>4.df命令</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css">格式： <span class="hljs-selector-tag">df</span> <span class="hljs-selector-attr">[选项]</span><br>功能： 查看磁盘的使用情况，可看起挂载点。<br>选项： <span class="hljs-selector-tag">-a</span>：显示全部文件系统<br>			<span class="hljs-selector-tag">-t</span> 文件系统类型：显示指定文件系统<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="5-mkfs命令"><a href="#5-mkfs命令" class="headerlink" title="5.mkfs命令"></a>5.mkfs命令</h3><figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css">格式： <span class="hljs-selector-tag">mkfs</span> <span class="hljs-selector-attr">[选项]</span> 设备<br>功能： 在磁盘上建立文件系统，进行磁盘格式化。<br>选项： <span class="hljs-selector-tag">-t</span> 文件系统类型<br></code></pre></td></tr></table></figure>
+<p>每个文件系统都包含一个lost+found目录，用于保存执行文件系统检查操作中发现的问题文件。</p>
+<h3 id="6-fsck命令"><a href="#6-fsck命令" class="headerlink" title="6.fsck命令"></a>6.fsck命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plain">格式： fsck 设备<br>功能： 检查并修复文件系统。<br></code></pre></td></tr></table></figure>
+
+
+<h2 id="4-配额的基本概念"><a href="#4-配额的基本概念" class="headerlink" title="4.配额的基本概念"></a>4.配额的基本概念</h2><p>➢磁盘配额是一种磁盘空间的管理机制。<br>➢限制用户或组群在某个特定文件系统中所能使用的最大空间。分用户级和组群级的配额管理。<br>➢配额管理文件保存于实施配额管理的那个文件系统的挂载目录中<br>➢aquota.user文件保存用户级配额的内容<br>➢aquota.group文件保留组群级配额的内容。</p>
+<p>◆据配额特性将配额分为硬配额和软配额<br>➢硬配额是用户和组群可使用的最大值。<br>➢软配额是用户和组群可使用空间，但系统允许软配额在一段时间（过渡期）内被超过，过渡期后，用户不能写入更多的文件。<br>➢通常硬配额大于软配额。<br>◆<strong>只有采用Linux文件系统ext的文件系统（磁盘分区）才能进行配额管理。</strong></p>
+<h3 id="步骤："><a href="#步骤：" class="headerlink" title="步骤："></a>步骤：</h3><p><strong>◆修改/etc/fstab文件，设置某个文件系统的配额为usrquota或是grpquota</strong><br><strong>◆重启系统</strong><br><strong>◆用quotacheck命令创建配额文件</strong><br><strong>◆用edquota 命令编辑配额文件：edquota 用户</strong><br><strong>◆用quotaon命令启动配额文件</strong><br><strong>◆用quotaoff命令关闭配额文件</strong></p>
+<h3 id="1-quotacheck命令"><a href="#1-quotacheck命令" class="headerlink" title="1.quotacheck命令"></a>1.quotacheck命令</h3><p>格式： quotacheck 选项<br>功能： 检查文件系统的配额限制，创建配额管理文件<br>选项： </p>
+<p>-a（all）：扫描/etc/mtab文件中所有挂载的文件系统<br>-g（group）：检查每个组群占用的目录和文件<br>数目，并创建aquota.group文件<br>-u（user）：检查每个用户占用的目录和文件<br>数目，并创建aquota.user文件</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-regexp">/etc/m</span>tab表示目前系统加载的分区<br><span class="hljs-regexp">/etc/</span>fstab表示系统开机时默认加载的分区。<br><span class="hljs-regexp">/dev/</span>hda9 swap swap defaults,usrquota <span class="hljs-number">0</span> <span class="hljs-number">0</span><br>其文件内容为<br>◆设备<br>◆挂载点<br>◆文件系统<br>◆挂载选项：usrquota(该分区设置用户级配额),<br>grpquota(该分区设置组群配额) <br>◆是否备份<br>◆是否自检<br></code></pre></td></tr></table></figure>
+<h3 id="2-edquota命令"><a href="#2-edquota命令" class="headerlink" title="2.edquota命令"></a>2.edquota命令</h3><figure class="highlight diff"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs diff">格式： edquota 选项<br>功能： 编辑配额管理文件。<br>选项： [-u] 用户名：设置用户的配额<br><span class="hljs-deletion">-g 组群名：设置组群的配额</span><br><span class="hljs-deletion">-p 用户1 用户2 ：将用户1的配额复制给用户2</span><br></code></pre></td></tr></table></figure>
+<h3 id="3-quota命令"><a href="#3-quota命令" class="headerlink" title="3.quota命令"></a>3.quota命令</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plain">格式：quota 用户名<br>功能：查看指定用户的配额设置。<br></code></pre></td></tr></table></figure>
+<h3 id="4、quotaon命令"><a href="#4、quotaon命令" class="headerlink" title="4、quotaon命令"></a>4、quotaon命令</h3><p>格式： quotaon 选项<br>功能： 启动配额管理</p>
+<h3 id="5、quotaoff命令"><a href="#5、quotaoff命令" class="headerlink" title="5、quotaoff命令"></a>5、quotaoff命令</h3><p>格式： quotaoff 选项<br>功能： 关闭配额管理</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/18/Linux%E5%9F%BA%E7%A1%80%E4%BA%94/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux基础五</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/17/Linux%E5%9F%BA%E7%A1%80%E4%B8%89/">
+                        <span class="hidden-mobile">Linux基础三</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

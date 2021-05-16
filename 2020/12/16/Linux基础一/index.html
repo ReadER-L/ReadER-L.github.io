@@ -1,0 +1,604 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>Linux基础一 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Linux基础一">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-16 16:35" pubdate>
+        2020年12月16日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      14
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Linux基础一</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月18日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <p>​    最近考试周，下周一要考差Linux的相关知识了。加之这些知识和安全也是息息相关，因此打算边复习边书写博客作为记录。</p>
+<h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-Linux的操作基础"><a href="#1-Linux的操作基础" class="headerlink" title="1.Linux的操作基础"></a>1.Linux的操作基础</h1><h2 id="1-Linux的各组成部分"><a href="#1-Linux的各组成部分" class="headerlink" title="1.Linux的各组成部分"></a>1.Linux的各组成部分</h2><p><img src="/2020/12/16/Linux%E5%9F%BA%E7%A1%80%E4%B8%80/1.png" srcset="/img/loading.gif"></p>
+<h3 id="1-用户、Shell和内核的关系"><a href="#1-用户、Shell和内核的关系" class="headerlink" title="1.用户、Shell和内核的关系"></a>1.用户、Shell和内核的关系</h3><p><img src="/2020/12/16/Linux%E5%9F%BA%E7%A1%80%E4%B8%80/2.png" srcset="/img/loading.gif"></p>
+<p>常用的Shell:</p>
+<p>Bourne shell(称B Shell)<br>C Shell<br>Korn Shell(K Shell)<br>Bourne-Again shell(称Bash):Linux默认采用Shell</p>
+<p>Shell不仅是一种交互式命令解释程序，还是一种程序设计语言。Shell脚本程序是解释型。</p>
+<p><img src="/2020/12/16/Linux%E5%9F%BA%E7%A1%80%E4%B8%80/3.png" srcset="/img/loading.gif"></p>
+<h3 id="2-字符界面简介"><a href="#2-字符界面简介" class="headerlink" title="2.字符界面简介"></a>2.字符界面简介</h3><p>采用字符界面的理由：<br>1.图形化界面不能完成所有的操作，部分操作仍需要在字符界面下进行。<br>2.字符界面占用资源少，且运行速度快。<br>3.字符界面减少了出错、被攻击的可能性</p>
+<h4 id="1-虚拟终端"><a href="#1-虚拟终端" class="headerlink" title="1.虚拟终端"></a>1.虚拟终端</h4><p>◼ Linux虚拟终端。默认有7个，1~6是字符界面，第7<br>个是图形化用户界面。<br>◼ 虚拟终端切换 ：<code>Ctrl＋Alt＋Fn</code><br>◼ 在字符界面下，进入图形化界面命令：<code>startx</code></p>
+<h4 id="2-简单基础Shell命令"><a href="#2-简单基础Shell命令" class="headerlink" title="2.简单基础Shell命令"></a>2.简单基础Shell命令</h4><p>命令提示符：</p>
+<p><img src="/2020/12/16/Linux%E5%9F%BA%E7%A1%80%E4%B8%80/4.png" srcset="/img/loading.gif"></p>
+<p><strong>注意：</strong></p>
+<p>1.Linux系统严格区分英文字母的大小写；<br>2.Shell自动过滤多余的空格;<br>3.回车符只是控制符的一个例子。控制符是指控制终端工作方式的非显示字符。如Ctrl+d表示终端的输入结束；Ctrl+c表示终止程序</p>
+<p>(1).注销</p>
+<p>注销即退出登陆状态：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-keyword">exit</span>命令或logout或Ctrl+d<br></code></pre></td></tr></table></figure>
+<p>(2).重启</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">reboot 或 <span class="hljs-built_in">shutdown</span> -r now<br></code></pre></td></tr></table></figure>
+<p>(3).关机</p>
+<figure class="highlight arduino"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs arduino">halt或<span class="hljs-built_in">shutdown</span> -h now<br></code></pre></td></tr></table></figure>
+<p>其他表示：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli"><span class="hljs-keyword">shutdown</span> -h 23<span class="hljs-function">:59</span><br><span class="hljs-keyword">shutdown</span> -h [+]10<br><span class="hljs-keyword">shutdown</span> -h now<br></code></pre></td></tr></table></figure>
+<p><code>shutdown -c </code>用来取消关机任务</p>
+<p>(4).显示日历</p>
+<p><code>date [MMDDhhmm[YYYY]]</code></p>
+<p>功能：查看或修改系统时间</p>
+<p><code>date -s </code>修改系统时间</p>
+<p>(5)pwd命令</p>
+<p>格式：pwd</p>
+<p>功能：显示当前目录的绝对路径</p>
+<p>(6).ls 命令</p>
+<p><code>ls</code>命令</p>
+<p>格式：ls [选项] [文件|目录]<br>◼ 功能：显示指定目录中的文件和子目录信息。<br>◼ 主要选项说明：<br>-a：显示所有文件及目录<br>-l： 详细列出文件名、权限、文件大小等信息<br>-d：将目录像其他文件一样列出<br>-R：递归列出子目录</p>
+<p><img src="/2020/12/16/Linux%E5%9F%BA%E7%A1%80%E4%B8%80/5.png" srcset="/img/loading.gif"></p>
+<p>(7).who命令</p>
+<p>功能：显示当前已登录到系统的所有用户名，及其终端名和登录到系统的时间。</p>
+<p>(8).历史记录</p>
+<p>每个用户将曾执行过的Shell命令都保存在自己的主目录下的<code>.bash_history</code></p>
+<p><code>history [数字]</code>：查看Shell命令的历史记录。<br><code>history –c</code>：清除历史记录<br><code>!序号 </code>：执行指定序号命令<br><code>!!</code>：执行刚才命令</p>
+<p>(9).别名<br>别名是按照Shell命令的标准格式所写命令行的缩写。<br>作用：减少键盘输入<br>格式：<strong>alias [别名=”标准Shell命令行”]</strong></p>
+<p>功能：查看和设置别名。</p>
+<p>1.别名与标准命令同名时，别名优先；<br>2.在已定义别名的命令下，要使用同名的标准命令，前方加”/“;</p>
+<p>3.设置别名时”=”两端不能有空格;<br>4.当别名或命令中包含空格时，需单引号;<br>5.<code>alias</code>的设置仅在本次登录。若要每次登录都起作用，可在<code>.bashrc</code>中设置命令的别名。而对所有用户都有效的别名在<code>/etc/bashrc</code>中设置。</p>
+<p><strong>删除别名：</strong><code>unalias 命令别名——删除已创建的别名</code></p>
+<p>(10).Shell命令的通配符</p>
+<p>1.通配符<code>*</code> ：代表任意长度的任何字符。</p>
+<p>2.通配符<code>?</code> ：代表任何一个字符。</p>
+<p>3.字符组通配符<code>[ ]、-</code> 和<code>!</code></p>
+<p><code> [ ]</code>表示指定的一个字符范围，而<code>[ ]</code>内的任意一个字符都用于匹配。</p>
+<p> <code>-</code>在<code>[ ]</code>内表示连接符。如<code>[abc]</code>或<code>[a-c]</code></p>
+<p><code>!</code>表示不在这个范围之内的其他字符。</p>
+<p>(11).输入输出重定向（输出）</p>
+<p>输入输出重定向（输出）<br>标准输入是键盘，标准输出是屏幕。<br>1、输出重定向<br>    输出重定向就是命令执行的结果不在标准输出（屏幕）上显示，而是保存到某一文件的操作。<br>    Bash通过符号<code>&gt;</code>来实现输出重定向功能。<br>    一般形式为：命令&gt;文件名</p>
+<p>2、附加输出重定向<br>    附加输出重定向将输出内容添加在原来文件已有内容的后面，而不会覆盖其内容。<br>    Bash通过符号<code>&gt;&gt;</code>来实现。</p>
+<p>3、错误输出重定向<br>    Shell中标准输出与错误输出是两个独立的操作。<br>    程序的执行结果显示在屏幕上，而错误信息重定向到指定文件，使用<code>2&gt;</code>符号。<br>     程序的执行结果和错误信息都重定向到同一文件，使用<code>&amp;&gt;</code>符号</p>
+<p>4、输入重定向<br>    不从标准输入（键盘）读入数据，而是从文件读入数据，用<code>&lt;</code>符号来实现。<br>    因为大多数的命令都以参数的形式在命令行上指定输入文件，所以输入重定向并不常使用。</p>
+<p>5、<code>su命令</code><br>格式：su [-] [用户名]<br>功能：切换用户身份。<br><code>exit</code>命令可返回本来的用户身份。<br>    选项说明：“-”选项是切换为新用户的同时使用新用户的的环境变量</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/16/Linux%E5%9F%BA%E7%A1%80%E4%BA%8C/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux基础二</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/">
+                        <span class="hidden-mobile">SWPUCTF2020-WEB复现wp</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

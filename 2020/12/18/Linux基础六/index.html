@@ -1,0 +1,586 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>Linux基础六 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Linux基础六">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-18 22:22" pubdate>
+        2020年12月18日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      25
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Linux基础六</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月20日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <p>Linux复习第六章</p>
+<h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-Linux进程概述"><a href="#1-Linux进程概述" class="headerlink" title="1.Linux进程概述"></a>1.Linux进程概述</h1><p>◼ 进程是具有独立功能的程序的一次运行过程，是系统资源分配和调度的基本单位。PID是进程的ID号。<br>◼ 进程和程序的区别<br>    ◆程序是存储在磁盘上包含可执行机器指令和数据的静态实体。<br>    ◆进程是程序的一次运行过程，是动态的。<br>    ◆程序可长期保存，进程只暂时存在。<br>    ◆进程和程序不一一对应，一个程序可启动多个进程，一个进程可调用多个程序。</p>
+<h1 id="2-进程的状态"><a href="#2-进程的状态" class="headerlink" title="2.进程的状态"></a>2.进程的状态</h1><p>进程的三种基本状态：<br>➢ 运行状态：当一个进程在处理机上运行时，则称该进程处于执行（运行）状态。<br>➢ 就绪状态：一个进程获得了除处理机外的一切所需资源，一旦得到处理机即可运行。<br>➢ 等待(封锁)状态：当一个进程正在等待某一事件发生（例如请求I／O而等待I／O完成等）而暂时停止运行，这时即使把处理机分配给进程也无法运行，故称该进程处于等待（封锁）状态。</p>
+<p><img src="/2020/12/18/Linux%E5%9F%BA%E7%A1%80%E5%85%AD/1.png" srcset="/img/loading.gif"></p>
+<p>◼ 僵死进程是非常特殊的一种；</p>
+<p>◼ 放弃了几乎所有内存空间，没有任何可执行代码，也不能被调度，仅仅在进程列表中保留一个位置，记载该进程的退出状态等信息供其他进程收集；</p>
+<p>◼ 需要它的父进程来为它收尸。</p>
+<h1 id="3-进程的优先级"><a href="#3-进程的优先级" class="headerlink" title="3.进程的优先级"></a>3.进程的优先级</h1><p>➢ 进程根据所处状态，按照时间顺序排列成不同的队列，系统按照一定的策略调用就绪队列。<br>➢ 用户可修改进程的优先级来改变在队列中的顺序<br>➢ Linux中进程优先级的取值范围为-20~19之间的整数，取值越低，优先级越高，默认为0。</p>
+<h1 id="4-进程的工作模式"><a href="#4-进程的工作模式" class="headerlink" title="4.进程的工作模式"></a>4.进程的工作模式</h1><p><img src="/2020/12/18/Linux%E5%9F%BA%E7%A1%80%E5%85%AD/2.png" srcset="/img/loading.gif"></p>
+<h1 id="5-前后台运行和暂停进程"><a href="#5-前后台运行和暂停进程" class="headerlink" title="5.前后台运行和暂停进程"></a>5.前后台运行和暂停进程</h1><p>◼ 正在执行的一个或多个相关进程可形成一个作业。一个作业可启动多个进程。<br>➢ 前台作业：运行于前台，用户正对其进行交互操作<br>➢ 后台作业：不接收终端输入，向终端输出执行结果<br>◼ 作业可以在前后台运行，但是在同一时刻，每一用户只有一个前台作业。</p>
+<h2 id="1-相关命令"><a href="#1-相关命令" class="headerlink" title="1.相关命令"></a>1.相关命令</h2><h3 id="1-作业的前后台切换"><a href="#1-作业的前后台切换" class="headerlink" title="1.作业的前后台切换"></a>1.作业的前后台切换</h3><p>◆ 后台的作业无法接收键盘的输入。<br>◆ 实际上并不能直接使用bg 命令将当前前台作业转为后台运行，因为这时的键盘输入被视为对作业的输入而不是对shell 的输入。<br>◆ 解决方法是：先<strong>ctrl+z</strong> 挂起当前作业，使该进程暂停，再执行<strong>bg</strong> 命令使其转到后台运行。</p>
+<p>◼ <code>ctrl+c</code>强行中断当前程序的执行。<br>◼ <code>ctrl+d</code>表示结束当前输入，那么Linux通常将结束当前程序。<br>◼<code> ctrl+z</code>表示将当前前台运行的经常放在后台并挂起，如需其在后台继续运行，需用”<strong>bg</strong> 进程号”使其继续运行；再用”fg 进程号”可将后台进程前台化。</p>
+<h4 id="1-jobs命令"><a href="#1-jobs命令" class="headerlink" title="1.jobs命令"></a>1.jobs命令</h4><p>格式：jobs [选项]<br>功能：显示当前所有的作业。<br>主要选项说明：-l（list）</p>
+<p>例如显示的内容为：<code>[2]+ Done find / -name fox.jpg</code></p>
+<h4 id="2-bg命令"><a href="#2-bg命令" class="headerlink" title="2.bg命令"></a>2.bg命令</h4><p>格式：bg [作业号]<br>功能：将前台作业切换到后台运行。<br>            若没有指定作业号，则切换当前作业</p>
+<h4 id="3-fg命令"><a href="#3-fg命令" class="headerlink" title="3.fg命令"></a>3.fg命令</h4><p>格式：fg [作业号]<br>功能：</p>
+<p>​            将后台作业切换到前台运行。</p>
+<p>​            若没有指定作业号，则将后台作业序列中的第一个作业切换到前台运行。</p>
+<h1 id="6-进程调度"><a href="#6-进程调度" class="headerlink" title="6.进程调度"></a>6.进程调度</h1><p>​    Linux允许用户根据需要在指定的时间自动运行指定的进程，也允许用户将非常消耗资源和时间的进程安排到系统比较空闲的时间来执行。<br>◼ 对于偶尔运行的进程采用<code>at</code>或<code>batch</code>调度。<br>◼ 对于特定时间重复运行的进程采用<code>cron</code>调度。</p>
+<h3 id="1-相关命令-1"><a href="#1-相关命令-1" class="headerlink" title="1.相关命令"></a>1.相关命令</h3><h4 id="1-at调度"><a href="#1-at调度" class="headerlink" title="1.at调度"></a>1.at调度</h4><p>格式：at [选项] [时间]<br>功能：设置指定时间执行的指定的命令。<br>主要选项说明：<br>-f 文件名：读入预先写好的命令文件。用户不一定要使用交互模式来输入<br>-d 工作号：删除指定的调度作业。等价于atrm命令<br>-l：显示等待执行的调度作业，等价atq命令<br>-c 工作号：查看at任务的内容</p>
+<p>时间表示：<br>◆ 绝对：HH:MM MMDDYY<br>◆ 相对：now+时间间隔(minutes,hours,days,weeks)<br>◆ 直接计时法：today,tomorrow,midnight,noon当指定了时间并按下enter之后，at会进入交互模式并要求输入命令或程序，当输入完后按下<br>CTRL+D 即可完成所有动作，至于执行的结果将会发送信息到用户的账号邮箱中。</p>
+<h4 id="2-batch调度"><a href="#2-batch调度" class="headerlink" title="2.batch调度"></a>2.batch调度</h4><p>格式：batch [选项] [时间]<br>功能：<br>◼ 与at的区别是不用指定运行时间，进程将在系统较空闲时运行。<br>◼ batch调度适合于时间上要求不高，但运行时占用系统资源较多的工作。<br>◼ batch命令的选项与at命令相同。</p>
+<h4 id="3-cron调度-重点"><a href="#3-cron调度-重点" class="headerlink" title="3.cron调度(重点)"></a>3.cron调度(重点)</h4><p>◼ at调度和batch调度中指定的命令只能执行一次。但在实际系统管理中有些命令需要在指定的日期和时间重复执行，例如每天例行要做的数据备份。<br>◼ cron调度正可以满足这种需求。cron调度与crond进程、crontab命令和crontab配置文件有关。</p>
+<p><strong>(1).crontab命令</strong></p>
+<p>格式：crontab [选项]<br>功能：维护用户的crontab配置文件。<br>主要选项说明：<br>-e：编辑crontab配置文件<br>-l：显示crontab配置文件<br>-r：删除crontab配置文件</p>
+<p><strong>(2).crontab配置文件</strong></p>
+<p>➢ crontab配置文件保留cron调度的内容，共有6个字段，</p>
+<p>如下：f1 f2 f3 f4 f5 program从左到右为分钟、小时、日期、月份、星期和命令<br>➢ 如果执行的命令未使用输出重定向，那么系统将会把执行结果以邮件的方式发送给crontab文件的所有者。<br>➢ 用户的crontab配置文件保存于/var/spool/cron目录中，其文件名与用户名相同。</p>
+<p><strong>(3).crontab配置文件</strong><br>操作符号<br>➢ 逗号 (“,”) 表示指定时间，如：“1,3,4,7,8”<br>➢ 连词符 (“<code>-</code>“) 表示值的范围，如：“1-6”，等同于“1,2,3,4,5,6”<br>➢ 星号 (“<code>*</code>“) 代表任何可能的值。如，在”小时域”里的星号等于是”每一个小时”。<br>➢ 斜线 (“<code>/</code>“) 表示跳过某些给定的数。例如，“*/3”在小时域中等于“0,3,6,9,12,15,18,21”等被3整除的数；</p>
+<p>实例：</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs awk">[例] helen用户设置cron调度，要求每周五的<span class="hljs-number">17</span>点<span class="hljs-number">00</span>分<br>将 <span class="hljs-regexp">/home/u</span>ser1 目 录 中 的 所 有 文 件 归 档 并 压 缩 为<br><span class="hljs-regexp">/mnt/u</span>ser1.gz文件。<br>输入<span class="hljs-string">&quot;crontab -e&quot;</span>命令后，用户输入以下配置内容:<br><span class="hljs-number">00</span> <span class="hljs-number">17</span> * * <span class="hljs-number">5</span> tar czf <span class="hljs-regexp">/mnt/u</span>ser1.gz <span class="hljs-regexp">/home/u</span>ser1<br><br><br>例：每隔<span class="hljs-number">5</span>分钟，备份<span class="hljs-regexp">/home/</span><span class="hljs-number">1</span>.txt为<span class="hljs-number">1</span>_cop.txt这个文<br>件一次。<br>* <span class="hljs-regexp">/5 * * * * cp /</span>home<span class="hljs-regexp">/1.txt /</span>home/ <span class="hljs-number">1</span>_cop.txt<br></code></pre></td></tr></table></figure>
+<p><strong>(4).crond进程</strong>(守护进程)</p>
+<p>➢ crond进程在系统启动时自动启动，并一直运行于后台。<br>➢ crond进程负责检测crontab配置文件，并按照其设置内容，定期重复执行指定的cron调度工作。</p>
+<h1 id="7-管理进程的Shell命令"><a href="#7-管理进程的Shell命令" class="headerlink" title="7.管理进程的Shell命令"></a>7.管理进程的Shell命令</h1><h2 id="1-ps命令"><a href="#1-ps命令" class="headerlink" title="1.ps命令"></a>1.ps命令</h2><p>格式：ps [选项]<br>功能：显示进程的状态。<br>            无选项时显示当前用户在当前终端启动的进程。<br>选项说明：<br>➢ -a：显示当前终端(包括其他用户)的所有用户进程。<br>➢ -e：显示所有进程(包括系统进程)。<br>➢ -l：显示进程的详细列表。可查看进程的优先级<br>➢ -u：显示面向用户的格式<br>➢ -x：显示后台进程的信息</p>
+<h2 id="2-top命令"><a href="#2-top命令" class="headerlink" title="2.top命令"></a>2.top命令</h2><p>格式：top [-d 秒数]<br>功能：动态显示CPU利用率、内存利用率和进程状态等相关信息，是目前使用最广泛的实时系统性能监视程序。默认每5秒钟更新显示信息，而“-d<br>秒数”选项可指定刷新频率。按q退出。<br>[例] 动态监视系统性能，每10秒刷新一次<br>top –d 10</p>
+<h2 id="3-kill命令"><a href="#3-kill命令" class="headerlink" title="3.kill命令"></a>3.kill命令</h2><p>格式：kill [选项] 进程号<br>功能：终止正在运行的进程或作业。超级用户可终止所有的进程，普通用户只能终止自己启动的进程。<br>选项：- 9 强行终止指定进程</p>
+<h2 id="4-free命令"><a href="#4-free命令" class="headerlink" title="4.free命令"></a>4.free命令</h2><p>格式：free [选项]<br>功能：显示内存和交换分区的相关信息。<br>主要选项说明：<br>-b: 以Byte为单位显示内存使用情况。<br>-m: 以MB为单位显示内存使用情况。<br>-k: 以KB为单位显示内存使用情况。（默认）<br>-s 秒数<br>[例]显示内存、缓存和交换分区的使用情况<br><code>free</code></p>
+<h2 id="5-sleep-命令"><a href="#5-sleep-命令" class="headerlink" title="5.sleep 命令"></a>5.sleep 命令</h2><p>格式：sleep 秒数<br>功能：使进程暂停一段时间。以秒为单位的时间值，<br>此命令大多用于shell 编程中，使两条命令执行<br>之间停顿指定的时间。<br>例：sleep 100; pwd<br>使进程先停100 秒，再显示当前目录</p>
+<h2 id="6-nice命令"><a href="#6-nice命令" class="headerlink" title="6.nice命令"></a>6.nice命令</h2><p>格式：nice [-优先级值] 命令<br>功能：指定将启动的进程的优先级。<br>            优先级范围：-20(高)到19(低)。<br>[例] 启动ftp程序，其优先级为5</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/19/Linux%E5%9F%BA%E7%A1%80%E4%B8%83/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux基础七</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/18/Linux%E5%9F%BA%E7%A1%80%E4%BA%94/">
+                        <span class="hidden-mobile">Linux基础五</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

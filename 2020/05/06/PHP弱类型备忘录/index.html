@@ -1,0 +1,610 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>PHP弱类型备忘录 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="PHP弱类型备忘录">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-05-06 23:17" pubdate>
+        2020年5月6日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      21
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">PHP弱类型备忘录</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月2日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h2 id="１．前言"><a href="#１．前言" class="headerlink" title="１．前言"></a>１．前言</h2><p>在做题的时候总是经常碰到关于这知识点类型的题目，可是老是遗忘，所以做一个备忘录。</p>
+<h2 id="２．参考链接"><a href="#２．参考链接" class="headerlink" title="２．参考链接"></a>２．参考链接</h2><p><a target="_blank" rel="noopener" href="https://zhzhdoai.github.io/2019/02/27/PHP%E5%BC%B1%E7%B1%BB%E5%9E%8B/">osword’s blog</a></p>
+<p>以下笔记大部分来自参考链接的师傅的（学长牛逼）</p>
+<h2 id="３．笔记"><a href="#３．笔记" class="headerlink" title="３．笔记"></a>３．笔记</h2><h4 id="１．Hash比较（科学计数法）"><a href="#１．Hash比较（科学计数法）" class="headerlink" title="１．Hash比较（科学计数法）"></a>１．Hash比较（科学计数法）</h4><p>有时候会经常碰见关于md5值判断是否相等的题目</p>
+<p>例如一道南邮的题目md5 collision</p>
+<p>审计代码，我们可以发现我们需要传入一个不等于QNKCDZO的字符串，同时我们传入字符串经过md5()运算后又要和QNKCDZO的字符串的md5值相等。这就要利用<strong>PHP在处理哈希字符串时，它把每一个以“0E”开头的哈希值都解释为0，所以如果两个不同的密码经过哈希以后，其哈希值都是以“0E”开头的，那么PHP将会认为他们相同，都是0</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$md51</span> = md5(<span class="hljs-string">&#x27;QNKCDZO&#x27;</span>);<br><span class="hljs-variable">$a</span> = @<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;a&#x27;</span>];<br><span class="hljs-variable">$md52</span> = @md5(<span class="hljs-variable">$a</span>);<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$a</span>))&#123;<br><span class="hljs-keyword">if</span> (<span class="hljs-variable">$a</span> != <span class="hljs-string">&#x27;QNKCDZO&#x27;</span> &amp;&amp; <span class="hljs-variable">$md51</span> == <span class="hljs-variable">$md52</span>) &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;nctf&#123;*****************&#125;&quot;</span>;<br>&#125; <span class="hljs-keyword">else</span> &#123;<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;false!!!&quot;</span>;<br>&#125;<br>&#125;<span class="hljs-keyword">else</span>&#123;<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;please input a&quot;</span>;&#125;<br></code></pre></td></tr></table></figure>
+<p><code>0e830400451993494058024219903391</code>这是QNKCDZO字符串的md5值。我们利用以上讲述的特性，只要传入一个不是QNKCDZO，但是md5后的哈希值是以0E开头即可。网上一大堆。</p>
+<figure class="highlight dns"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs dns">s878926199a<br><span class="hljs-number">0</span>e5459932745177090343<span class="hljs-number">28855841020</span><br>s155964671a<br><span class="hljs-number">0</span>e3DAqQcgtoJvaY9ymASu95PZSewAXZjB2yj<br>s214587387a<br><span class="hljs-number">0</span>e8482404488305379244<span class="hljs-number">65865611904</span><br>s214587387a<br><span class="hljs-number">0</span>e8482404488305379244<span class="hljs-number">65865611904</span><br>s878926199a<br><span class="hljs-number">0</span>e5459932745177090343<span class="hljs-number">28855841020</span><br>s1091221200a<br><span class="hljs-number">0</span>e9406242178565615578<span class="hljs-number">16327384675</span><br>s1885207154a<br><span class="hljs-number">0</span>e5093672134182067008<span class="hljs-number">42008763514</span><br></code></pre></td></tr></table></figure>
+<p><strong>拓展：</strong></p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-string">&quot;0e132456789&quot;</span>==<span class="hljs-string">&quot;0e7124511451155&quot;</span> <span class="hljs-regexp">//</span>true<br><span class="hljs-string">&quot;0e123456abc&quot;</span>==<span class="hljs-string">&quot;0e1dddada&quot;</span>	<span class="hljs-regexp">//</span>false<br><span class="hljs-string">&quot;0e1abc&quot;</span>==<span class="hljs-string">&quot;0&quot;</span>     <span class="hljs-regexp">//</span>true<br></code></pre></td></tr></table></figure>
+<p>有时我们还会碰到类似以下代码形式的题目，这时我们用上面的科学计数法就不行了，因为在php中===为完全等于运算，不仅比较<strong>值</strong>，而且还比较值的<strong>类型</strong>，只有<strong>两者一致</strong>才为真。再次使用a=QNKCDZO&amp;b=240610708是不行了，因为a和b类型不同。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs php"><br><span class="hljs-keyword">if</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;param1&#x27;</span>]!==<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;param2&#x27;</span>] &amp;&amp; md5(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;param1&#x27;</span>])===md5(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;param2&#x27;</span>]))&#123;<br>        <span class="hljs-keyword">die</span>(<span class="hljs-string">&quot;success!&quot;</span>);<br>    &#125;<br></code></pre></td></tr></table></figure>
+<p>但是我们可以通过md5函数的特性：对于数组则返回false，如果$a和$b都是数组则双双返回FALSE, 两个FALSE相等得以绕过</p>
+<p>因此我们可以使用param1[]=1&amp;param2[]=2就可以绕过了</p>
+<h4 id="２．十六进制转换"><a href="#２．十六进制转换" class="headerlink" title="２．十六进制转换"></a>２．十六进制转换</h4><figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs awk"><span class="hljs-string">&quot;0x1e240&quot;</span>==<span class="hljs-string">&quot;123456&quot;</span> <span class="hljs-regexp">//</span>true<br><span class="hljs-string">&quot;0x1e240&quot;</span>==<span class="hljs-number">123456</span> <span class="hljs-regexp">//</span>true<br><span class="hljs-string">&quot;0x1e240&quot;</span>==<span class="hljs-string">&quot;1e240&quot;</span> <span class="hljs-regexp">//</span>false<br></code></pre></td></tr></table></figure>
+<p>字符串解析为十进制在进行比较</p>
+<h3 id="３．类型转换"><a href="#３．类型转换" class="headerlink" title="３．类型转换"></a>３．类型转换</h3><p>Int转string</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs xquery"><span class="hljs-variable">$var</span> = <span class="hljs-number">5</span>;<br>方式<span class="hljs-number">1</span>：<span class="hljs-variable">$item</span> = <span class="hljs-built_in">(string</span>)<span class="hljs-variable">$var</span>;<br>方式<span class="hljs-number">2</span>：<span class="hljs-variable">$item</span> = strval(<span class="hljs-variable">$var</span>);<br></code></pre></td></tr></table></figure>
+<h3 id="４．String转int-intval-函数"><a href="#４．String转int-intval-函数" class="headerlink" title="４．String转int : intval()函数"></a>４．String转int : intval()函数</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">var_dump</span><span class="hljs-params">(intval(<span class="hljs-string">&#x27;2&#x27;</span>)</span></span>) <span class="hljs-comment">//2</span><br><span class="hljs-function"><span class="hljs-title">var_dump</span><span class="hljs-params">(intval(<span class="hljs-string">&#x27;3abcd&#x27;</span>)</span></span>) <span class="hljs-comment">//3</span><br><span class="hljs-function"><span class="hljs-title">var_dump</span><span class="hljs-params">(intval(<span class="hljs-string">&#x27;abcd&#x27;</span>)</span></span>) <span class="hljs-comment">//0</span><br></code></pre></td></tr></table></figure>
+<h4 id="Ctf-demo"><a href="#Ctf-demo" class="headerlink" title="Ctf demo"></a>Ctf demo</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">if</span>(intval(<span class="hljs-variable">$a</span>)&gt;<span class="hljs-number">1000</span>) &#123;<br><br>mysql_query(<span class="hljs-string">&quot;select * from news where id=&quot;</span>.<span class="hljs-variable">$a</span>)<br><br>&#125;<br><br><span class="hljs-variable">$a</span>=<span class="hljs-number">1002</span> union…　<span class="hljs-comment">#造成ｓｑｌ注入</span><br><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="５．intval"><a href="#５．intval" class="headerlink" title="５．intval()"></a>５．intval()</h3><p>intval()转换的时候，会将从字符串的开始进行转换知道遇到一个非数字的字符。<br>即使出现无法转换的字符串，intval()不会报错而是返回0。</p>
+<h4 id="小拓展："><a href="#小拓展：" class="headerlink" title="小拓展："></a>小拓展：</h4><p>在科学计数法字符串转换为数字时，如果 E 后面的数小于某个值会弄成 double 类型，再强制转换为 int 类型时可能会有奇妙的结果，测试发现某变量为 1e-1000 时已经可以触发这个漏洞绕过两个检查，使得某变量既大于 0 又不大于 0。<br>例如：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">var_dump</span>((int)(&#x27;<span class="hljs-number">1</span>e-<span class="hljs-number">1000</span>&#x27;)&gt;<span class="hljs-number">0</span>);<br><span class="hljs-attribute">var_dump</span>(&#x27;<span class="hljs-number">1</span>e-<span class="hljs-number">1000</span>&#x27;&gt;<span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus">Command line <span class="hljs-selector-tag">code</span>:<span class="hljs-number">1</span>:<br><span class="hljs-function"><span class="hljs-title">bool</span><span class="hljs-params">(true)</span></span><br>Command line <span class="hljs-selector-tag">code</span>:<span class="hljs-number">1</span>:<br><span class="hljs-function"><span class="hljs-title">bool</span><span class="hljs-params">(false)</span></span><br></code></pre></td></tr></table></figure>
+<p>再如：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">var_dump</span>((int)(&#x27;<span class="hljs-number">1</span>e-<span class="hljs-number">10</span>&#x27;)&gt;<span class="hljs-number">0</span>);<br><span class="hljs-attribute">var_dump</span>(&#x27;<span class="hljs-number">1</span>e-<span class="hljs-number">10</span>&#x27;&gt;<span class="hljs-number">0</span>);<br></code></pre></td></tr></table></figure>
+<p>结果</p>
+<figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs stylus">Command line <span class="hljs-selector-tag">code</span>:<span class="hljs-number">1</span>:<br><span class="hljs-function"><span class="hljs-title">bool</span><span class="hljs-params">(true)</span></span><br>Command line <span class="hljs-selector-tag">code</span>:<span class="hljs-number">1</span>:<br><span class="hljs-function"><span class="hljs-title">bool</span><span class="hljs-params">(true)</span></span><br></code></pre></td></tr></table></figure>
+<h3 id="６．ereg"><a href="#６．ereg" class="headerlink" title="６．ereg()"></a>６．ereg()</h3><p>字符串对比解析，ereg函数存在NULL截断漏洞，当ereg读取字符串string时,如果遇到了%00,后面的字符串就不会被解析。<br>注：这里的%00是需要urldecode才可以截断的，这是url终止符，且%00长度是1不是3</p>
+<h3 id="７．内置函数的参数的松散性"><a href="#７．内置函数的参数的松散性" class="headerlink" title="７．内置函数的参数的松散性"></a>７．内置函数的参数的松散性</h3><p>内置函数的松散性说的是，调用函数时给函数传递函数无法接受的参数类型。</p>
+<h3 id="８．md5"><a href="#８．md5" class="headerlink" title="８．md5()"></a>８．md5()</h3><p>对于数组则返回false，如果$a和$b都是数组则双双返回FALSE, 两个FALSE相等得以绕过</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">$array1<span class="hljs-literal">[]</span> = <span class="hljs-built_in">array</span>(<br><span class="hljs-string">&quot;foo&quot;</span> =&gt; <span class="hljs-string">&quot;bar&quot;</span>,<br><span class="hljs-string">&quot;bar&quot;</span> =&gt; <span class="hljs-string">&quot;foo&quot;</span>,<br>);<br>$array2 = １;<br>var<span class="hljs-constructor">_dump(<span class="hljs-params">md5</span>($<span class="hljs-params">array1</span>)</span>==var<span class="hljs-constructor">_dump($<span class="hljs-params">array2</span>)</span>); <span class="hljs-comment">//true</span><br></code></pre></td></tr></table></figure>
+<h3 id="９．Strcmp"><a href="#９．Strcmp" class="headerlink" title="９．Strcmp()"></a>９．Strcmp()</h3><figure class="highlight mel"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs mel"><span class="hljs-keyword">strcmp</span> ( <span class="hljs-keyword">string</span> $str1 , <span class="hljs-keyword">string</span> $str2 ) : <span class="hljs-keyword">int</span><br>$array=[<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>];<br>var_dump(<span class="hljs-keyword">strcmp</span>($array,<span class="hljs-string">&#x27;123&#x27;</span>)); <span class="hljs-comment">//null,在某种意义上null也就是相当于false。</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="１０．switch"><a href="#１０．switch" class="headerlink" title="１０．switch()"></a>１０．switch()</h3><p>如果case判断值为int形，switch会将传入的参数转换为int类型</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$i</span> =<span class="hljs-string">&quot;2abc&quot;</span>;<br><span class="hljs-keyword">switch</span> (<span class="hljs-variable">$i</span>) &#123;<br><span class="hljs-keyword">case</span> <span class="hljs-number">0</span>:<br><span class="hljs-keyword">case</span> <span class="hljs-number">1</span>:<br><span class="hljs-keyword">case</span> <span class="hljs-number">2</span>:<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;i is less than 3 but not negative&quot;</span>;<br>    <span class="hljs-keyword">break</span>;<br><span class="hljs-keyword">case</span> <span class="hljs-number">3</span>:<br>    <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;i is 3&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="１１．“-”和’-’弱类型问题"><a href="#１１．“-”和’-’弱类型问题" class="headerlink" title="１１．“==”和’===’弱类型问题"></a>１１．“==”和’===’弱类型问题</h3><p><code>＝＝</code>：比较两侧的值，不同类型会自动转换为同种类型。如传参与整形比较－&gt;整形。传参与字符串比较－&gt;字符串</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$a</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;a&#x27;</span>];<br><span class="hljs-keyword">if</span> (<span class="hljs-variable">$a</span>==<span class="hljs-number">1</span>)<br>&#123;<br><span class="hljs-keyword">echo</span> ‘vul-&gt;’.<span class="hljs-variable">$a</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Payload : <code>http://127.0.0.1/fuzz.php?a=1a</code><br>成功进入ｉｆ条件语句中</p>
+<p>补充：Bool类型(true)和任何类型的比较结果都是<code>true</code></p>
+<p><code>“＝＝＝”</code>：　符号比较两侧的值和类型，但不是绝对安全的。在加减乘除中会自动进行整形转换。<br>ＤＥＭＯ:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-variable">$a</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;a&#x27;</span>];<br><span class="hljs-variable">$b</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;b&#x27;</span>];<br><span class="hljs-keyword">if</span>(<span class="hljs-variable">$a</span>+<span class="hljs-variable">$b</span>===<span class="hljs-number">2</span>)<br>&#123;<br><span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;vul-&gt;&#x27;</span>.<span class="hljs-variable">$a</span>.<span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>.<span class="hljs-variable">$b</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Payload : <code>&quot;http://172.31.19.5/fuzz.php?a=1a&amp;b=1b&quot;</code><br>成功进入条件语句</p>
+<h4 id="修复策略"><a href="#修复策略" class="headerlink" title="修复策略"></a>修复策略</h4><p>：intval强制类型转换或者过滤</p>
+<h3 id="１２．In-array-函数使用不严谨导致的弱类型"><a href="#１２．In-array-函数使用不严谨导致的弱类型" class="headerlink" title="１２．In_array()函数使用不严谨导致的弱类型"></a>１２．In_array()函数使用不严谨导致的弱类型</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-keyword">if</span>(in_array(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>],<span class="hljs-keyword">array</span>(<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,<span class="hljs-number">4</span>,<span class="hljs-number">5</span>)))<br>&#123;<br><span class="hljs-keyword">echo</span> <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>];<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>Payload:<code>&quot;http://172.31.19.5/fuzz.php?id=1a&quot;</code><br>成功转换</p>
+<h4 id="修复方式"><a href="#修复方式" class="headerlink" title="修复方式"></a>修复方式</h4><p>开启函数中的参数strict=Ture ,传参使用intval修饰<br><code>if(in_array(intval($_GET[&#39;id&#39;]),array(1,2,3,4,5),true))</code></p>
+<h3 id="１３．is-numeric-十六进制转换字符"><a href="#１３．is-numeric-十六进制转换字符" class="headerlink" title="１３．is_numeric()十六进制转换字符"></a>１３．is_numeric()十六进制转换字符</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span> <br><span class="hljs-keyword">if</span>(is_numeric(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;num&#x27;</span>]))<br><br>&#123;<br><br><span class="hljs-comment">//echo $_GET[&#x27;num&#x27;];</span><br><br><span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;&lt;/br&gt;&#x27;</span>;<br><br><span class="hljs-comment">//假设这个插入进了mysql数据库，mysql数据库就会把十六进制转换成了字符串，这里为了方便用 Hex2String 函数代替</span><br><br><span class="hljs-keyword">echo</span> Hex2String(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;num&#x27;</span>]);<br><br><br><br>&#125;<br><br><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">Hex2String</span>(<span class="hljs-params"><span class="hljs-variable">$hex</span></span>)</span>&#123;<br><br><span class="hljs-variable">$string</span>=<span class="hljs-string">&quot;;</span><br><span class="hljs-string"></span><br><span class="hljs-string">for (<span class="hljs-subst">$i</span>=0; <span class="hljs-subst">$i</span> &lt; strlen(<span class="hljs-subst">$hex</span>)-1; <span class="hljs-subst">$i</span>+=2)&#123;</span><br><span class="hljs-string"></span><br><span class="hljs-string"><span class="hljs-subst">$string</span> .= chr(hexdec(<span class="hljs-subst">$hex</span>[<span class="hljs-subst">$i</span>].<span class="hljs-subst">$hex</span>[<span class="hljs-subst">$i</span>+1]));</span><br><span class="hljs-string"></span><br><span class="hljs-string">&#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">return <span class="hljs-subst">$string</span>;</span><br><span class="hljs-string"></span><br><span class="hljs-string">&#125;</span><br><span class="hljs-string"></span><br><span class="hljs-string">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>//输入<code>http://127.0.01/equal.php?num=0x39393939393939393939393920756e696f6e20616c6c202873656c656374202748656c6c6f21212729</code><br>//输出<code>0x39393939393939393939393920756e696f6e20616c6c202873656c656374202748656c6c6f2121272</code><br>//输出<code>9999999999999 union all (select &#39;Hello!!&#39;)</code></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/PHP%E5%AE%89%E5%85%A8/">PHP安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/php/">php</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/05/07/BUUCTF%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0-7/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">BUUCTF刷题笔记[7]</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/06/BUUCTF%E5%88%B7%E9%A2%98%E7%AC%94%E8%AE%B0-6/">
+                        <span class="hidden-mobile">BUUCTF刷题笔记[6]</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

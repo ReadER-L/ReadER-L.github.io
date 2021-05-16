@@ -1,0 +1,640 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>java安全-java基础学习 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="java安全-java基础学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-09-28 16:59" pubdate>
+        2020年9月28日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.4k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      33
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">java安全-java基础学习</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月20日 中午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>即使我本身有学过java一些知识和语法，但总是会遗忘一些比较重要的知识点，因此来记录一下。太菜了QAQ</p>
+<p>以下知识来自<a target="_blank" rel="noopener" href="https://b0ee4600.wiz03.com/wapp/pages/view/share/s/2MXAo016zh7G2zZTn50HsfYW1Zj9LN3JGQyF2ztYeT3kMMcQ?&data=eyJ1c2VySWQiOiIjdWlkXzhiNDcxZjU1N2Q2MGEwYzA1ZGNjM2FhYzEyYjE5NThhQHFxLmNvbSIsInVzZXJHdWlkIjoiZjlkZjg3NDAtMDE2Ni0xMWViLWI4MDgtMWQ4NGQyMTY4NzJiIiwiYWNjZXNzVG9rZW4iOiJtZDUuZDEyZGY5NDA0ZmQxNTdmNmVhNTNmYzk3Mzk0MGRkYjIifQ==">星球里面的分享</a>，我之后有关于java不懂的语法都会在这里补充。</p>
+<p>这个是学习大佬笔记，我摘抄的，用来备忘的。</p>
+<h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="2-知识笔记"><a href="#2-知识笔记" class="headerlink" title="2.知识笔记"></a>2.知识笔记</h1><h2 id="1-数据类型小计"><a href="#1-数据类型小计" class="headerlink" title="1.数据类型小计"></a>1.数据类型小计</h2><p>数据类型四种:</p>
+<p>1.整型</p>
+<p>2.字符串型-&gt;是个String类,应该不算基础类型</p>
+<p>3.布尔型</p>
+<p>4.浮点型</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/1.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/3.png" srcset="/img/loading.gif"></p>
+<p>如果超出数值范围的话，会报错的。同时如果是<code>float</code>类型的数值没有带着<code>f</code>，是会报错的。但是改成<code>double</code>类型的话就不会报错了。</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/2.png" srcset="/img/loading.gif"></p>
+<h2 id="2-java基础类型赋值大范围不能赋给小范围"><a href="#2-java基础类型赋值大范围不能赋给小范围" class="headerlink" title="2.java基础类型赋值大范围不能赋给小范围"></a>2.java基础类型赋值大范围不能赋给小范围</h2><h2 id="3-this-表示当前类对象"><a href="#3-this-表示当前类对象" class="headerlink" title="3.this 表示当前类对象"></a>3.this 表示当前类对象</h2><h2 id="4-关系操作符"><a href="#4-关系操作符" class="headerlink" title="4.关系操作符:"></a>4.关系操作符:</h2><p>长路与和短路与:(&amp;和&amp;&amp;)</p>
+<p>长路与即使第一个表达式是false，也会执行第二个表达式，长路与两边都会进行运算</p>
+<p>短路与，如果第一个表达式是false，不会执行第二个表达式。</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/4.png" srcset="/img/loading.gif"></p>
+<p>长路或和短路或:(|和||)</p>
+<p>长路或，不管是false还是true，两边都会执行运算</p>
+<p>短路或，如果第一个表达式true，就不会执行后面的运算，反之其他情况下全都会进行表达式运算。</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/5.png" srcset="/img/loading.gif"></p>
+<p>异或:(^)</p>
+<p>不同返回真，相同返回假:</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/6.png" srcset="/img/loading.gif"></p>
+<h2 id="5-二维数组"><a href="#5-二维数组" class="headerlink" title="5.二维数组"></a>5.二维数组</h2><p>创建和赋值</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;<br>    <span class="hljs-keyword">int</span> c[][] = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[<span class="hljs-number">2</span>][<span class="hljs-number">3</span>];<br>    <span class="hljs-keyword">int</span> d[][] = <span class="hljs-keyword">new</span> <span class="hljs-keyword">int</span>[<span class="hljs-number">2</span>][];<br>    <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;i &lt; c.length; i++ )&#123;<br>        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> j = <span class="hljs-number">0</span>; j &lt; c[i].length; j++ )&#123;<br>            System.out.println(c[i][j]);<br>        &#125;<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<h2 id="6-类和对象"><a href="#6-类和对象" class="headerlink" title="6.类和对象"></a>6.类和对象</h2><p>1.重载就是相同的方法，但是有不同的方法的方法参数</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">hacker</span></span>&#123;<br>    <span class="hljs-keyword">public</span> String name = <span class="hljs-string">&quot;defalut&quot;</span>;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">attack</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-keyword">this</span>.name+<span class="hljs-string">&quot;进行了第一次攻击&quot;</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">attack</span><span class="hljs-params">(hacker t1)</span></span>&#123;<br>        System.out.println(name + t1.name+<span class="hljs-string">&quot;进行一次攻击&quot;</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">attack</span><span class="hljs-params">(hacker h1,hacker h2)</span></span>&#123;<br>        System.out.println(h1.name+<span class="hljs-string">&quot;和&quot;</span>+h2.name+<span class="hljs-string">&quot;进行了攻击&quot;</span>);<br>    &#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">test</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;<br>        hacker reader = <span class="hljs-keyword">new</span> hacker();<br>        hacker test  = <span class="hljs-keyword">new</span> hacker();<br>        test.name = <span class="hljs-string">&quot;test&quot;</span>;<br>        reader.name = <span class="hljs-string">&quot;reader&quot;</span>;<br>        System.out.println(reader.name);<br>        reader.attack(test,reader);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/7.png" srcset="/img/loading.gif"></p>
+<p>但是如果参数很多的话，每次都重载的话，会非常麻烦。因此可以使用可变数量的参数，即可以代表所有方法了</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">hacker</span></span>&#123;<br>    <span class="hljs-keyword">public</span> String name = <span class="hljs-string">&quot;defalut&quot;</span>;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">attack</span><span class="hljs-params">(hacker...hackers)</span></span>&#123;<br>        System.out.println(hackers.length);<br>        <span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;i &lt; hackers.length; i++ )&#123;<br>            System.out.println(name+ <span class="hljs-string">&quot; 攻击了 &quot;</span>+ hackers[i].name);<br>        &#125;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">test</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;<br>        hacker reader = <span class="hljs-keyword">new</span> hacker();<br>        hacker test  = <span class="hljs-keyword">new</span> hacker();<br>        test.name = <span class="hljs-string">&quot;test&quot;</span>;<br>        reader.name = <span class="hljs-string">&quot;reader&quot;</span>;<br>        System.out.println(reader.name);<br>        reader.attack(test);<br>        reader.attack(test,reader);<br>        reader.attack(reader,test);<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/8.png" srcset="/img/loading.gif"></p>
+<h3 id="1-this使用来代表当前对象"><a href="#1-this使用来代表当前对象" class="headerlink" title="1.this使用来代表当前对象"></a>1.this使用来代表当前对象</h3><p>在构造方法中可以使用构造方法:this(),this(参数)</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">hacker</span></span>&#123;<br>    String name = <span class="hljs-string">&quot;default&quot;</span>;<br>    <span class="hljs-keyword">float</span> num;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hacker</span><span class="hljs-params">(String name)</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;一个参数的构造方法&quot;</span>);<br>        <span class="hljs-keyword">this</span>.name = name;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hacker</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-number">11111</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hacker</span><span class="hljs-params">(String name ,<span class="hljs-keyword">float</span> num)</span></span>&#123;<br>        <span class="hljs-keyword">this</span>(name);<br>        System.out.println(<span class="hljs-string">&quot;两个参数的构造方法&quot;</span>);<br>        <span class="hljs-keyword">this</span>.num = num;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">test</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;<br>        hacker reader = <span class="hljs-keyword">new</span> hacker(<span class="hljs-string">&quot;test&quot;</span>,<span class="hljs-number">12.5f</span>);<br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/9.png" srcset="/img/loading.gif"></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">hacker</span></span>&#123;<br>    String name = <span class="hljs-string">&quot;default&quot;</span>;<br>    <span class="hljs-keyword">float</span> num;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hacker</span><span class="hljs-params">(String name)</span></span>&#123;<br>        System.out.println(<span class="hljs-string">&quot;一个参数的构造方法&quot;</span>);<br>        <span class="hljs-keyword">this</span>.name = name;<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hacker</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-number">123456</span>);<br>    &#125;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hacker</span><span class="hljs-params">(String name ,<span class="hljs-keyword">float</span> num)</span></span>&#123;<br>        <span class="hljs-keyword">this</span>();<br>        System.out.println(<span class="hljs-string">&quot;两个参数的构造方法&quot;</span>);<br>        <span class="hljs-keyword">this</span>.num = num;<br>    &#125;<br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">test</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;<br>        hacker reader = <span class="hljs-keyword">new</span> hacker(<span class="hljs-string">&quot;test&quot;</span>,<span class="hljs-number">12.5f</span>);<br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/10.png" srcset="/img/loading.gif"></p>
+<h3 id="2-引用和"><a href="#2-引用和" class="headerlink" title="2.引用和="></a>2.引用和=</h3><p>赋值：</p>
+<p><code>float f = 1.25f</code> 中的<code>=</code>表示赋值，其中<code>f</code>就是变量。</p>
+<p>引用：</p>
+<p><code>hacker t=new hacker();</code></p>
+<p>t是引用,其中=不再是赋值的意思,=表示指向的意思</p>
+<p><code>hacker t=new hacker();</code>这个语句的含义是:</p>
+<p>引用t指向hacker对象</p>
+<p>每次指向对象,即使指向同一个对象,引用地址都不一样。</p>
+<h3 id="3-修饰词"><a href="#3-修饰词" class="headerlink" title="3.修饰词"></a>3.修饰词</h3><p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/11.png" srcset="/img/loading.gif"></p>
+<blockquote>
+<p>\1. 属性通常使用private封装起来<br>\2. 方法一般使用public用于被调用<br>\3. 会被子类继承的方法，通常使用protected<br>\4. package用的不多，一般新手会用package,因为还不知道有修饰符这个东西</p>
+</blockquote>
+<p>当一个属性被static修饰 的时候,就叫做类属性，又叫到静态属性。</p>
+<p>当一个属性被声明成类属性的时候,所有对象都共享一个值。</p>
+<h2 id="7-方法"><a href="#7-方法" class="headerlink" title="7.方法"></a>7.方法</h2><p>对象方法：又称为实例方法，非静态方法。</p>
+<p><strong>必须要有对象，才能调用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">die</span><span class="hljs-params">()</span></span>&#123;<br>    test = <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>类方法：静态方法</p>
+<p><strong>可以直接类调用，无需实例化对象，来调用</strong></p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">test</span><span class="hljs-params">()</span></span>&#123;<br>    System.out.println(<span class="hljs-number">1</span>);<br>&#125;<br>.....<br>    <br>    <span class="hljs-comment">//无需实例对象，直接通过类调用</span><br>    hacker.test();<br></code></pre></td></tr></table></figure>
+<h2 id="8-初始化代码块的执行顺序"><a href="#8-初始化代码块的执行顺序" class="headerlink" title="8.初始化代码块的执行顺序"></a>8.初始化代码块的执行顺序</h2><p>属性初始化&gt;静态初始化&gt;初始化代码块&gt;构造方法</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">hacker</span></span>&#123;<br>    String name = <span class="hljs-string">&quot;default&quot;</span>;<br>    <span class="hljs-keyword">float</span> num;<br><span class="hljs-comment">//    public hacker(String name)&#123;</span><br><span class="hljs-comment">//        System.out.println(&quot;一个参数的构造方法&quot;);</span><br><span class="hljs-comment">//        this.name = name;</span><br><span class="hljs-comment">//    &#125;</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">hacker</span><span class="hljs-params">()</span></span>&#123;<br>        System.out.println(<span class="hljs-number">1111</span>);<br>    &#125;<br><span class="hljs-comment">//    public hacker(String name ,float num)&#123;</span><br><span class="hljs-comment">//        System.out.println(&quot;两个参数的构造方法&quot;);</span><br><span class="hljs-comment">//        this.num = num;</span><br><span class="hljs-comment">//    &#125;</span><br>    <span class="hljs-keyword">static</span> &#123;<br>        System.out.println(<span class="hljs-number">22222</span>);<br>    &#125;<br>    &#123;<br>        name = <span class="hljs-string">&quot;reader&quot;</span>;<br>        System.out.println(<span class="hljs-number">33333</span>);<br>    &#125;<br><br>&#125;<br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">test</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span></span>&#123;<br>        hacker reader = <span class="hljs-keyword">new</span> hacker();<br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/12.png" srcset="/img/loading.gif"></p>
+<h2 id="9-接口与继承"><a href="#9-接口与继承" class="headerlink" title="9.接口与继承"></a>9.接口与继承</h2><p>PS:如果想要实现接口的话，必须实现接口上的方法。一个类是可以实现多个接口的，但是继承是不能的。</p>
+<h3 id="1-向上转型：子类转父类"><a href="#1-向上转型：子类转父类" class="headerlink" title="1.向上转型：子类转父类"></a>1.向上转型：子类转父类</h3><p>只要子类继承了父类的话，子类引用赋值给父类是不需要强制类型转换的。</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/13.png" srcset="/img/loading.gif"></p>
+<h3 id="2-向下转型：父类转子类"><a href="#2-向下转型：父类转子类" class="headerlink" title="2.向下转型：父类转子类"></a>2.向下转型：父类转子类</h3><p>子类继承了父类的话，，父类引用赋值给子类需要强制类型转换</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/14.png" srcset="/img/loading.gif"></p>
+<h3 id="3-向上转型：类转换成接口"><a href="#3-向上转型：类转换成接口" class="headerlink" title="3.向上转型：类转换成接口"></a>3.向上转型：类转换成接口</h3><p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/15.png" srcset="/img/loading.gif"></p>
+<h3 id="4-向下转型：接口转换成类"><a href="#4-向下转型：接口转换成类" class="headerlink" title="4.向下转型：接口转换成类"></a>4.向下转型：接口转换成类</h3><p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/16.png" srcset="/img/loading.gif"></p>
+<h3 id="5-instanceof"><a href="#5-instanceof" class="headerlink" title="5.instanceof"></a>5.instanceof</h3><p>判断一个引用所指向的对象。</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/17.png" srcset="/img/loading.gif"></p>
+<h2 id="10-重写"><a href="#10-重写" class="headerlink" title="10.重写"></a>10.重写</h2><p>子类可以继承父类的对象方法（静态方法不能被继承的），在继承后，我们可以在子类中对该方法重复提供（并修改）。</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/18.png" srcset="/img/loading.gif"></p>
+<h2 id="11-隐藏"><a href="#11-隐藏" class="headerlink" title="11.隐藏"></a>11.隐藏</h2><p>子类覆盖父类<strong>类方法</strong></p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/19.png" srcset="/img/loading.gif"></p>
+<h2 id="12-类的多态"><a href="#12-类的多态" class="headerlink" title="12.类的多态"></a>12.类的多态</h2><p>父类引用指向子类对象</p>
+<p>实现类的多态的条件：</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs plain">1.父类（接口）引用指向子类（就是向下转型）<br>2.调用的方法有重写<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/20.png" srcset="/img/loading.gif"></p>
+<h2 id="13-实例化的小tips"><a href="#13-实例化的小tips" class="headerlink" title="13.实例化的小tips"></a>13.实例化的小tips</h2><p>实例化子类，会先调用父类的无参构造方法，然后调用子类的构造方法：</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/21.png" srcset="/img/loading.gif"></p>
+<h2 id="14-super"><a href="#14-super" class="headerlink" title="14.super"></a>14.super</h2><p>super调用父类带参的构造方法：super除了可以调用父类的构造方法外，还可以调用父类的属性和方法。</p>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/22.png" srcset="/img/loading.gif"></p>
+<h2 id="15-抽象类和接口的区别"><a href="#15-抽象类和接口的区别" class="headerlink" title="15.抽象类和接口的区别"></a>15.抽象类和接口的区别</h2><p>1.子类只能继承一个抽象类，不能继承多个</p>
+<p>2.子类可以实现多个接口</p>
+<p>3.抽象类可以定义<code>public</code>、<code>protected</code>、<code>package</code>、<code>private</code>，静态和非静态，<code>final和非final属性</code>，但是接口中声明的属性，只能是<code>public</code>、静态、final。</p>
+<h2 id="16-输入输出"><a href="#16-输入输出" class="headerlink" title="16.输入输出"></a>16.输入输出</h2><h3 id="1-InputStream字节输入流-写入的是字符"><a href="#1-InputStream字节输入流-写入的是字符" class="headerlink" title="1.InputStream字节输入流:写入的是字符"></a>1.InputStream字节输入流:写入的是字符</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-keyword">import</span> java.io.File;<br><span class="hljs-keyword">import</span> java.io.FileInputStream;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OutPut</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            File f = <span class="hljs-keyword">new</span> File(System.getProperty(<span class="hljs-string">&quot;user.dir&quot;</span>)+<span class="hljs-string">&quot;/dict/wenben.txt&quot;</span>);<span class="hljs-comment">//内容ab</span><br>            FileInputStream fileInputStream = <span class="hljs-keyword">new</span> FileInputStream(f);<br>            <span class="hljs-comment">//创建字节数组，其长度就是文件的长度</span><br>            <span class="hljs-keyword">byte</span>[] a = <span class="hljs-keyword">new</span> <span class="hljs-keyword">byte</span>[(<span class="hljs-keyword">int</span>)f.length()];<br>            <span class="hljs-comment">//以字节流的形式读取文件所有内容</span><br>            fileInputStream.read(a);<br>            <span class="hljs-comment">//数据遍历</span><br>            <span class="hljs-keyword">for</span> (<span class="hljs-keyword">byte</span> i:a)&#123;<br>                System.out.println(i);<br>            &#125;<br>            fileInputStream.close();<br>        &#125;<span class="hljs-keyword">catch</span> (IOException e)&#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br><span class="hljs-comment">//result</span><br><span class="hljs-comment">//97</span><br><span class="hljs-comment">//98</span><br><br><span class="hljs-comment">//Process finished with exit code 0</span><br><br></code></pre></td></tr></table></figure>
+<h3 id="2-OutputStream字节输出流"><a href="#2-OutputStream字节输出流" class="headerlink" title="2.OutputStream字节输出流"></a>2.OutputStream字节输出流</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-keyword">import</span> java.io.File;<br><span class="hljs-keyword">import</span> java.io.FileInputStream;<br><span class="hljs-keyword">import</span> java.io.FileOutputStream;<br><span class="hljs-keyword">import</span> java.io.IOException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OutPut</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            File f = <span class="hljs-keyword">new</span> File(System.getProperty(<span class="hljs-string">&quot;user.dir&quot;</span>)+<span class="hljs-string">&quot;/dict/wenben.txt&quot;</span>);<br>            <span class="hljs-comment">//准备长度是2的字节数组。用88,89初始化，其对应的字符分别是X,Y</span><br>            <span class="hljs-keyword">byte</span>[] value = &#123;<span class="hljs-number">88</span>,<span class="hljs-number">89</span>&#125;;<br>            <span class="hljs-comment">//创建基于文件的输出流</span><br>            FileOutputStream fileOutputStream = <span class="hljs-keyword">new</span> FileOutputStream(f);<br>            <span class="hljs-comment">//把数据写入输出流</span><br>            fileOutputStream.write(value);<br>            fileOutputStream.close();<br><br>        &#125;<span class="hljs-keyword">catch</span> (IOException e)&#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/23.png" srcset="/img/loading.gif"></p>
+<h3 id="3-Reader字符输入流和Writer字符输出流"><a href="#3-Reader字符输入流和Writer字符输出流" class="headerlink" title="3.Reader字符输入流和Writer字符输出流"></a>3.Reader字符输入流和Writer字符输出流</h3><figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-keyword">import</span> java.io.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OutPut</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        <span class="hljs-keyword">try</span> &#123;<br>            File f = <span class="hljs-keyword">new</span> File(System.getProperty(<span class="hljs-string">&quot;user.dir&quot;</span>)+<span class="hljs-string">&quot;/dict/wenben.txt&quot;</span>);<br>            String data = <span class="hljs-string">&quot;reader love java&quot;</span>;<br>            <span class="hljs-comment">//字符串转字符数组</span><br>            <span class="hljs-keyword">char</span>[] change = data.toCharArray();<br>            FileWriter fileWriter = <span class="hljs-keyword">new</span> FileWriter(f);<br>            fileWriter.write(data);<br>            fileWriter.close();<br>        &#125;<span class="hljs-keyword">catch</span> (IOException e)&#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<h3 id="4-缓存字符输入和输出流"><a href="#4-缓存字符输入和输出流" class="headerlink" title="4.缓存字符输入和输出流"></a>4.缓存字符输入和输出流</h3><p>缓存流在写入数据的时候，会先把数据写入缓存区，知道缓存区达到一定的量，才把这些数据写入硬盘中。</p>
+<p>缓存读取，缓存字符输入流：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-keyword">import</span> java.io.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OutPut</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        File f = <span class="hljs-keyword">new</span> File(System.getProperty(<span class="hljs-string">&quot;user.dir&quot;</span>)+<span class="hljs-string">&quot;/dict/wenben.txt&quot;</span>);<br>        <span class="hljs-keyword">try</span> &#123;<br>            FileReader fileReader = <span class="hljs-keyword">new</span> FileReader(f);<br>            BufferedReader bufferedReader = <span class="hljs-keyword">new</span> BufferedReader(fileReader);<br>            <span class="hljs-keyword">while</span> (<span class="hljs-keyword">true</span>)&#123;<br>                String line = bufferedReader.readLine();<br>                <span class="hljs-keyword">if</span>(line == <span class="hljs-keyword">null</span>) &#123;<br>                    <span class="hljs-keyword">break</span>;<br><br>                &#125;<br>                System.out.println(line);<br>            &#125;<br>        &#125;<span class="hljs-keyword">catch</span> (IOException e)&#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>缓存写入，缓存字符输出流：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> learning;<br><br><span class="hljs-keyword">import</span> java.io.*;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">OutPut</span> </span>&#123;<br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> </span>&#123;<br>        File f = <span class="hljs-keyword">new</span> File(System.getProperty(<span class="hljs-string">&quot;user.dir&quot;</span>)+<span class="hljs-string">&quot;/dict/wenben.txt&quot;</span>);<br>        <span class="hljs-keyword">try</span> &#123;<br>            FileWriter fileWriter = <span class="hljs-keyword">new</span> FileWriter(f);<br>            PrintWriter pw = <span class="hljs-keyword">new</span> PrintWriter(fileWriter);<br>            pw.write(<span class="hljs-string">&quot;hello world!!&quot;</span>);<br>            pw.write(<span class="hljs-number">111</span>);<br>            pw.write(<span class="hljs-string">&quot;哈哈哈&quot;</span>);<br>            fileWriter.close();<br>        &#125;<span class="hljs-keyword">catch</span> (IOException e)&#123;<br>            e.printStackTrace();<br>        &#125;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/09/28/java%E5%AE%89%E5%85%A8-java%E5%9F%BA%E7%A1%80%E5%AD%A6%E4%B9%A0/24.png" srcset="/img/loading.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/09/28/%E5%86%85%E7%BD%91%E5%AD%A6%E4%B9%A0%E4%B8%80-%E5%86%85%E7%BD%91%E4%BF%A1%E6%81%AF%E6%94%B6%E9%9B%86/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">内网学习一-内网信息收集</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/09/18/BJDCTF2020%E9%83%A8%E5%88%86%E9%A2%98%E7%9B%AE%E5%A4%8D%E7%8E%B0/">
+                        <span class="hidden-mobile">BJDCTF2020部分题目复现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

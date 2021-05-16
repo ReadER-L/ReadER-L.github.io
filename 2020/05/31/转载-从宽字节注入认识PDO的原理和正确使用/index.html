@@ -1,0 +1,630 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>[转载]从宽字节注入认识PDO的原理和正确使用 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="[转载]从宽字节注入认识PDO的原理和正确使用">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-05-31 19:55" pubdate>
+        2020年5月31日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      22
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">[转载]从宽字节注入认识PDO的原理和正确使用</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月12日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h4 id="本文作者：Anylike，该文章来自FreeBuf-COM"><a href="#本文作者：Anylike，该文章来自FreeBuf-COM" class="headerlink" title="本文作者：Anylike，该文章来自FreeBuf.COM"></a><strong>本文作者：Anylike，该文章来自FreeBuf.COM</strong></h4><h4 id="该文章原来的链接"><a href="#该文章原来的链接" class="headerlink" title="该文章原来的链接"></a><a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/216336.html">该文章原来的链接</a></h4><p>本篇文章是在做题的时候查到的，感觉不错。就转载作为笔记了。</p>
+<p>倘若觉得侵权或者不愿意我转载，请在评论区进行评论。我看见会马上删除的。</p>
+<p>原文链接：<a target="_blank" rel="noopener" href="https://www.freebuf.com/articles/web/216336.html">https://www.freebuf.com/articles/web/216336.html</a></p>
+<h2 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h2><p><strong>随着数据库参数化查询的方式越来越普遍，SQL注入漏洞较之于以前也大大减少，而PDO作为php中最典型的预编译查询方式，使用越来越广泛。</strong></p>
+<p><strong>众所周知，PDO是php中防止SQL注入最好的方式，但并不是100%杜绝SQL注入的方式，关键还要看如何使用。</strong></p>
+<p>之前在一篇文章中了解到PDO场景下参数可控导致的多句执行等问题（<a target="_blank" rel="noopener" href="https://xz.aliyun.com/t/3950%EF%BC%89%E4%BA%8E%E6%98%AF%E5%AF%B9PDO%E5%9C%BA%E6%99%AF%E4%B8%8B%E7%9A%84SQL%E6%B3%A8%E5%85%A5%E5%8F%88%E8%BF%9B%E8%A1%8C%E4%BA%86%E4%B8%80%E4%BA%9B%E6%8E%A2%E7%A9%B6%E3%80%82">https://xz.aliyun.com/t/3950）于是对PDO场景下的SQL注入又进行了一些探究。</a></p>
+<h2 id="PDO查询语句可控存在的安全问题："><a href="#PDO查询语句可控存在的安全问题：" class="headerlink" title="PDO查询语句可控存在的安全问题："></a>PDO查询语句可控存在的安全问题：</h2><p>首先在本地新建一个库和表，随便写点东西。</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/1.png" srcset="/img/loading.gif" alt="img"></p>
+<p>然后写一个test.php，用PDO进行简单的查询：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span> <br><span class="hljs-keyword">try</span><br>&#123;<br>  <span class="hljs-variable">$db</span> = <span class="hljs-keyword">new</span> PDO(<span class="hljs-string">&#x27;mysql:host=localhost;dbname=pdotest&#x27;</span>,<span class="hljs-string">&#x27;root&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>);<br>&#125; <br><span class="hljs-keyword">catch</span>(<span class="hljs-built_in">Exception</span> <span class="hljs-variable">$e</span>)<br>&#123;<br>  <span class="hljs-keyword">echo</span> <span class="hljs-variable">$e</span>-&gt;getMessage();<br>&#125;<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>]))<br>&#123;<br>  <span class="hljs-variable">$id</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>];<br>&#125;<br><span class="hljs-keyword">else</span><br>&#123;<br>  <span class="hljs-variable">$id</span>=<span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-variable">$query</span> = <span class="hljs-string">&quot;select balabala from table1 where 1=?&quot;</span>;<br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;id:&quot;</span>.<span class="hljs-variable">$id</span>.<span class="hljs-string">&quot;&lt;/br&gt;&quot;</span>;<br><span class="hljs-variable">$row</span> = <span class="hljs-variable">$db</span>-&gt;prepare(<span class="hljs-variable">$query</span>);<br><span class="hljs-variable">$row</span>-&gt;bindParam(<span class="hljs-number">1</span>,<span class="hljs-variable">$id</span>);<br><span class="hljs-variable">$row</span>-&gt;execute();<br><span class="hljs-variable">$result</span> = <span class="hljs-variable">$row</span>-&gt;fetch(PDO::FETCH_ASSOC);<br><span class="hljs-keyword">if</span>(<span class="hljs-variable">$result</span>)<br>&#123;<br>  <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;结果为：&quot;</span>;<br>  print_r(<span class="hljs-variable">$result</span>);<br>  <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;/br&gt;&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>将输入的内容和得到的结果打印在页面上：</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/2.png" srcset="/img/loading.gif" alt="img"></p>
+<p>PDO与安全问题相关的主要的设置有下面三个:</p>
+<blockquote>
+<p>PDO::ATTR_EMULATE_PREPARES</p>
+<p>PDO::ATTR_ERRMODE</p>
+<p>PDO::MYSQL_ATTR_MULTI_STATEMENTS</p>
+</blockquote>
+<p>分别与模拟预编译、报错和多句执行有关。</p>
+<p>PDO默认是允许多句执行和模拟预编译的，在之前的很多文章中已经写到，在参数可控的情况下，会导致堆叠注入。</p>
+<p>例如我们把查询语句改成：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$query</span> = <span class="hljs-string">&quot;select balabala from table1 where 1=<span class="hljs-subst">&#123;$id&#125;</span>&quot;</span>;<br><span class="hljs-variable">$row</span> = <span class="hljs-variable">$db</span>-&gt;query(<span class="hljs-variable">$query</span>);<br></code></pre></td></tr></table></figure>
+<p>则在$db-&gt;query()这一步执行之前，我们便可以对$query进行非法操作，那PDO相当于没用：</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/3.png" srcset="/img/loading.gif" alt="img"></p>
+<h2 id="PDO默认设置存在的安全隐患："><a href="#PDO默认设置存在的安全隐患：" class="headerlink" title="PDO默认设置存在的安全隐患："></a>PDO默认设置存在的安全隐患：</h2><p>如果我们在查询语句中没有可控的参数，并把输入的参数按照prepare-&gt;bindParam-&gt;execute的方式去写就一定没有问题了吗？</p>
+<p>我们按如下语句进行查询：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$query</span> = <span class="hljs-string">&quot;select balabala from table1 where 1=?&quot;</span>;<br><span class="hljs-variable">$row</span> = <span class="hljs-variable">$db</span>-&gt;prepare(<span class="hljs-variable">$query</span>);<br><span class="hljs-variable">$row</span>-&gt;bindParam(<span class="hljs-number">1</span>,<span class="hljs-variable">$_GET</span>[‘id’]);<br><span class="hljs-variable">$row</span>-&gt;execute();<br></code></pre></td></tr></table></figure>
+<p>我们在URL中随便输入一个参数：?id=asdasd，然后通过设置SET GLOBAL GENERAL_LOG=ON，从.log里实时监控，看看sql语句到底执行了什么：</p>
+<p><a target="_blank" rel="noopener" href="https://image.3001.net/images/20191011/1570760166_5d9fe5e680199.png"><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/4.png" srcset="/img/loading.gif" alt="img"></a></p>
+<p>我们发现模拟预编译的请求发送方式和以往的mysqli并没有什么区别，但我们注意到，在原有的查询语句中对参数并没有用单引号包裹，而在此却用单引号进行了包裹，于是我们可以尝试输入一些特殊字符，比如单引号：</p>
+<p><a target="_blank" rel="noopener" href="https://image.3001.net/images/20191011/1570760233_5d9fe629de604.png"><img src="https://image.3001.net/images/20191011/1570760233_5d9fe629de604.png!small" srcset="/img/loading.gif" alt="img"></a></p>
+<p>发现单引号被转义了，这时我们不由得想到如果设置了gbk编码会怎么样：</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/5.png" srcset="/img/loading.gif" alt="img"></p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/7.png" srcset="/img/loading.gif" alt="img"></p>
+<p>我们会发现select * from table1成功执行了，尽管PDO只会返回一个结果，但是它的的确确执行了。</p>
+<p>也就是说，即使查询语句里没有可控参数，只有?或者:id这类被绑定的参数，依然可以进行堆叠注入。</p>
+<p>那如果把多句执行关掉呢？</p>
+<p>我们把PDO::MYSQL_ATTR_MULTI_STATEMENTS设为false，重复上述操作：</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/8.png" srcset="/img/loading.gif" alt="img"></p>
+<p>发现已经行不通了。</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/9.png" srcset="/img/loading.gif" alt="img"></p>
+<p>实际也只执行了设置gbk这一条语句</p>
+<p>但是这样就结束了吗？</p>
+<p>为什么不试试union注入等其他方式呢？</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/10.png" srcset="/img/loading.gif" alt="img"></p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/11.png" srcset="/img/loading.gif" alt="img"></p>
+<p>经过尝试，发现union注入也是可以的！根本不需要进行多句执行！</p>
+<p>实际上，在模拟预编译的情况下，PDO对于SQL注入的防范（PDO::queto()），无非就是将数字型的注入转变为字符型的注入，又用类似mysql_real_escape_string()的方法将单引号、双引号、反斜杠等字符进行了转义。</p>
+<p>这种防范方法在GBK编码的情况下便可用宽字节进行绕过，而在非GBK编码的情况下，若存在二次注入的情况，是否能利用呢？</p>
+<p>答案是否定的。</p>
+<p>二次注入是由于对添加进数据库中的数据没有再次处理和转义而导致的，而预编译对每次查询都进行转义，则不存在二次注入的情况。</p>
+<p>上述安全隐患，是由于未正确设置PDO造成的，在PDO的默认设置中，PDO::ATTR_EMULATE_PREPARES和PDO::MYSQL_ATTR_MULTI_STATEMENTS都是true，意味着模拟预编译和多句执行是默认开启的。</p>
+<p>而在非模拟预编译的情况下，若语句中没有可控参数，是否还能这样做呢？</p>
+<p>答案是否定的。</p>
+<p>我们将PDO::ATTR_EMULATE_PREPARES设为false，来看看sql语句到底执行了什么：</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/12.png" srcset="/img/loading.gif" alt="img"></p>
+<p>它对每一句sql语句都进行了预编译和执行两个操作，在执行select balabala from table1 where 1=?这句时，如果是GBK编码，那么它将会把?绑定的参数转化成16进制，这样无论输入什么样的东西都无法再进行注入了。</p>
+<p>如果不是GBK编码，如上面所说，也不存在二次注入的情况，故可以避免SQL注入漏洞。</p>
+<h2 id="相同原理的Prepare-Statement方法"><a href="#相同原理的Prepare-Statement方法" class="headerlink" title="相同原理的Prepare Statement方法"></a>相同原理的Prepare Statement方法</h2><p>PDO的原理，与Mysql中prepare语句是一样的。上面PDO所执行的SQL语句，用如下的方式可以等效替代：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">Set</span> <span class="hljs-variable">@x</span><span class="hljs-operator">=</span><span class="hljs-number">0x31</span><br><span class="hljs-keyword">Prepare</span> a <span class="hljs-keyword">from</span> “<span class="hljs-keyword">select</span> balabala <span class="hljs-keyword">from</span> table1 <span class="hljs-keyword">where</span> <span class="hljs-number">1</span><span class="hljs-operator">=</span>?”<br><span class="hljs-keyword">Execute</span> a <span class="hljs-keyword">using</span> <span class="hljs-variable">@x</span><br></code></pre></td></tr></table></figure>
+<p>我们可以手动将输入的参数设置为@x，并将其转化为16进制，随后预编译，再执行</p>
+<p>也就是说，不用PDO也可以仿照其原理手动设置预编译：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-variable">$db</span> = <span class="hljs-keyword">new</span> mysqli(<span class="hljs-string">&#x27;localhost&#x27;</span>,<span class="hljs-string">&#x27;root&#x27;</span>,<span class="hljs-string">&#x27;&#x27;</span>,<span class="hljs-string">&#x27;pdotest&#x27;</span>);<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>]))<br>&#123;<br>	<span class="hljs-variable">$id</span> = <span class="hljs-string">&quot;0x&quot;</span>.bin2hex(<span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;id&#x27;</span>]);<br>&#125;<br><span class="hljs-keyword">else</span><br>&#123;<br>	<span class="hljs-variable">$id</span>=<span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;id:&quot;</span>.<span class="hljs-variable">$id</span>.<span class="hljs-string">&quot;&lt;/br&gt;&quot;</span>;<br><span class="hljs-variable">$db</span>-&gt;query(<span class="hljs-string">&quot;set names gbk&quot;</span>);<br><span class="hljs-variable">$db</span>-&gt;query(<span class="hljs-string">&quot;set @x=<span class="hljs-subst">&#123;$id&#125;</span>&quot;</span>);<br><span class="hljs-variable">$db</span>-&gt;query(<span class="hljs-string">&quot;prepare a from &#x27;select balabala from table1 where 1=?&#x27;&quot;</span>);<br><span class="hljs-variable">$row</span> = <span class="hljs-variable">$db</span>-&gt;query(<span class="hljs-string">&quot;execute a using @x&quot;</span>);<br><span class="hljs-variable">$result</span> = <span class="hljs-variable">$row</span>-&gt;fetch_assoc();<br><span class="hljs-keyword">if</span>(<span class="hljs-variable">$result</span>)<br>&#123;<br>	<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;结果为：&quot;</span>;<br>	print_r(<span class="hljs-variable">$result</span>);<br>	<span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;&lt;/br&gt;&quot;</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>得到的结果和使用PDO是一样的：</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/13.png" srcset="/img/loading.gif" alt="img">这样设置不用担心没有合理地设置PDO，或是用了GBK编码等情况。</p>
+<h2 id="Prepare-Statement在SQL注入中的利用"><a href="#Prepare-Statement在SQL注入中的利用" class="headerlink" title="Prepare Statement在SQL注入中的利用"></a>Prepare Statement在SQL注入中的利用</h2><p>Prepare语句在防范SQL注入方面起到了非常大的作用，但是对于SQL注入攻击却也提供了新的手段。</p>
+<p>Prepare语句最大的特点就是它可以将16进制串转为语句字符串并执行。如果我们发现了一个存在堆叠注入的场景，但过滤非常严格，便可以使用prepare语句进行绕过。</p>
+<p>例如我们将createtable table2 like table1转化成16进制，然后执行：</p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/14.png" srcset="/img/loading.gif" alt="img"></p>
+<p><img src="/2020/05/31/%E8%BD%AC%E8%BD%BD-%E4%BB%8E%E5%AE%BD%E5%AD%97%E8%8A%82%E6%B3%A8%E5%85%A5%E8%AE%A4%E8%AF%86PDO%E7%9A%84%E5%8E%9F%E7%90%86%E5%92%8C%E6%AD%A3%E7%A1%AE%E4%BD%BF%E7%94%A8/15.png" srcset="/img/loading.gif" alt="img">我们发现数据库中已经多了一个表table2。则语句成功执行了。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>对于此类问题的防范，主要有以下三个方面：</p>
+<blockquote>
+<p>\1. 合理、安全地使用gbk编码。即使采用PDO预编译的方式，如若配置不当，依然可造成宽字节注入</p>
+<p>\2. 使用PDO时，一定要将模拟预编译设为false</p>
+<p>\3. 可采用使用Prepare Statement手动预编译，杜绝SQL注入</p>
+</blockquote>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E8%BD%AC%E8%BD%BD/">转载</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/web/">web</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/06/01/%E6%97%A0%E5%88%97%E5%90%8D%E6%B3%A8%E5%85%A5%E5%B0%8F%E8%AE%B0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">无列名注入小记</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/30/GKCTF%E9%A2%98%E7%9B%AE%E5%A4%8D%E7%8E%B0/">
+                        <span class="hidden-mobile">GKCTF题目复现</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

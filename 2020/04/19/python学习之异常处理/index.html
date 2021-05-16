@@ -1,0 +1,580 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>python学习之异常处理 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="python学习之异常处理">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-04-19 08:23" pubdate>
+        2020年4月19日 早上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.8k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      26
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">python学习之异常处理</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="python学习之异常处理"><a href="#python学习之异常处理" class="headerlink" title="python学习之异常处理"></a>python学习之异常处理</h1><h3 id="常见的异常："><a href="#常见的异常：" class="headerlink" title="常见的异常："></a>常见的异常：</h3><figure class="highlight julia"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br></pre></td><td class="code"><pre><code class="hljs julia"><span class="hljs-built_in">Exception</span>           所有异常的基类（当不知道具体的异常可用这个处理）<br><br><span class="hljs-built_in">AssertionError</span>   assert语句失败<br><br>AttributeError      特性应用或赋值时引发（试图访问一个对象没有的属性）<br><br>IOError                 试图打开不存在的文件或者无全新的文件等操作时，就会引发(输入输入异常，基本是无法打开文件)<br><br>ImportError         无法引入模块或包，基本是路径问题<br><br>IndexError            在使用系列中不存在的索引时引发（下标索引超出序列边界）<br><br><span class="hljs-built_in">KeyError</span>               试图访问你字典里不存在的键key<br><br>KeyboardInterrupt    Ctrl+C被按下<br><br>NameError            使用一个未被赋予对象的变量<br><br>SyntaxError            Python代码逻辑语法出错不能执行<br><br><span class="hljs-built_in">TypeError</span>               传入的对象类型与要求不符<br><br>UnboundLocalError   试图访问一个还未被设置的全局变量，基本上是由于另有一个同名的全局变量<br><br>ValueError             传入一个不被期望的值，即使类型正确<br><br>ZeroDivisonError  在除数为零发生的一个异常       <br></code></pre></td></tr></table></figure>
+<h3 id="2-AssertionError（断言语句assert失败）"><a href="#2-AssertionError（断言语句assert失败）" class="headerlink" title="2.AssertionError（断言语句assert失败）"></a>2.AssertionError（断言语句assert失败）</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span>my_list = [<span class="hljs-string">&#x27;reader&#x27;</span>]<br><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(my_list)<br><span class="hljs-meta">&gt;&gt;&gt; </span>my_list.pop()  <span class="hljs-comment">#当我把列表中唯一的元素pop出去后，列表没有任何元素的情况下。使用assert和len()函数会导致断言失败错误</span><br><span class="hljs-string">&#x27;reader&#x27;</span><br><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">assert</span> <span class="hljs-built_in">len</span>(my_list)<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>AssertionError<br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br></code></pre></td></tr></table></figure>
+<h3 id="2-AttributeError（尝试访问未知的对象属性）"><a href="#2-AttributeError（尝试访问未知的对象属性）" class="headerlink" title="2.AttributeError（尝试访问未知的对象属性）"></a>2.AttributeError（尝试访问未知的对象属性）</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment">#当试图访问对象属性不存在时抛出异常</span><br><span class="hljs-meta">&gt;&gt;&gt; </span>my_list = []<br><span class="hljs-meta">&gt;&gt;&gt; </span>my_list.reader<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>AttributeError: <span class="hljs-string">&#x27;list&#x27;</span> <span class="hljs-built_in">object</span> has no attribute <span class="hljs-string">&#x27;reader&#x27;</span><br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br></code></pre></td></tr></table></figure>
+<h3 id="3-indexError：索引超出序列的范围"><a href="#3-indexError：索引超出序列的范围" class="headerlink" title="3.indexError：索引超出序列的范围"></a>3.indexError：索引超出序列的范围</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span>my_list = [<span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>]<br><span class="hljs-meta">&gt;&gt;&gt; </span>my_list[<span class="hljs-number">3</span>]<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>IndexError: <span class="hljs-built_in">list</span> index out of <span class="hljs-built_in">range</span><br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br></code></pre></td></tr></table></figure>
+<h3 id="4-keyError：字典中查找一个不存在的关键字"><a href="#4-keyError：字典中查找一个不存在的关键字" class="headerlink" title="4.keyError：字典中查找一个不存在的关键字"></a>4.keyError：字典中查找一个不存在的关键字</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">dict</span> = &#123;<span class="hljs-string">&#x27;reader&#x27;</span>:<span class="hljs-string">&#x27;hacker&#x27;</span>,<span class="hljs-string">&quot;python&quot;</span>:<span class="hljs-string">&quot;hacker&#x27;s friend&quot;</span>&#125;<br><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">dict</span>[<span class="hljs-string">&quot;reader&quot;</span>]<br><span class="hljs-string">&#x27;hacker&#x27;</span><br><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">dict</span>[<span class="hljs-string">&quot;java&quot;</span>]<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>KeyError: <span class="hljs-string">&#x27;java&#x27;</span><br></code></pre></td></tr></table></figure>
+<h3 id="5-NameError：尝试访问一个不存在的变量"><a href="#5-NameError：尝试访问一个不存在的变量" class="headerlink" title="5.NameError：尝试访问一个不存在的变量"></a>5.NameError：尝试访问一个不存在的变量</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span>c<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>NameError: name <span class="hljs-string">&#x27;c&#x27;</span> <span class="hljs-keyword">is</span> <span class="hljs-keyword">not</span> defined<br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br><br><br></code></pre></td></tr></table></figure>
+<h3 id="6-OSError：操作系统产生的异常"><a href="#6-OSError：操作系统产生的异常" class="headerlink" title="6.OSError：操作系统产生的异常"></a>6.OSError：操作系统产生的异常</h3><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs plain">顾名思义就是操作系统产生的异常。像打开一个不存在的文件会引发FileNotFoundError,而这个异常就是这个OSError的子类<br></code></pre></td></tr></table></figure>
+<h3 id="7-SyntaxError：Python的语法错误"><a href="#7-SyntaxError：Python的语法错误" class="headerlink" title="7.SyntaxError：Python的语法错误"></a>7.SyntaxError：Python的语法错误</h3><h3 id="8-TypeError-：不同类型间的无效操作"><a href="#8-TypeError-：不同类型间的无效操作" class="headerlink" title="8.TypeError ：不同类型间的无效操作"></a>8.TypeError ：不同类型间的无效操作</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span>my_list = [<span class="hljs-string">&#x27;1&#x27;</span>,<span class="hljs-string">&#x27;23&#x27;</span>,<span class="hljs-number">4</span>]<br><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-built_in">dict</span> = &#123;<span class="hljs-string">&#x27;reader&#x27;</span>:<span class="hljs-number">1</span>&#125;<br><span class="hljs-meta">&gt;&gt;&gt; </span>my_list+<span class="hljs-built_in">dict</span>[<span class="hljs-string">&#x27;reader&#x27;</span>]<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>TypeError: can only concatenate <span class="hljs-built_in">list</span> (<span class="hljs-keyword">not</span> <span class="hljs-string">&quot;int&quot;</span>) to <span class="hljs-built_in">list</span><br><span class="hljs-meta">&gt;&gt;&gt; </span>my_list[<span class="hljs-number">1</span>]+<span class="hljs-built_in">dict</span>[<span class="hljs-string">&#x27;reader&#x27;</span>]<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>TypeError: Can<span class="hljs-string">&#x27;t convert &#x27;</span><span class="hljs-built_in">int</span><span class="hljs-string">&#x27; object to str implicitly</span><br><span class="hljs-string">&gt;&gt;&gt; 1+&#x27;</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;</span><br><span class="hljs-string">Traceback (most recent call last):</span><br><span class="hljs-string">  File &quot;&lt;stdin&gt;&quot;, line 1, in &lt;module&gt;</span><br><span class="hljs-string">TypeError: unsupported operand type(s) for +: &#x27;</span><span class="hljs-built_in">int</span><span class="hljs-string">&#x27; and &#x27;</span>st<span class="hljs-string">r&#x27;</span><br><span class="hljs-string">&gt;&gt;&gt; </span><br><span class="hljs-string"></span><br></code></pre></td></tr></table></figure>
+<h3 id="9-ZeroDivisionError：除数为零"><a href="#9-ZeroDivisionError：除数为零" class="headerlink" title="9.ZeroDivisionError：除数为零"></a>9.ZeroDivisionError：除数为零</h3><h3 id="10-try-except语句（异常捕获机制）"><a href="#10-try-except语句（异常捕获机制）" class="headerlink" title="10.try-except语句（异常捕获机制）"></a>10.try-except语句（异常捕获机制）</h3><p>用于检测和处理异常<strong>（注意：一旦try语句检测范围内出现异常的话，剩下的语句都不会执行）</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">try</span>:<br>	....<br><span class="hljs-keyword">except</span> Exception(<span class="hljs-keyword">as</span> reason)<br>	出现异常Exception后的处理代码<br> <span class="hljs-comment">#例子   </span><br><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">try</span>:<br><span class="hljs-meta">... </span>    f = <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;reader.txt&#x27;</span>)<br><span class="hljs-meta">... </span>    print(f.read())<br><span class="hljs-meta">... </span>    f.close<br><span class="hljs-meta">... </span><span class="hljs-keyword">except</span> OSError:<br><span class="hljs-meta">... </span>    <br><span class="hljs-meta">... </span>    print(<span class="hljs-string">&#x27;文件打开的过程中出错啦！&#x27;</span>)<br><span class="hljs-meta">... </span><br>文件打开的过程中出错啦！<br><span class="hljs-meta">&gt;&gt;&gt; </span><br></code></pre></td></tr></table></figure>
+<p>出于程序员的角度，我们有时候需要知道倒是异常的原因。因此我们可以使用as把具体的错误信息打印出来</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">try</span>:<br><span class="hljs-meta">... </span>    f = <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;reader.txt&#x27;</span>)<br><span class="hljs-meta">... </span>    print(f.read())<br><span class="hljs-meta">... </span>    f.close()<br><span class="hljs-meta">... </span><span class="hljs-keyword">except</span> OSError <span class="hljs-keyword">as</span> reason:<br><span class="hljs-meta">... </span>    print(<span class="hljs-string">&#x27;文件出错啦，错误原因是：&#x27;</span>+<span class="hljs-built_in">str</span>(reason))<br><span class="hljs-meta">... </span><br>文件出错啦，错误原因是：[Errno <span class="hljs-number">2</span>] No such file <span class="hljs-keyword">or</span> directory: <span class="hljs-string">&#x27;reader.txt&#x27;</span><br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br></code></pre></td></tr></table></figure>
+<p><strong>当然，我们可以针对不同异常设置多个except</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">try</span>:<br>		<span class="hljs-built_in">sum</span> = <span class="hljs-number">1</span>+<span class="hljs-string">&#x27;1&#x27;</span><br><span class="hljs-meta">... </span>    f = <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;reader.txt&#x27;</span>)<br><span class="hljs-meta">... </span>    print(f.read())<br><span class="hljs-meta">... </span>    f.close()<br><span class="hljs-meta">... </span><span class="hljs-keyword">except</span> OSError <span class="hljs-keyword">as</span> reason:<br><span class="hljs-meta">... </span>    print(<span class="hljs-string">&#x27;文件出错啦，错误原因是：&#x27;</span>+<span class="hljs-built_in">str</span>(reason))<br><span class="hljs-meta">... </span><span class="hljs-keyword">except</span> TypeError <span class="hljs-keyword">as</span> reason:<br>		print(<span class="hljs-string">&#x27;文件出错啦，错误原因是：&#x27;</span>+<span class="hljs-built_in">str</span>(reason))<br>文件出错了，错误原因是unsupported operand <span class="hljs-built_in">type</span>(s) <span class="hljs-keyword">for</span> +: <span class="hljs-string">&#x27;int&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-string">&#x27;str&#x27;</span><br><br><span class="hljs-meta">&gt;&gt;&gt; </span><br></code></pre></td></tr></table></figure>
+<p><strong>我们还可以对多个异常进行统一的处理</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">try</span>:<br><span class="hljs-meta">... </span>    <span class="hljs-built_in">sum</span> = <span class="hljs-number">1</span> + <span class="hljs-string">&#x27;1&#x27;</span><br><span class="hljs-meta">... </span>    f = <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;reader.txt&#x27;</span>)<br><span class="hljs-meta">... </span>    print(f.read())<br><span class="hljs-meta">... </span>    f.close()<br><span class="hljs-meta">... </span><span class="hljs-keyword">except</span> (OSError,TypeError) <span class="hljs-keyword">as</span> reason:<br><span class="hljs-meta">... </span>    print(<span class="hljs-built_in">str</span>(reason))<br><span class="hljs-meta">... </span><br>unsupported operand <span class="hljs-built_in">type</span>(s) <span class="hljs-keyword">for</span> +: <span class="hljs-string">&#x27;int&#x27;</span> <span class="hljs-keyword">and</span> <span class="hljs-string">&#x27;str&#x27;</span><br><br>    <br></code></pre></td></tr></table></figure>
+<h3 id="11-try-finally语句（实现就算出现异常了，也可以执行一些不得不执行的收尾工作）"><a href="#11-try-finally语句（实现就算出现异常了，也可以执行一些不得不执行的收尾工作）" class="headerlink" title="11.try-finally语句（实现就算出现异常了，也可以执行一些不得不执行的收尾工作）"></a>11.try-finally语句（实现就算出现异常了，也可以执行一些不得不执行的收尾工作）</h3><p>比如当有一个文档确实存在。open()函数正常返回文件对象。但异常却发生了在成功打开文件后的sum=1+’1’语句上了。此时Python将直接跳到except语句，也就是说文件打开了，但是没有执行关闭的命令</p>
+<p>因此我们可以使用try-finally来完成收尾工作</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">try</span>:<br><span class="hljs-meta">... </span>    f = <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;reader.txt&#x27;</span>)<br><span class="hljs-meta">... </span>    print(f.read())<br><span class="hljs-meta">... </span>    <span class="hljs-built_in">sum</span> = <span class="hljs-number">1</span> + <span class="hljs-string">&#x27;1&#x27;</span><br><span class="hljs-meta">... </span><span class="hljs-keyword">except</span>:<br><span class="hljs-meta">... </span>    print(<span class="hljs-string">&#x27;出错啦！&#x27;</span>)<br><span class="hljs-meta">... </span><span class="hljs-keyword">finally</span>:<br><span class="hljs-meta">... </span>    f.close()<br><span class="hljs-meta">... </span><br><span class="hljs-number">123123123123</span><br>reader you are cool<br><br>出错啦！<br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br></code></pre></td></tr></table></figure>
+<h3 id="12-raise语句（自己抛出一个异常）"><a href="#12-raise语句（自己抛出一个异常）" class="headerlink" title="12.raise语句（自己抛出一个异常）"></a>12.raise语句（自己抛出一个异常）</h3><figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">raise</span> ZeroDivisionError<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>ZeroDivisionError<br><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">raise</span> ZeroDivisionError(<span class="hljs-string">&#x27;除数不能为领！&#x27;</span>)<br>Traceback (most recent call last):<br>  File <span class="hljs-string">&quot;&lt;stdin&gt;&quot;</span>, line <span class="hljs-number">1</span>, <span class="hljs-keyword">in</span> &lt;module&gt;<br>ZeroDivisionError: 除数不能为领！<br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br><br></code></pre></td></tr></table></figure>
+<h3 id="13-丰富的else语句（else还可以和for语句和while语句构成‘干完了能怎么样，干不完就别想怎样’的句式）"><a href="#13-丰富的else语句（else还可以和for语句和while语句构成‘干完了能怎么样，干不完就别想怎样’的句式）" class="headerlink" title="13.丰富的else语句（else还可以和for语句和while语句构成‘干完了能怎么样，干不完就别想怎样’的句式）"></a>13.丰富的else语句（else还可以和for语句和while语句构成‘干完了能怎么样，干不完就别想怎样’的句式）</h3><p>说白了，else语句块只能在循环完成后执行，也就是说如果循环中间使用break跳出循环，那么else里面的内容就不会被执行。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">showMaxFactor</span>(<span class="hljs-params">num</span>):</span><br><span class="hljs-meta">... </span>    count = num // <span class="hljs-number">2</span><br><span class="hljs-meta">... </span>    <span class="hljs-keyword">while</span> count &gt; <span class="hljs-number">1</span>:<br><span class="hljs-meta">... </span>            <span class="hljs-keyword">if</span> num % count == <span class="hljs-number">0</span>:<br><span class="hljs-meta">... </span>                    print(<span class="hljs-string">&#x27;%d最大的约数是%d&#x27;</span>%(num,count))<br><span class="hljs-meta">... </span>                    <span class="hljs-keyword">break</span><br><span class="hljs-meta">... </span>            count -= <span class="hljs-number">1</span><br><span class="hljs-meta">... </span>    <span class="hljs-keyword">else</span>:<br><span class="hljs-meta">... </span>            print(<span class="hljs-string">&#x27;%d是素数！&#x27;</span>%(num))<br><span class="hljs-meta">... </span><br><span class="hljs-meta">&gt;&gt;&gt; </span>num = <span class="hljs-built_in">int</span>(<span class="hljs-built_in">input</span>(<span class="hljs-string">&#x27;请输入一个数：&#x27;</span>))<br>请输入一个数：<span class="hljs-number">99</span><br><span class="hljs-meta">&gt;&gt;&gt; </span>showMaxFactor(num)<br><span class="hljs-number">99</span>最大的约数是<span class="hljs-number">33</span><br><span class="hljs-meta">&gt;&gt;&gt; </span>showMaxFactor(<span class="hljs-number">3</span>)<br><span class="hljs-number">3</span>是素数！<br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br><br></code></pre></td></tr></table></figure>
+<p><strong>else还可以和try语句块进行搭配，没有问题那就干吧</strong></p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-meta">&gt;&gt;&gt; </span><span class="hljs-keyword">try</span>:<br><span class="hljs-meta">... </span>    <span class="hljs-built_in">int</span>(<span class="hljs-string">&#x27;abc&#x27;</span>)<br><span class="hljs-meta">... </span><span class="hljs-keyword">except</span> ValueError <span class="hljs-keyword">as</span> reason:<br><span class="hljs-meta">... </span>    print(<span class="hljs-string">&#x27;出错啦：&#x27;</span>+<span class="hljs-built_in">str</span>(reason))<br><span class="hljs-meta">... </span><span class="hljs-keyword">else</span>:<br><span class="hljs-meta">... </span>    print(<span class="hljs-string">&#x27;没有任何异常！&#x27;</span>)<br><span class="hljs-meta">... </span><br>出错啦：invalid literal <span class="hljs-keyword">for</span> <span class="hljs-built_in">int</span>() <span class="hljs-keyword">with</span> base <span class="hljs-number">10</span>: <span class="hljs-string">&#x27;abc&#x27;</span><br><span class="hljs-meta">&gt;&gt;&gt; </span><br><br></code></pre></td></tr></table></figure>
+<h3 id="14-简洁的with语句"><a href="#14-简洁的with语句" class="headerlink" title="14.简洁的with语句"></a>14.简洁的with语句</h3><p>有时候可能觉着打开文件又要关闭文件，还要关注异常处理有点麻烦。所以Python提供了一个with语句。利用这个语句抽象出文件操作中频繁使用的try/except/finally相关细节。</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">try</span>:<br>	f = <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;reader.txt&#x27;</span>,<span class="hljs-string">&#x27;w&#x27;</span>)<br>	<span class="hljs-keyword">for</span> each <span class="hljs-keyword">in</span> f:<br>		print(each)<br><span class="hljs-keyword">except</span> OSError <span class="hljs-keyword">as</span> reason:<br>	print(<span class="hljs-string">&#x27;出错啦&#x27;</span>+<span class="hljs-built_in">str</span>(reason))<br><span class="hljs-keyword">finally</span>:<br>	f.close()<br>	<br>	<br><span class="hljs-comment">#使用with语句，这样就可以不用担心忘记关闭文件了</span><br><span class="hljs-keyword">try</span>:<br>    <span class="hljs-keyword">with</span> <span class="hljs-built_in">open</span>(<span class="hljs-string">&#x27;reader.txt&#x27;</span>,<span class="hljs-string">&#x27;w&#x27;</span>) <span class="hljs-keyword">as</span> f:<br>        <span class="hljs-keyword">for</span> each <span class="hljs-keyword">in</span> f:<br>            print(each)<br><span class="hljs-keyword">except</span> OSError	<span class="hljs-keyword">as</span> reason:<br>    print(<span class="hljs-string">&#x27;出错啦&#x27;</span>+<span class="hljs-built_in">str</span>(reason))<br>    <br></code></pre></td></tr></table></figure>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0/">语言学习</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/python%E5%AD%A6%E4%B9%A0/">python学习</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/04/19/linux%E6%90%AD%E5%BB%BA%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1%E7%8E%AF%E5%A2%83/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">linux搭建代码审计环境</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/04/19/Python%E5%AD%A6%E4%B9%A0%E4%B9%8B%E7%B1%BB%E5%92%8C%E5%AF%B9%E8%B1%A1/">
+                        <span class="hidden-mobile">Python学习之类和对象</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

