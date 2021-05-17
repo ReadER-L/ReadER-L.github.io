@@ -209,7 +209,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      2.3k 字
+      2.4k 字
     </span>
   
 
@@ -261,7 +261,7 @@
             
               <p class="note note-info">
                 
-                  本文最后更新于：2021年5月13日 晚上
+                  本文最后更新于：2021年5月17日 下午
                 
               </p>
             
@@ -272,13 +272,15 @@
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs java">PriorityQueue()           <br>	使用默认的初始容量（<span class="hljs-number">11</span>）创建一个 PriorityQueue，并根据其自然顺序对元素进行排序。<br>PriorityQueue(<span class="hljs-keyword">int</span> initialCapacity)<br>	使用指定的初始容量创建一个 PriorityQueue，并根据其自然顺序对元素进行排序。<br></code></pre></td></tr></table></figure>
 <p>常见的方法：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><code class="hljs java">add(E e)           			将指定的元素插入此优先级队列<br>clear()            			从此优先级队列中移除所有元素。<br>comparator()       			返回用来对此队列中的元素进行排序的比较器；如果此队列根据其元素的自然顺序进行排序，则返回 <span class="hljs-keyword">null</span><br>contains(Object o)          如果此队列包含指定的元素，则返回 <span class="hljs-keyword">true</span>。<br>iterator()           		返回在此队列中的元素上进行迭代的迭代器。<br>offer(E e)           		将指定的元素插入此优先级队列<br>peek()           			获取但不移除此队列的头；如果此队列为空，则返回 <span class="hljs-keyword">null</span>。<br>poll()           			获取并移除此队列的头，如果此队列为空，则返回 <span class="hljs-keyword">null</span>。<br>remove(Object o)           	从此队列中移除指定元素的单个实例（如果存在）。<br>size()           			返回此 collection 中的元素数。<br>toArray()          			返回一个包含此队列所有元素的数组。<br></code></pre></td></tr></table></figure>
-<h1 id="2-利用链分析"><a href="#2-利用链分析" class="headerlink" title="2.利用链分析"></a>2.利用链分析</h1><p>​    我们先来看一下yso中的利用链：</p>
+<h1 id="2-利用链限制条件"><a href="#2-利用链限制条件" class="headerlink" title="2.利用链限制条件"></a>2.利用链限制条件</h1><h4 id="利用版本"><a href="#利用版本" class="headerlink" title="利用版本"></a>利用版本</h4><p>CommonsCollections 4.0</p>
+<h4 id="JDK限制"><a href="#JDK限制" class="headerlink" title="JDK限制"></a>JDK限制</h4><p>JDK版本：暂无限制</p>
+<h1 id="3-利用链分析"><a href="#3-利用链分析" class="headerlink" title="3.利用链分析"></a>3.利用链分析</h1><p>​    我们先来看一下yso中的利用链：</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-comment">/*</span><br><span class="hljs-comment">	Gadget chain:</span><br><span class="hljs-comment">		ObjectInputStream.readObject()</span><br><span class="hljs-comment">			PriorityQueue.readObject()</span><br><span class="hljs-comment">				...</span><br><span class="hljs-comment">				TransformingComparator.compare()</span><br><span class="hljs-comment">					InvokerTransformer.transform()</span><br><span class="hljs-comment">							Method.invoke()</span><br><span class="hljs-comment">								Runtime.exec()</span><br><span class="hljs-comment"> */</span><br></code></pre></td></tr></table></figure>
 <p>我们可以看到如下为该利用链的核心：通过<code>TransformingComparator.compare()</code>方法调用<code>transform</code>方法从而触发<code>InvokerTransformer.transform()</code>来达到触发命令执行。</p>
 <figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><code class="hljs java">TransformingComparator.compare()<br>					InvokerTransformer.transform()<br></code></pre></td></tr></table></figure>
 <p>我们跟进<code>TransformingComparator.compare()</code>看一下：发现在构造函数中会将我们传入的<code>transformer</code>（比如是<code>InvokerTransformer</code>）赋值给<code>this.transformer</code> 属性，同时发现在<code>compare</code>方法会调用我们传入的<code>transformer</code>的<code>transform</code>方法，假如<code>compare</code>方法的参数值是我们可以控制的话，那我们就可以执行任意命令了。</p>
 <p><img src="/2021/04/15/Java%E5%AE%89%E5%85%A8-CommonsCollections2%E5%88%86%E6%9E%90/1.png" srcset="/img/loading.gif"></p>
-<p>​    所以接下来我们就要找到可以调用<code>TransformingComparator.compare()</code>，并且参数<code>obj1</code>和<code>obj2</code>参数可以控制的。<code>yso</code>中，<code>cc2</code>中也是用到了 <code>PriorityQueue</code>来进行触发的。</p>
+<p>​    所以接下来我们就要找到可以调用<code>TransformingComparator.compare()</code>，并且参数<code>obj1</code>和<code>obj2</code>参数可以控制的类。<code>yso</code>中，<code>cc2</code>中是用到了 <code>PriorityQueue</code>来进行触发的。</p>
 <h2 id="1-通过PriorityQueue触发TransformingComparator-compare-分析。"><a href="#1-通过PriorityQueue触发TransformingComparator-compare-分析。" class="headerlink" title="1.通过PriorityQueue触发TransformingComparator.compare()分析。"></a>1.通过PriorityQueue触发TransformingComparator.compare()分析。</h2><p>​    我们先来看看<code>PriorityQueue.writeObject</code>序列化的方法：我们可以发现假如调用<code>PriorityQueue.writeObject</code>的话，程序序列化的数据是<code>queue</code>属性，我们可以可以利用反射机制来控制<code>queue</code>，所以这里<code>queue</code>可控</p>
 <p><img src="/2021/04/15/Java%E5%AE%89%E5%85%A8-CommonsCollections2%E5%88%86%E6%9E%90/14.png" srcset="/img/loading.gif"></p>
 <p>​    那我们首先从<code>PriorityQueue.readObject</code>开始看起：反序列化的数据是我们可以控制的，因此<code>queue</code>对象数组的值是我们可以控制的。</p>
@@ -332,7 +334,7 @@
 <p><img src="/2021/04/15/Java%E5%AE%89%E5%85%A8-CommonsCollections2%E5%88%86%E6%9E%90/20.png" srcset="/img/loading.gif"></p>
 <p>​    最后回到<code>TemplatesImpl</code>的 <code>getTransletInstance()</code>中在红框处对类进行了初始化，从而触发了我们的恶意代码。</p>
 <p><img src="/2021/04/15/Java%E5%AE%89%E5%85%A8-CommonsCollections2%E5%88%86%E6%9E%90/21.png" srcset="/img/loading.gif"></p>
-<h1 id="3-参考链接"><a href="#3-参考链接" class="headerlink" title="3.参考链接"></a>3.参考链接</h1><p>p神的代码审计星球的JAVA安全漫谈的系列文章。</p>
+<h1 id="4-参考链接"><a href="#4-参考链接" class="headerlink" title="4.参考链接"></a>4.参考链接</h1><p>p神的代码审计星球的JAVA安全漫谈的系列文章。</p>
 <p><a target="_blank" rel="noopener" href="https://paper.seebug.org/1242/#commonscollections-2">https://paper.seebug.org/1242/#commonscollections-2</a></p>
 
             </div>

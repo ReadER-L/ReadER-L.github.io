@@ -206,6 +206,90 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/">内网安全学习三-Windows系统提权</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/03/06/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8%E5%AD%A6%E4%B9%A0%E4%B8%89-Windows%E7%B3%BB%E7%BB%9F%E6%8F%90%E6%9D%83/">
+          
+          
+            
+          
+          1.Windows中的权限分类1.User：普通用户权限，该组的默认权限不允许成员修改操作系统的设置或用户资料。
+2.Administrator：管理员权限。可以利用windows的机制将自己的权限提升为System权限，以便操作SAM文件。
+3.System：系统权限。可以对SAM等敏感文件进行读取，往往需要将Administrator权限提升到System权限才可以对散列值进行Dump操作。
+
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-06 15:54" pubdate>
+              2021-03-06
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%86%85%E7%BD%91%E5%AE%89%E5%85%A8/">内网安全</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/">某大学的附属医院存储XSS漏洞-Bypass</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/03/05/%E6%9F%90%E5%A4%A7%E5%AD%A6%E7%9A%84%E9%99%84%E5%B1%9E%E5%8C%BB%E9%99%A2%E5%AD%98%E5%82%A8XSS%E6%BC%8F%E6%B4%9E-Bypass/">
+          
+          
+            
+          
+          1.前言​    在对某个大学进行漏洞挖掘的时候，挖着挖着就挖到它的附属医院了。在可以进行注册的普通用户的后台，初步发现可以写入html标签代码到页面中，即存在存储型XSS漏洞的可能。
+2.漏洞初探疑似漏洞点是在个人信息中的就诊人信息处，点击修改操作。
+
+因为存在前台的检验，因此先填写正常的信息提交，然后用Burp进行抓包修改。
+
+尝试写入一些html标签，查看目标页面是否被正常写入并解析。
+可以
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-05 19:11" pubdate>
+              2021-03-05
+            </time>
+          </div>
+        
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2021/02/21/%E4%BB%8E%E6%9F%90%E9%AB%98%E6%A0%A1%E7%9A%84%E5%A4%87%E4%BB%BD%E6%96%87%E4%BB%B6%E6%89%BE%E5%88%B0%E7%9A%84webshell/">从某高校的备份文件找到的webshell</a>
       </h1>
 
@@ -509,95 +593,6 @@
             <i class="iconfont icon-date"></i>
             <time datetime="2021-01-27 23:04" pubdate>
               2021-01-27
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/01/26/Java%E5%AE%89%E5%85%A8-LDAP-JNDI%E6%B3%A8%E5%85%A5/">Java安全-LDAP+JNDI注入</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/01/26/Java%E5%AE%89%E5%85%A8-LDAP-JNDI%E6%B3%A8%E5%85%A5/">
-          
-          
-            
-          
-          
-
-1.前言​    在学习基于RMI的JNDI注入，可以知道有许多java版本限制，具体限制可以看上一篇文章。
-​    JNDI注入远程对象读取不仅仅可以从RMI服务中读取，还可以从LDAP服务中读取。同时LDAP服务的Reference远程加载Factory类不受com.sun.jndi.rmi.object.trustURLCodebase、com.sun.jndi.cosnaming.o
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-01-26 19:39" pubdate>
-              2021-01-26
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/">Java安全-RMI_JNDI注入</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/01/26/Java%E5%AE%89%E5%85%A8-RMI-JNDI%E6%B3%A8%E5%85%A5/">
-          
-          
-            
-          
-          1.前言这一篇主要学习关于RMI-JNDI注入的利用原理和流程。
-2.参考链接https://xz.aliyun.com/t/6633?page=5
-https://www.cnblogs.com/tr1ple/p/11558842.html
-https://www.freebuf.com/column/189835.html
-3.正文1.JNDI简介​    JNDI (Java Naming 
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-01-26 13:05" pubdate>
-              2021-01-26
             </time>
           </div>
         
