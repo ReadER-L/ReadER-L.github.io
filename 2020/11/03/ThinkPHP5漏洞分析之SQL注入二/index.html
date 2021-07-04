@@ -261,13 +261,13 @@
             
               <p class="note note-info">
                 
-                  本文最后更新于：2020年11月3日 晚上
+                  本文最后更新于：2021年6月13日 晚上
                 
               </p>
             
             <div class="markdown-body">
               <p>本系列文章将对Thinkphp的历史漏洞进行分析复现，来增加自己代码审计的能力，以及对大型框架的了解。这是第二篇文章，将分析学习ThinkPHP5中的存在的SQL注入漏洞（update方法的注入）</p>
-<h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-漏洞概要"><a href="#1-漏洞概要" class="headerlink" title="1.漏洞概要"></a>1.漏洞概要</h1><p>本次漏洞存在于 <strong>Mysql</strong> 类的 <strong>parseArrayData</strong> 方法中，依旧是因为没有对数据进行很好的检查和过滤，而将数据拼接进 <strong>SQL</strong> 语句，导致 <strong>SQL注入漏洞</strong> 的产生。</p>
+<h1 id="1-漏洞概要"><a href="#1-漏洞概要" class="headerlink" title="1.漏洞概要"></a>1.漏洞概要</h1><p>本次漏洞存在于 <strong>Mysql</strong> 类的 <strong>parseArrayData</strong> 方法中，依旧是因为没有对数据进行很好的检查和过滤，而将数据拼接进 <strong>SQL</strong> 语句，导致 <strong>SQL注入漏洞</strong> 的产生。</p>
 <p>漏洞影响版本： <strong>5.1.6&lt;=ThinkPHP&lt;=5.1.7</strong> (非最新的 <strong>5.1.8</strong> 版本也可利用)。</p>
 <h1 id="2-漏洞环境"><a href="#2-漏洞环境" class="headerlink" title="2.漏洞环境"></a>2.漏洞环境</h1><p>通过以下命令获取漏洞环境</p>
 <figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">composer</span> <span class="hljs-built_in">create-project</span> <span class="hljs-string">topthink</span>/<span class="hljs-string">think</span>=<span class="hljs-string">5</span>.<span class="hljs-string">1</span>.<span class="hljs-string">8</span> <span class="hljs-string">tpdemo1</span> <span class="hljs-built_in">--no-plugins</span><br></code></pre></td></tr></table></figure>

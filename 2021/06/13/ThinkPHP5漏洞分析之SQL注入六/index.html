@@ -1,0 +1,598 @@
+
+
+<!DOCTYPE html>
+<html lang="zh-CN" data-default-color-scheme=&#34;auto&#34;>
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/favicon.png">
+  <link rel="icon" type="image/png" href="/img/favicon.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="#2f4154">
+  <meta name="description" content="">
+  <meta name="author" content="reader-l">
+  <meta name="keywords" content="reader-l&#39;s blog,blog,reader-l,&#34;读者&#34;,&#34;reader-l web安全&#34;,&#34;攻防&#34;">
+  <title>ThinkPHP5漏洞分析之SQL注入六 - reader-l&#39;s blog</title>
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/github-markdown-css@4.0.0/github-markdown.min.css" />
+  <link  rel="stylesheet" href="/lib/hint/hint.min.css" />
+
+  
+    
+    
+      
+      <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@10.4.0/styles/github-gist.min.css" />
+    
+  
+
+  
+    <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css" />
+  
+
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_ba1fz6golrf.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_kmeydafke9r.css">
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+  <script id="fluid-configs">
+    var Fluid = window.Fluid || {};
+    var CONFIG = {"hostname":"reader-l.github.io","root":"/","version":"1.8.7","typing":{"enable":true,"typeSpeed":70,"cursorChar":"_","loop":false},"anchorjs":{"enable":true,"element":"h1,h2,h3,h4,h5,h6","placement":"right","visible":"hover","icon":""},"progressbar":{"enable":true,"height_px":3,"color":"#29d","options":{"showSpinner":false,"trickleSpeed":100}},"copy_btn":true,"image_zoom":{"enable":true},"toc":{"enable":true,"headingSelector":"h1,h2,h3,h4,h5,h6","collapseDepth":0},"lazyload":{"enable":true,"onlypost":false},"web_analytics":{"enable":true,"baidu":null,"google":null,"gtag":null,"tencent":{"sid":null,"cid":null},"woyaola":null,"cnzz":null,"leancloud":{"app_id":null,"app_key":null,"server_url":null}}};
+  </script>
+  <script  src="/js/utils.js" ></script>
+  <script  src="/js/color-schema.js" ></script>
+<meta name="generator" content="Hexo 5.3.0"><link rel="alternate" href="/atom.xml" title="reader-l's blog" type="application/atom+xml">
+</head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>reader-l's blog</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/">
+                <i class="iconfont icon-home-fill"></i>
+                首页
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/archives/">
+                <i class="iconfont icon-archive-fill"></i>
+                归档
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/categories/">
+                <i class="iconfont icon-category-fill"></i>
+                分类
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/tags/">
+                <i class="iconfont icon-tags-fill"></i>
+                标签
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/about/">
+                <i class="iconfont icon-user-fill"></i>
+                关于
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/Links/">
+                <i class="iconfont icon-link-fill"></i>
+                友链
+              </a>
+            </li>
+          
+        
+          
+          
+          
+          
+            <li class="nav-item">
+              <a class="nav-link" href="/List/">
+                <i class="iconfont icon-link-fill"></i>
+                List
+              </a>
+            </li>
+          
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;</a>
+          </li>
+        
+        
+          <li class="nav-item" id="color-toggle-btn">
+            <a class="nav-link" href="javascript:">&nbsp;<i
+                class="iconfont icon-dark" id="color-toggle-icon"></i>&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="banner" id="banner" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="page-header text-center fade-in-up">
+            <span class="h2" id="subtitle" title="ThinkPHP5漏洞分析之SQL注入六">
+              
+            </span>
+
+            
+              <div class="mt-3">
+  
+  
+    <span class="post-meta">
+      <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+      <time datetime="2021-06-13 11:38" pubdate>
+        2021年6月13日 中午
+      </time>
+    </span>
+  
+</div>
+
+<div class="mt-1">
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-chart"></i>
+      907 字
+    </span>
+  
+
+  
+    
+    <span class="post-meta mr-2">
+      <i class="iconfont icon-clock-fill"></i>
+      
+      
+      12
+       分钟
+    </span>
+  
+
+  
+  
+    
+      <!-- 不蒜子统计文章PV -->
+      <span id="busuanzi_container_page_pv" style="display: none">
+        <i class="iconfont icon-eye" aria-hidden="true"></i>
+        <span id="busuanzi_value_page_pv"></span> 次
+      </span>
+    
+  
+</div>
+
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid nopadding-x">
+  <div class="row nomargin-x">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-x-md">
+      <div class="container nopadding-x-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <article class="post-content mx-auto">
+            <!-- SEO header -->
+            <h1 style="display: none">ThinkPHP5漏洞分析之SQL注入六</h1>
+            
+              <p class="note note-info">
+                
+                  本文最后更新于：2021年6月13日 晚上
+                
+              </p>
+            
+            <div class="markdown-body">
+              <h1 id="1-漏洞简介"><a href="#1-漏洞简介" class="headerlink" title="1.漏洞简介"></a>1.漏洞简介</h1><p>本次漏洞存在于所有 <strong>Mysql</strong> 聚合函数相关方法。由于程序没有对数据进行很好的过滤，直接将数据拼接进 <strong>SQL</strong> 语句，最终导致 <strong>SQL注入漏洞</strong> 的产生。漏洞影响版本： <strong>5.0.0&lt;=ThinkPHP&lt;=5.0.21</strong> 、 <strong>5.1.3&lt;=ThinkPHP5&lt;=5.1.25</strong> 。</p>
+<p>不同版本 <strong>payload</strong> 需稍作调整：</p>
+<p><strong>5.0.0~5.0.21</strong> 、 <strong>5.1.3～5.1.10</strong> ： </p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">id</span>)%<span class="hljs-number">2</span>bupdatexml(<span class="hljs-number">1</span>,concat(<span class="hljs-number">0</span>x<span class="hljs-number">7</span>,user(),<span class="hljs-number">0</span>x<span class="hljs-number">7</span>e),<span class="hljs-number">1</span>) from users%<span class="hljs-number">23</span><br></code></pre></td></tr></table></figure>
+<p><strong>5.1.11～5.1.25</strong> ： </p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">id</span>`)%<span class="hljs-number">2</span>bupdatexml(<span class="hljs-number">1</span>,concat(<span class="hljs-number">0</span>x<span class="hljs-number">7</span>,user(),<span class="hljs-number">0</span>x<span class="hljs-number">7</span>e),<span class="hljs-number">1</span>) from users%<span class="hljs-number">23</span><br></code></pre></td></tr></table></figure>
+<h1 id="2-漏洞环境搭建"><a href="#2-漏洞环境搭建" class="headerlink" title="2.漏洞环境搭建"></a>2.漏洞环境搭建</h1><p>通过以下命令获取测试环境代码：</p>
+<figure class="highlight dsconfig"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs dsconfig"><span class="hljs-string">composer</span> <span class="hljs-built_in">create-project</span> <span class="hljs-built_in">--prefer-dist</span> <span class="hljs-string">topthink</span>/<span class="hljs-string">think</span>=<span class="hljs-string">5</span>.<span class="hljs-string">1</span>.<span class="hljs-string">25</span> <span class="hljs-string">tpdemo1</span><br></code></pre></td></tr></table></figure>
+<p>将 <strong>composer.json</strong> 文件的 <strong>require</strong> 字段设置成如下：</p>
+<figure class="highlight lua"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><code class="hljs lua"><span class="hljs-string">&quot;require&quot;</span>: &#123;<br>    <span class="hljs-string">&quot;php&quot;</span>: <span class="hljs-string">&quot;&gt;=5.6.0&quot;</span>,<br>    <span class="hljs-string">&quot;topthink/framework&quot;</span>: <span class="hljs-string">&quot;5.1.25&quot;</span><br>&#125;,<br></code></pre></td></tr></table></figure>
+<p>然后执行 <code>composer update</code> ，并将 <strong>application/index/controller/Index.php</strong> 文件代码设置如下：</p>
+<figure class="highlight php"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><code class="hljs php"><span class="hljs-meta">&lt;?php</span><br><span class="hljs-keyword">namespace</span> <span class="hljs-title">app</span>\<span class="hljs-title">index</span>\<span class="hljs-title">controller</span>;<br><br><span class="hljs-class"><span class="hljs-keyword">class</span> <span class="hljs-title">Index</span></span><br><span class="hljs-class"></span>&#123;<br>    <span class="hljs-keyword">public</span> <span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">index</span>(<span class="hljs-params"></span>)</span><br><span class="hljs-function">    </span>&#123;<br>        <span class="hljs-variable">$options</span> = request()-&gt;get(<span class="hljs-string">&#x27;options&#x27;</span>);<br>        <span class="hljs-variable">$result</span> = db(<span class="hljs-string">&#x27;users&#x27;</span>)-&gt;max(<span class="hljs-variable">$options</span>);<br>        var_dump(<span class="hljs-variable">$result</span>);<br>    &#125;<br>&#125;<br></code></pre></td></tr></table></figure>
+<p>在 <strong>config/database.php</strong> 文件中配置数据库相关信息，并开启 <strong>config/app.php</strong> 中的 <strong>app_debug</strong> 和 <strong>app_trace</strong> 。创建数据库信息如下：</p>
+<figure class="highlight sql"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><code class="hljs sql"><span class="hljs-keyword">create</span> database tp5;<br>use tp5;<br><span class="hljs-keyword">create</span> <span class="hljs-keyword">table</span> users(<br>	id <span class="hljs-type">int</span> <span class="hljs-keyword">primary</span> <span class="hljs-keyword">key</span> auto_increment,<br>	username <span class="hljs-type">varchar</span>(<span class="hljs-number">50</span>) <span class="hljs-keyword">not</span> <span class="hljs-keyword">null</span><br>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users(id,username) <span class="hljs-keyword">values</span>(<span class="hljs-number">1</span>,<span class="hljs-string">&#x27;reader-l&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users(id,username) <span class="hljs-keyword">values</span>(<span class="hljs-number">2</span>,<span class="hljs-string">&#x27;reader-l1&#x27;</span>);<br><span class="hljs-keyword">insert</span> <span class="hljs-keyword">into</span> users(id,username) <span class="hljs-keyword">values</span>(<span class="hljs-number">3</span>,<span class="hljs-string">&#x27;reader-l2&#x27;</span>);<br></code></pre></td></tr></table></figure>
+<h1 id="3-漏洞复现"><a href="#3-漏洞复现" class="headerlink" title="3.漏洞复现"></a>3.漏洞复现</h1><p>访问如下</p>
+<figure class="highlight apache"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><code class="hljs apache"><span class="hljs-attribute">http</span>://www.reader-l.com:<span class="hljs-number">7777</span>/tpdemo<span class="hljs-number">1</span>/public/index.php/index/index/index?options=id`)%<span class="hljs-number">2</span>bupdatexml(<span class="hljs-number">1</span>,concat(<span class="hljs-number">0</span>x<span class="hljs-number">7</span>,user(),<span class="hljs-number">0</span>x<span class="hljs-number">7</span>e),<span class="hljs-number">1</span>)%<span class="hljs-number">20</span>from%<span class="hljs-number">20</span>users%<span class="hljs-number">23</span><br></code></pre></td></tr></table></figure>
+<p>成功触发</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/1.png" srcset="/img/loading.gif"></p>
+<h1 id="4-漏洞分析"><a href="#4-漏洞分析" class="headerlink" title="4.漏洞分析"></a>4.漏洞分析</h1><p>老方法，继续跟着payload分析漏洞产生的原因：</p>
+<p>该版本依旧是使用<code>/thinkphp/library/think/Request.php#input</code>方法获取请求数据，发现使用<code>this-&gt;filterValue</code>方法处理数据，但是基本没有处理就返回了。</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/2.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/3.png" srcset="/img/loading.gif"></p>
+<p>假如开发者使用该框架进行二次开发的时候，没有进行检查和过滤的话，数据就有可能原样进入到<code>max</code>方法</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/4.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>thinkphp/library/think/db/Query.php#max</code>方法：发现调用了<code>thinkphp/library/think/db/Query.php#aggregate</code>方法。</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/5.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>thinkphp/library/think/db/Query.php#aggregate</code>方法查看：调用<code>thinkphp/library/think/db/Connection.php#aggregate</code>方法</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/6.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>thinkphp/library/think/db/Connection.php#aggregate</code>方法进行查看：</p>
+<p>可以明显发现程序将用户可控变量 <code>$field</code> ，经过 <code>parseKey</code> 方法处理后，与 <code>SQL</code> 语句进行了拼接。</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/7.png" srcset="/img/loading.gif"></p>
+<p>下面我们就来具体看看 <code>parseKey</code>方法，可以发现只是对我们的payload两端加上反引号就返回了。</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/8.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/9.png" srcset="/img/loading.gif"></p>
+<p>回到<code>thinkphp/library/think/db/Connection.php#aggregate</code>方法可以发现调用了<code>/thinkphp/library/think/db/Connection.php#value</code>方法</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/10.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>/thinkphp/library/think/db/Connection.php#value</code>方法查看，可以发现数据原样进入到了<code>thinkphp/library/think/db/Builder.php#select</code>方法</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/11.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>thinkphp/library/think/db/Builder.php#select</code>方法进行查看</p>
+<p>使用该方法来构造 <code>SQL</code> 语句，应该说是在分析 <code>ThinkPHP</code> 漏洞时，非常常见的了。其就是使用 <code>str_replace</code> 方法，将变量替换到 <code>SQL</code> 语句模板中。这里，我们重点关注 <code>parseField</code> 方法，因为用户可控数据存储在 <code>$options[&#39;field&#39;]</code>变量中并被传入该方法。</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/13.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>parseFiled</code>方法：可以发现可控数据只是经过<code>parseKey</code>方法处理，并不影响数据，然后直接用逗号拼接，最终直接替换进 <strong>SQL</strong> 语句模板里，导致 <strong>SQL注入漏洞</strong> 的发生。</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/14.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/15.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/16.png" srcset="/img/loading.gif"></p>
+<h1 id="5-漏洞修复"><a href="#5-漏洞修复" class="headerlink" title="5.漏洞修复"></a>5.漏洞修复</h1><p>看一下官方修复的方法：</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/18.png" srcset="/img/loading.gif"></p>
+<p>在<code>thinkphp/library/think/db/builder/Mysql.php#parseKey</code>方法中添加如下判断语句。</p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/19.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E5%85%AD/17.png" srcset="/img/loading.gif"></p>
+<p>当匹配到除了 <strong>字母、点号、星号</strong> 以外的字符时，就抛出异常。</p>
+
+            </div>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                  <div class="post-meta mr-3">
+                    <i class="iconfont icon-category"></i>
+                    
+                      <a class="hover-with-bg" href="/categories/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1/">代码审计</a>
+                    
+                  </div>
+                
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a target="_blank" href="https://creativecommons.org/licenses/by-sa/4.0/deed.zh" rel="nofollow noopener noopener">CC BY-SA 4.0 协议</a> ，转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext">
+                  <article class="post-prev col-6">
+                    
+                    
+                      <a href="/2021/06/29/Struts2%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%90%88%E9%9B%86/">
+                        <i class="iconfont icon-arrowleft"></i>
+                        <span class="hidden-mobile">Struts2漏洞复现合集</span>
+                        <span class="visible-mobile">上一篇</span>
+                      </a>
+                    
+                  </article>
+                  <article class="post-next col-6">
+                    
+                    
+                      <a href="/2021/06/13/ThinkPHP5%E6%BC%8F%E6%B4%9E%E5%88%86%E6%9E%90%E4%B9%8BSQL%E6%B3%A8%E5%85%A5%E4%BA%94/">
+                        <span class="hidden-mobile">ThinkPHP5漏洞分析之SQL注入五</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </article>
+                </div>
+              
+            </div>
+
+            
+              <!-- Comments -->
+              <article class="comments" id="comments">
+                
+                
+  <div id="vcomments"></div>
+  <script type="text/javascript">
+    Fluid.utils.waitElementVisible('vcomments', function() {
+      Fluid.utils.createScript('https://cdn.jsdelivr.net/npm/valine@1.4.14/dist/Valine.min.js', function () {
+        new Valine({
+          el: "#vcomments",
+          app_id: "r1aoO2CU8pztHBXDkQYFikuI-gzGzoHsz",
+          app_key: "dJhm8HsnHbHaA1BVeojBc6MI",
+          placeholder: "Just go go",
+          path: window.location.pathname,
+          avatar: "mm",
+          meta: ["nick","mail","link"],
+          pageSize: "10",
+          lang: "zh-CN",
+          highlight: false,
+          recordIP: false,
+          serverURLs: "",
+        });
+      });
+    });
+  </script>
+  <noscript>Please enable JavaScript to view the
+    <a target="_blank" href="https://valine.js.org" rel="nofollow noopener noopener">comments powered by Valine.</a>
+  </noscript>
+
+
+              </article>
+            
+          </article>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;目录</p>
+  <div class="toc-body" id="toc-body"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+
+    
+      <a id="scroll-top-button" href="#" role="button">
+        <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+      </a>
+    
+
+    
+      <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">搜索</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">关键词</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+
+    
+  </main>
+
+  <footer class="text-center mt-5 py-3">
+  <div class="footer-content">
+     <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a> <i class="iconfont icon-love"></i> <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener"><span>Fluid</span></a> 
+  </div>
+  
+  <div class="statistics">
+    
+    
+
+    
+      
+        <!-- 不蒜子统计PV -->
+        <span id="busuanzi_container_site_pv" style="display: none">
+            总访问量 
+            <span id="busuanzi_value_site_pv"></span>
+             次
+          </span>
+      
+      
+        <!-- 不蒜子统计UV -->
+        <span id="busuanzi_container_site_uv" style="display: none">
+            总访客数 
+            <span id="busuanzi_value_site_uv"></span>
+             人
+          </span>
+      
+    
+  </div>
+
+
+  
+
+  
+</footer>
+
+<!-- SCRIPTS -->
+
+  <script  src="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.jsdelivr.net/npm/nprogress@0.2.0/nprogress.min.css" />
+
+  <script>
+    NProgress.configure({"showSpinner":false,"trickleSpeed":100})
+    NProgress.start()
+    window.addEventListener('load', function() {
+      NProgress.done();
+    })
+  </script>
+
+
+<script  src="https://cdn.jsdelivr.net/npm/jquery@3.5.1/dist/jquery.min.js" ></script>
+<script  src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/js/bootstrap.min.js" ></script>
+<script  src="/js/debouncer.js" ></script>
+<script  src="/js/events.js" ></script>
+<script  src="/js/plugins.js" ></script>
+
+<!-- Plugins -->
+
+
+  
+    <script  src="/js/lazyload.js" ></script>
+  
+
+
+
+  
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/tocbot@4.12.0/dist/tocbot.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js" ></script>
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/anchor-js@4.3.0/anchor.min.js" ></script>
+
+
+
+  <script defer src="https://cdn.jsdelivr.net/npm/clipboard@2.0.6/dist/clipboard.min.js" ></script>
+
+
+
+  <script defer src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js" ></script>
+
+
+
+
+  <script  src="https://cdn.jsdelivr.net/npm/typed.js@2.0.11/lib/typed.min.js" ></script>
+  <script>
+    (function (window, document) {
+      var typing = Fluid.plugins.typing;
+      var title = document.getElementById('subtitle').title;
+      
+      typing(title)
+      
+    })(window, document);
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    (function () {
+      var path = "/local-search.xml";
+      var inputArea = document.querySelector("#local-search-input");
+      inputArea.onclick = function () {
+        searchFunc(path, 'local-search-input', 'local-search-result');
+        this.onclick = null
+      }
+    })()
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+  
+
+  
+
+  
+
+
+
+
+
+<!-- 主题的启动项 保持在最底部 -->
+<script  src="/js/boot.js" ></script>
+
+
+
+</body>
+</html>

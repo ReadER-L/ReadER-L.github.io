@@ -206,6 +206,138 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/">漏洞复现-骑士CMS文件包含导致远程代码执行漏洞</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/03/27/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0-%E9%AA%91%E5%A3%ABCMS%E6%96%87%E4%BB%B6%E5%8C%85%E5%90%AB%E5%AF%BC%E8%87%B4%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E6%BC%8F%E6%B4%9E/">
+          
+          
+            
+          
+          1.前言这个漏洞2020年的时候就已经出了，但是我现在复现分析学习[doge]。觉得对自己的提升最好的途径还是代码吧。以后有新漏洞的出现，我一定会尽量及时复现分析学习。
+2.漏洞环境搭建与复现1.漏洞环境搭建http://www.74cms.com/news/show-2497.html
+​    看了官方发的通告，可以知道漏洞在6.0.48版本得到了修复。（具体修复方法，后面在分析。）
+​   
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-27 10:29" pubdate>
+              2021-03-27
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0/">漏洞复现</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/">免杀学习-静态恶意代码逃逸</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/03/22/%E5%85%8D%E6%9D%80%E5%AD%A6%E4%B9%A0-%E9%9D%99%E6%80%81%E6%81%B6%E6%84%8F%E4%BB%A3%E7%A0%81%E9%80%83%E9%80%B8/">
+          
+          
+            
+          
+          1.前言​    上次用Python写了一个shellcode加载器后，对免杀有了很大的兴趣，因此想要再多学习一些。
+2.学习​    这次主要利用C/C++来实现shellcode的加载，以及基础免杀操作。
+​    木马检测一般分为静态特征查杀、动态行为检测。
+​    静态查杀，其实就是对文件特征码的检测。在各大杀软的病毒库中存储着病毒所具有的独一无二的特征字符，我们称之为特征码。当杀毒软件
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-22 11:14" pubdate>
+              2021-03-22
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%85%8D%E6%9D%80/">免杀</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
+        <a href="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/">Shellcode加载器实现-Python</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2021/03/18/Shellcode%E5%8A%A0%E8%BD%BD%E5%99%A8%E5%AE%9E%E7%8E%B0-Python/">
+          
+          
+            
+          
+          1.前言​    突然想学学python是如何加载shellcode的。
+2.代码​    利用ctypes库来调用windows api来完成加载shellcode的操作。
+一些函数的详细信息：1.RtlMoveMemory​    调用RtlMoveMemory函数可以将shellcode载入内存，此函数从指定内存中复制内容至另一内存里。RtlMoveMemory函数原型和参数如下:
+1234
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2021-03-18 18:18" pubdate>
+              2021-03-18
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/%E5%85%8D%E6%9D%80/">免杀</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2021/03/13/%E4%BB%A3%E7%A0%81%E5%AE%A1%E8%AE%A1-%E6%9F%90%E5%A4%A7%E5%AD%A6%E6%BA%90%E7%A0%81%E4%B8%AD%E8%8B%A5%E5%B9%B2%E4%B8%AA%E9%AB%98%E5%8D%B1%E6%BC%8F%E6%B4%9E/">代码审计-某大学源码中若干个高危漏洞</a>
       </h1>
 
@@ -491,123 +623,6 @@
               <a href="/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/">漏洞挖掘</a>
             
           </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/02/02/%E9%92%88%E5%AF%B9%E6%9F%90%E4%B8%AA%E6%B8%B8%E6%88%8F%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/">针对某个游戏平台的漏洞挖掘</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/02/02/%E9%92%88%E5%AF%B9%E6%9F%90%E4%B8%AA%E6%B8%B8%E6%88%8F%E5%B9%B3%E5%8F%B0%E7%9A%84%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/">
-          
-          
-            
-          
-          该文章已加密, 请输入密码查看。
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-02-02 12:29" pubdate>
-              2021-02-02
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/%E6%BC%8F%E6%B4%9E%E6%8C%96%E6%8E%98/">漏洞挖掘</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/01/28/%E9%92%88%E5%AF%B9%E6%9F%90%E9%AB%98%E6%A0%A1%E7%9A%84%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">针对某高校的渗透测试</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/01/28/%E9%92%88%E5%AF%B9%E6%9F%90%E9%AB%98%E6%A0%A1%E7%9A%84%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">
-          
-          
-            
-          
-          该文章已加密, 请输入密码查看。
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-01-28 21:37" pubdate>
-              2021-01-28
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/%E6%B8%97%E9%80%8F%E6%B5%8B%E8%AF%95/">渗透测试</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2021/01/28/CVE-2019-11043-PHP%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E5%A4%8D%E7%8E%B0/">CVE-2019-11043-PHP远程代码执行复现</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2021/01/28/CVE-2019-11043-PHP%E8%BF%9C%E7%A8%8B%E4%BB%A3%E7%A0%81%E6%89%A7%E8%A1%8C%E5%A4%8D%E7%8E%B0/">
-          
-          
-            
-          
-          1.漏洞简介​    这个漏洞是Andrew Danau在某比赛解决一道CTF题目的时候发现，在向目标服务器的URL发送%0a符号时，服务返回异常发现的漏洞（啥时候我也能那么牛）。
-​    2019年九月二十六日，PHP官方发布漏洞通告，其中指出：使用Nginx+php-fpm的服务器，在部分配置下，存在远程代码执行漏洞，且改漏洞已经被广泛利用，危害较大。相关工具 https://github.
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2021-01-28 14:25" pubdate>
-              2021-01-28
-            </time>
-          </div>
-        
         
         
       </div>
