@@ -206,6 +206,51 @@
     <article class="col-12 col-md-12 mx-auto index-info">
       <h1 class="index-header">
         
+        <a href="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/">java安全-反序列化之利用LazyMap构造利用链</a>
+      </h1>
+
+      <p class="index-excerpt">
+        <a href="/2020/10/21/java%E5%AE%89%E5%85%A8-%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E4%B9%8B%E5%88%A9%E7%94%A8LazyMap%E6%9E%84%E9%80%A0%E5%88%A9%E7%94%A8%E9%93%BE/">
+          
+          
+            
+          
+          1.前言在代码审计的知识星球里，看到p神关于java反序列化系列的文章。于是跟着该系列文章进行学习。
+这是跟这个系列学习的第三篇文章
+前面记录关于简化CommonCollections1利用链学习分析，我们都是用到了TransformedMap，但是我们在yso中的CommonCollections1利用链中用到的是LazyMap，因此这篇文章就是学习LazyMap，并用它来构造利用链。
+
+1.该
+        </a>
+      </p>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>
+            <time datetime="2020-10-21 19:16" pubdate>
+              2020-10-21
+            </time>
+          </div>
+        
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-category"></i>
+            
+              <a href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
+            
+          </div>
+        
+        
+      </div>
+    </article>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <article class="col-12 col-md-12 mx-auto index-info">
+      <h1 class="index-header">
+        
         <a href="/2020/10/16/Dubbo%E5%8E%86%E5%8F%B2%E6%BC%8F%E6%B4%9E%E4%B9%8BCVE-2019-17564%E6%BC%8F%E6%B4%9E%E5%A4%8D%E7%8E%B0%E5%88%86%E6%9E%90/">Dubbo历史漏洞之CVE-2019-17564漏洞复现分析</a>
       </h1>
 
@@ -274,8 +319,8 @@
           1.前言最近在学习java的反序列化，在代码审计的知识星球里，看到p神关于java反序列化系列的文章。于是跟着该系列文章进行学习。
 这是我跟着该系列文章学习的第二篇文章。
 1.该利用链的限制条件：JDK版本：1.7 （8u71之后已修复不可利用）
-2.分析学习这是上一篇文章的demo，这个Demo中我们要触发漏洞的关键，在于map.put(1,1);我们需要向Map中加入一个新的元素。
-12345
+利用版本：CommonsCollections 3.1 - 3.2.1
+2.分析学习这是上一篇文章的demo，这个Demo中我们要触发漏洞的关键，在于m
         </a>
       </p>
 
@@ -581,49 +626,6 @@ URLClassLoader提供了这个功能，它让我们可以通过以
             <i class="iconfont icon-date"></i>
             <time datetime="2020-10-02 09:40" pubdate>
               2020-10-02
-            </time>
-          </div>
-        
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-category"></i>
-            
-              <a href="/categories/JAVA%E5%AE%89%E5%85%A8/">JAVA安全</a>
-            
-          </div>
-        
-        
-      </div>
-    </article>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <article class="col-12 col-md-12 mx-auto index-info">
-      <h1 class="index-header">
-        
-        <a href="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/">java安全-JAVA反射机制</a>
-      </h1>
-
-      <p class="index-excerpt">
-        <a href="/2020/09/30/java%E5%AE%89%E5%85%A8-JAVA%E5%8F%8D%E5%B0%84%E6%9C%BA%E5%88%B6/">
-          
-          
-            
-          
-          1.JAVA反射机制的概念：​    java反射机制是在运行状态中，对于任意一个类，都能够知道这个类的所有属性和方法;对于任意一个对象，都能够调用它的任意方法和属性; 这种动态获取信息以及动态调用对象方法的功能称为java语言的反射机制。
-以下大部分知识来自代码审计的知识星球
-2.反射1234public void execute(String className, String methodN
-        </a>
-      </p>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>
-            <time datetime="2020-09-30 19:10" pubdate>
-              2020-09-30
             </time>
           </div>
         
